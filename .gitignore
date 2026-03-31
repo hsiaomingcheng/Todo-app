@@ -208,3 +208,4 @@ __marimo__/
 
 connect.py
 **/.DS_Store
+node_modules/

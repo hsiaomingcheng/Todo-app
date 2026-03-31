@@ -29,7 +29,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/User"
+                                "$ref": "#/components/schemas/LoginUser"
                             }
                         }
                     },
@@ -51,6 +51,58 @@
                                 "schema": {
                                     "$ref": "#/components/schemas/HTTPValidationError"
                                 }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/register": {
+            "post": {
+                "summary": "Register User",
+                "operationId": "register_user_auth_register_post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RegisterUser"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/test-login": {
+            "get": {
+                "summary": "Test Login User",
+                "operationId": "test_login_user_auth_test_login_get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
                             }
                         }
                     }
@@ -67,42 +119,6 @@
                         "content": {
                             "application/json": {
                                 "schema": {}
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/auth/register": {
-            "post": {
-                "summary": "Register User",
-                "operationId": "register_user_auth_register_post",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/User"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
                             }
                         }
                     }
@@ -216,6 +232,57 @@
                 "type": "object",
                 "title": "HTTPValidationError"
             },
+            "LoginUser": {
+                "properties": {
+                    "user_account": {
+                        "type": "string",
+                        "title": "User Account"
+                    },
+                    "password": {
+                        "type": "string",
+                        "title": "Password"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "user_account",
+                    "password"
+                ],
+                "title": "LoginUser"
+            },
+            "RegisterUser": {
+                "properties": {
+                    "user_account": {
+                        "type": "string",
+                        "title": "User Account"
+                    },
+                    "password": {
+                        "type": "string",
+                        "title": "Password"
+                    },
+                    "email": {
+                        "type": "string",
+                        "title": "Email"
+                    },
+                    "first_name": {
+                        "type": "string",
+                        "title": "First Name"
+                    },
+                    "last_name": {
+                        "type": "string",
+                        "title": "Last Name"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "user_account",
+                    "password",
+                    "email",
+                    "first_name",
+                    "last_name"
+                ],
+                "title": "RegisterUser"
+            },
             "Task": {
                 "properties": {
                     "id": {
@@ -238,34 +305,6 @@
                     "title"
                 ],
                 "title": "Task"
-            },
-            "User": {
-                "properties": {
-                    "email": {
-                        "type": "string",
-                        "title": "Email"
-                    },
-                    "name": {
-                        "type": "string",
-                        "title": "Name"
-                    },
-                    "user_account": {
-                        "type": "string",
-                        "title": "User Account"
-                    },
-                    "password": {
-                        "type": "string",
-                        "title": "Password"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "email",
-                    "name",
-                    "user_account",
-                    "password"
-                ],
-                "title": "User"
             },
             "ValidationError": {
                 "properties": {

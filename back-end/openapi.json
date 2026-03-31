@@ -5,10 +5,10 @@
         "version": "0.1.0"
     },
     "paths": {
-        "/users": {
+        "/api/users": {
             "get": {
                 "summary": "Get Users",
-                "operationId": "get_users_users_get",
+                "operationId": "get_users_api_users_get",
                 "responses": {
                     "200": {
                         "description": "Successful Response",
@@ -21,10 +21,10 @@
                 }
             }
         },
-        "/auth/login": {
+        "/api/auth/login": {
             "post": {
                 "summary": "Login User",
-                "operationId": "login_user_auth_login_post",
+                "operationId": "login_user_api_auth_login_post",
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -57,10 +57,10 @@
                 }
             }
         },
-        "/auth/register": {
+        "/api/auth/register": {
             "post": {
                 "summary": "Register User",
-                "operationId": "register_user_auth_register_post",
+                "operationId": "register_user_api_auth_register_post",
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -93,10 +93,10 @@
                 }
             }
         },
-        "/auth/test-login": {
+        "/api/auth/test-login": {
             "get": {
                 "summary": "Test Login User",
-                "operationId": "test_login_user_auth_test_login_get",
+                "operationId": "test_login_user_api_auth_test_login_get",
                 "responses": {
                     "200": {
                         "description": "Successful Response",
@@ -109,10 +109,10 @@
                 }
             }
         },
-        "/auth/test-register": {
+        "/api/auth/test-register": {
             "get": {
                 "summary": "Test Register User",
-                "operationId": "test_register_user_auth_test_register_get",
+                "operationId": "test_register_user_api_auth_test_register_get",
                 "responses": {
                     "200": {
                         "description": "Successful Response",
@@ -125,10 +125,10 @@
                 }
             }
         },
-        "/tasks": {
+        "/api/tasks": {
             "get": {
                 "summary": "Get Tasks",
-                "operationId": "get_tasks_tasks_get",
+                "operationId": "get_tasks_api_tasks_get",
                 "responses": {
                     "200": {
                         "description": "Successful Response",
@@ -142,7 +142,7 @@
             },
             "post": {
                 "summary": "Create Task",
-                "operationId": "create_task_tasks_post",
+                "operationId": "create_task_api_tasks_post",
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -179,10 +179,10 @@
                 }
             }
         },
-        "/tasks/{task_id}": {
+        "/api/tasks/{task_id}": {
             "delete": {
                 "summary": "Delete Task",
-                "operationId": "delete_task_tasks__task_id__delete",
+                "operationId": "delete_task_api_tasks__task_id__delete",
                 "parameters": [
                     {
                         "name": "task_id",

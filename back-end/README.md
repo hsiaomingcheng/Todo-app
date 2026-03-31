@@ -22,8 +22,9 @@ DevOps：Docker + AWS
 Install
 pip install "fastapi[standard]"
 
-Run App
-fastapi dev or uvicorn main:app --reload
+Run App - two options
+1. fastapi dev
+2. uvicorn main:app --reload (uvicorn app.main:app --reload --port 8000)
 
 Produce requirements dovument
 pip freeze > requirements.txt

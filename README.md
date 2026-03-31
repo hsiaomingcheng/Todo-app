@@ -23,3 +23,17 @@ npm run dev
 Vite proxies `/api/*` to `http://localhost:8000` automatically — no CORS issues in dev.
 
 ---
+
+## The process of calling APIs
+
+```
+React (Vite)
+   ↓
+/api/auth/register
+   ↓ (proxy)
+http://localhost:XXXX
+   ↓
+Backend (FastAPI)
+```
+
+---

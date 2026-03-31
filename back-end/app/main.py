@@ -5,8 +5,8 @@ from app import lifespan
 from app.routes import common, task
 
 app = FastAPI(lifespan=lifespan)
-app.include_router(common.router)
-app.include_router(task.router)
+app.include_router(common.router, prefix="/api")
+app.include_router(task.router, prefix="/api")
 
 # Generate OpenAPI schema and save to file
 with open("openapi.json", "w") as f:

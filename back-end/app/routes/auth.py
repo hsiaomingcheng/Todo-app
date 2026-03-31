@@ -54,23 +54,7 @@ def register_user(user: RegisterUser, cursor = Depends(db.get_cursor)):
         "message": f"User {user.user_account} has been registered successfully!"
     }
 
-@router.get("/auth/test-login")
-def test_login_user(cursor = Depends(db.get_cursor)):
 
-    test_data = {
-        "user_account": "testuser",
-        "password": "password123"
-    }
-
-    user = LoginUser(**test_data)
-    login_user(user, cursor)
-
-    return {
-        "message": "This is a test login endpoint. Please use /auth/login to log in!"
-    }
-
-@router.get("/auth/test-register")
-def test_register_user(cursor = Depends(db.get_cursor)):
 
     test_data = {
         "email": "tom-hanks@example.com",

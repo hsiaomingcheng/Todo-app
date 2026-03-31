@@ -93,38 +93,6 @@
                 }
             }
         },
-        "/api/auth/test-login": {
-            "get": {
-                "summary": "Test Login User",
-                "operationId": "test_login_user_api_auth_test_login_get",
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/api/auth/test-register": {
-            "get": {
-                "summary": "Test Register User",
-                "operationId": "test_register_user_api_auth_test_register_get",
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "/api/tasks": {
             "get": {
                 "summary": "Get Tasks",

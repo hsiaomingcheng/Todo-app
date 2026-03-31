@@ -3,6 +3,10 @@ A Todo-list app practice
 
 ---
 
+user's password are all `password123`
+
+---
+
 ## Frontend Setup
 
 ### Prerequisites

@@ -23,6 +23,8 @@ export default function RegisterPage() {
                 last_name: form.lastName,
                 email: form.email,
             });
+
+            // TODO: Handle the response from the server, such as showing error messages or redirecting to the login page
         } catch (error) {
             console.error("Error registering user:", error);
         } finally {
@@ -46,6 +48,7 @@ export default function RegisterPage() {
                             type="text"
                             placeholder="Account Name"
                             value={form.accountName}
+                            required
                             onChange={(e) => setForm({...form, accountName: e.target.value})} />
                     </div>
 
@@ -59,6 +62,7 @@ export default function RegisterPage() {
                             type="password"
                             placeholder="Password"
                             value={form.password}
+                            required
                             onChange={(e) => setForm({...form, password: e.target.value})} />
                         <p className="text-red-500 text-xs italic">Please choose a password.</p>
                     </div>
@@ -73,6 +77,7 @@ export default function RegisterPage() {
                             type="text"
                             placeholder="First Name"
                             value={form.firstName}
+                            required
                             onChange={(e) => setForm({...form, firstName: e.target.value})} />
                     </div>
 
@@ -86,6 +91,7 @@ export default function RegisterPage() {
                             type="text"
                             placeholder="Last Name"
                             value={form.lastName}
+                            required
                             onChange={(e) => setForm({...form, lastName: e.target.value})} />
                     </div>
 
@@ -99,6 +105,7 @@ export default function RegisterPage() {
                             type="email"
                             placeholder="Email"
                             value={form.email}
+                            required
                             onChange={(e) => setForm({...form, email: e.target.value})} />
                     </div>
 

@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 from app.security import hash_password, verify_password
 import app.db as db
 
@@ -8,6 +8,14 @@ router = APIRouter()
 class LoginUser(BaseModel):
     user_account: str
     password: str
+
+    # Validate that user_account and password are not empty or just whitespace
+    @field_validator("user_account", "password")
+    @classmethod
+    def must_not_be_blank(cls, value: str) -> str:
+        if not value or not value.strip():
+            raise ValueError("must not be empty")
+        return value
 
 
 class RegisterUser(LoginUser):
@@ -29,9 +37,11 @@ def login_user(user: LoginUser, cursor = Depends(db.get_cursor)):
     db_user = cursor.fetchone()
 
     if not db_user:
+        print("User not found")
         return {"message": "User not found"}
     
     if not verify_password(db_user['password_hash'], user.password):
+        print("Invalid password")
         return {"message": "Invalid password"}
     
     return {"message": "Login successful", "user": db_user}
@@ -52,21 +62,4 @@ def register_user(user: RegisterUser, cursor = Depends(db.get_cursor)):
 
     return {
         "message": f"User {user.user_account} has been registered successfully!"
-    }
-
-
-
-    test_data = {
-        "email": "tom-hanks@example.com",
-        "first_name": "Tom",
-        "last_name": "Hanks",
-        "user_account": "testuser",
-        "password": "password123"
-    }
-
-    user = RegisterUser(**test_data)
-    register_user(user, cursor)
-
-    return {
-        "message": "This is a test registration endpoint. Please use /auth/register to register a user!"
     }

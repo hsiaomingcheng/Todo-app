@@ -11,6 +11,7 @@ def hash_password(password: str) -> str:
 def verify_password(hashed_password: str, plain_password: str) -> bool:
     """verify if the plain password matches the hashed password in the database"""
     try:
-        return ph.verify(hashed_password, plain_password)
+        ph.verify(hashed_password, plain_password)
+        return True
     except VerifyMismatchError:
         return False

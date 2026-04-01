@@ -41,3 +41,14 @@ Backend (FastAPI)
 ```
 
 ---
+
+### Login/Register Page
+
+Frontend
+* All inputs have required attributes to avoid blank input value
+
+Backend
+* Add field_validator, this can check the value of input is blank or not
+* Security.py response for password hashing and verify (using argon2 package)
+
+---

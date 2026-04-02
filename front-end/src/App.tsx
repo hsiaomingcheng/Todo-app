@@ -25,7 +25,7 @@ export default function App() {
       {/* </Route> */}
 
       {/* Redirects */}
-      {/* <Route path="/" element={<Navigate to="/boards" replace />} /> */}
+      <Route path="/" element={<Navigate to="/boards" replace />} />
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );

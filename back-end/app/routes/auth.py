@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, field_validator
 from app.security import hash_password, verify_password
 import app.db as db
@@ -38,11 +38,11 @@ def login_user(user: LoginUser, cursor = Depends(db.get_cursor)):
 
     if not db_user:
         print("User not found")
-        return {"message": "User not found"}
+        raise HTTPException(status_code=404, detail="User not found")
     
     if not verify_password(db_user['password_hash'], user.password):
         print("Invalid password")
-        return {"message": "Invalid password"}
+        raise HTTPException(status_code=401, detail="Invalid credentials")
     
     return {"message": "Login successful", "user": db_user}
 
@@ -51,7 +51,7 @@ def register_user(user: RegisterUser, cursor = Depends(db.get_cursor)):
     # 1. Verify if the user account already exists in the database
     cursor.execute("SELECT * FROM users WHERE user_account = %s", (user.user_account,))
     if cursor.fetchone():
-        return {"message": "User account already exists"}
+        raise HTTPException(status_code=409, detail="User account already exists")
 
     # 2. If not, hash the password and insert the new user into the database
     cursor.execute("""

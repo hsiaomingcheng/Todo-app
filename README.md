@@ -7,6 +7,16 @@ user's password are all `password123`
 
 ---
 
+## Backend Setup
+
+### RESTful
+
+### Password hashing
+
+### JWT
+
+---
+
 ## Frontend Setup
 
 ### Prerequisites
@@ -50,5 +60,9 @@ Frontend
 Backend
 * Add field_validator, this can check the value of input is blank or not
 * Security.py response for password hashing and verify (using argon2 package)
+
+---
+
+## What I learned?
 
 ---

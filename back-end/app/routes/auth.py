@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, field_validator
 from app.security import hash_password, verify_password
+from app.validators import validate_not_blank
 import app.db as db
 
 router = APIRouter()
@@ -8,15 +9,6 @@ router = APIRouter()
 class LoginUser(BaseModel):
     user_account: str
     password: str
-
-    # Validate that user_account and password are not empty or just whitespace
-    @field_validator("user_account", "password")
-    @classmethod
-    def must_not_be_blank(cls, value: str) -> str:
-        if not value or not value.strip():
-            raise ValueError("must not be empty")
-        return value
-
 
 class RegisterUser(LoginUser):
     email: str
@@ -30,24 +22,45 @@ def get_users(cursor = Depends(db.get_cursor)):
     users = cursor.fetchall()
     return {"message": "Fetching all users", "users": users}
 
-@router.post("/auth/login")
+@router.post("/auth/login", status_code=200)
 def login_user(user: LoginUser, cursor = Depends(db.get_cursor)):
+    # validate user_account and password
+    validate_not_blank({
+        "user_account": user.user_account,
+        "password": user.password,
+    })
+
     # Implementation for user login
     cursor.execute("SELECT * FROM users WHERE user_account = %s", (user.user_account,))
     db_user = cursor.fetchone()
 
     if not db_user:
-        print("User not found")
         raise HTTPException(status_code=404, detail="User not found")
     
     if not verify_password(db_user['password_hash'], user.password):
-        print("Invalid password")
         raise HTTPException(status_code=401, detail="Invalid credentials")
     
-    return {"message": "Login successful", "user": db_user}
+    return {
+        "message": "Login successful",
+        "data": {
+            "user_account": db_user['user_account'],
+            "email": db_user['email'],
+            "first_name": db_user['first_name'],
+            "last_name": db_user['last_name'],
+        }
+    }
 
-@router.post("/auth/register")
+@router.post("/auth/register", status_code=201)
 def register_user(user: RegisterUser, cursor = Depends(db.get_cursor)):
+    # validate user_account, password, email, first_name and last_name
+    validate_not_blank({
+        "user_account": user.user_account,
+        "password": user.password,
+        "email": user.email,
+        "first_name": user.first_name,
+        "last_name": user.last_name,
+    })
+
     # 1. Verify if the user account already exists in the database
     cursor.execute("SELECT * FROM users WHERE user_account = %s", (user.user_account,))
     if cursor.fetchone():

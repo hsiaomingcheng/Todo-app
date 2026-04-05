@@ -19,7 +19,6 @@ def get_tasks(cursor=Depends(db.get_cursor), current_user = Depends(get_current_
     # current_user → a dict of the logged-in user's row from DB
     # e.g. current_user["id"], current_user["user_account"], current_user["email"]
 
-    
     return {
         "message": "歡迎光臨你大爺的任務列表！",
         "task_list": [
@@ -40,4 +39,11 @@ def create_task(task: Task):
 def delete_task(task_id: int):
     return {
         "message": f"任務 {task_id} 已刪除！"
+    }
+
+@router.put("/tasks/{task_id}")
+def update_task(task_id: int, task: Task):
+    return {
+        "message": f"任務 {task_id} 已更新！",
+        "task": task
     }

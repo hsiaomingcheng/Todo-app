@@ -74,7 +74,19 @@ This intercepts every `HTTPException` across the entire app and reformats it aut
 
 ### Password hashing
 
-### JWT
+### Identiry Verification
+
+### JWT (JSON Web Token)
+1. User sends username + password
+2. Backend verifies credentials
+3. Backend generates a JWT token and sends it back
+4. Frontend stores the token
+5. Frontend sends the token in every future request header
+6. Backend verifies the token on protected routes
+
+### .env
+A file that stores environment variables, and it is not recommended to commit to version control.
+Need to make sure that `python-dotenv` has been installed.
 
 ---
 
@@ -96,6 +108,10 @@ npm run dev
 ```
 
 Vite proxies `/api/*` to `http://localhost:8000` automatically — no CORS issues in dev.
+
+### Protected Route
+A `ProtectedRoute` component is created to protect the routes that require authentication.
+It works like a **gatekeeper**. When a user tries to visit `/boards`, instead of going directly to the page, they hit the gatekeeper first. The gatekeeper asks: "Are you logged in?". If yes → let them through. If no → redirect to `/login`.
 
 ---
 

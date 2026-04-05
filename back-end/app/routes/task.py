@@ -1,5 +1,7 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from pydantic import BaseModel
+from app.security import get_current_user
+import app.db as db
 
 router = APIRouter()
 
@@ -9,7 +11,15 @@ class Task(BaseModel):
     completed: bool = False
 
 @router.get("/tasks")
-def get_tasks():
+def get_tasks(cursor=Depends(db.get_cursor), current_user = Depends(get_current_user)):
+    # cursor → use it to query the DB
+    cursor.execute("SELECT * FROM tasks WHERE user_id = %s", (current_user["id"],))
+    tasks = cursor.fetchall()
+
+    # current_user → a dict of the logged-in user's row from DB
+    # e.g. current_user["id"], current_user["user_account"], current_user["email"]
+
+    
     return {
         "message": "歡迎光臨你大爺的任務列表！",
         "task_list": [
@@ -20,7 +30,7 @@ def get_tasks():
     }
 
 @router.post("/tasks")
-def create_task(task: Task = {"id": 3, "title": "吃飯", "completed": False}):
+def create_task(task: Task):
     return {
         "message": "任務已創建！",
         "task": task

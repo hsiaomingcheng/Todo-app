@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, field_validator
-from app.security import hash_password, verify_password
+from app.security import hash_password, verify_password, create_access_token
 from app.validators import validate_not_blank
 import app.db as db
 
@@ -38,9 +38,14 @@ def login_user(user: LoginUser, cursor = Depends(db.get_cursor)):
         raise HTTPException(status_code=404, detail="User not found")
     
     if not verify_password(db_user['password_hash'], user.password):
-        raise HTTPException(status_code=401, detail="Invalid credentials")
+        raise HTTPException(status_code=401, detail="Invalid password")
+
+    # Generate JWT token with user ID inside
+    token = create_access_token({"sub": str(db_user["id"])})
     
     return {
+        "access_token": token,
+        "token_type": "bearer",
         "message": "Login successful",
         "data": {
             "user_account": db_user['user_account'],

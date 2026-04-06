@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { isAxiosError } from "axios";
 import api from "@/api/client";
 
 export default function LoginPage() {
     const navigate = useNavigate();
 
     const [loading, setLoading] = useState(false);
+    const [errorMsg, setErrorMsg] = useState("");
     const [form, setForm] = useState({
         accountName: "",
         password: "",
@@ -14,21 +16,28 @@ export default function LoginPage() {
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setLoading(true);
+        setErrorMsg("");
 
         try {
-            await api.post("/auth/login", {
+            const response = await api.post("/auth/login", {
                 user_account: form.accountName,
                 password: form.password,
             });
 
-            // TODO: Need to store the access token in the local storage or cookie for future authenticated requests
-            // TODO: Handle the response from the server, such as showing error messages or redirecting to the dashboard
+            // Store the access token in local storage
+            localStorage.setItem("token", response.data.access_token)
+
+            // Redirect to dashboard
             navigate("/boards");
         } catch (error) {
-            console.error("Error login user:", error);
+            if (isAxiosError(error) && error.response) {
+                // FastAPI returns HTTP errors in the format: {"message": "Error message"}
+                setErrorMsg(error.response.data.message || "Login failed");
+            } else {
+                setErrorMsg("An unexpected error occurred");
+            }
         } finally {
             setLoading(false);
-            console.log("The finally of the login request");
         }
     }
 
@@ -36,13 +45,19 @@ export default function LoginPage() {
         <section className="h-screen flex items-center justify-center bg-gray-100">
             <div className="w-full max-w-xs">
                 <form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" onSubmit={handleSubmit}>
+                    {errorMsg && (
+                        <div className="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative text-sm text-center" role="alert">
+                            <span className="block sm:inline">{errorMsg}</span>
+                        </div>
+                    )}
+
                     <div className="mb-4">
                         <label
                             className="block text-gray-700 text-sm font-bold mb-2"
                             htmlFor="accountName">
                             User Account
                         </label>
-                        <input 
+                        <input
                             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                             id="accountName"
                             type="text"
@@ -73,7 +88,7 @@ export default function LoginPage() {
                                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                                 type="submit"
                                 disabled={loading}>
-                                { loading ? "Logging in..." : "Login" }
+                                {loading ? "Logging in..." : "Login"}
                             </button>
 
                             <Link to="/register">

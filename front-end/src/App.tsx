@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 
+import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/common/ProtectedRoute";
 import AppLayout from "./components/layout/AppLayout";
 
@@ -11,22 +12,24 @@ import NotFoundPage from "./pages/NotFoundPage";
 
 export default function App() {
   return (
-    <Routes>
-      {/* Public */}
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/register" element={<RegisterPage />} />
+    <AuthProvider>
+      <Routes>
+        {/* Public */}
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
 
-      {/* Protected — wrapped in AppLayout (Navbar + main) */}
-      <Route element={<ProtectedRoute />}> {/* gatekeeper */}
-        <Route element={<AppLayout />}>
-          <Route path="/boards" element={<BoardsPage />} />
-          {/* <Route path="/boards/:boardId" element={<BoardPage />} /> */}
+        {/* Protected — wrapped in AppLayout (Navbar + main) */}
+        <Route element={<ProtectedRoute />}> {/* gatekeeper */}
+          <Route element={<AppLayout />}>
+            <Route path="/boards" element={<BoardsPage />} />
+            {/* <Route path="/boards/:boardId" element={<BoardPage />} /> */}
+          </Route>
         </Route>
-      </Route>
 
-      {/* Redirects */}
-      <Route path="/" element={<Navigate to="/boards" replace />} />
-      <Route path="*" element={<NotFoundPage />} />
-    </Routes>
+        {/* Redirects */}
+        <Route path="/" element={<Navigate to="/boards" replace />} />
+        <Route path="*" element={<NotFoundPage />} />
+      </Routes>
+    </AuthProvider>
   );
 }

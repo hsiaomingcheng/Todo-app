@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { isAxiosError } from "axios";
 import api from "@/api/client";
+import { useAuth } from "@/context/AuthContext";
 
 export default function LoginPage() {
-    const navigate = useNavigate();
+    const { login } = useAuth();
 
     const [loading, setLoading] = useState(false);
     const [errorMsg, setErrorMsg] = useState("");
@@ -24,11 +25,8 @@ export default function LoginPage() {
                 password: form.password,
             });
 
-            // Store the access token in local storage
-            localStorage.setItem("token", response.data.access_token)
-
-            // Redirect to dashboard
-            navigate("/boards");
+            // Use AuthContext to log in (which safely updates state and redirects)
+            login(response.data.access_token);
         } catch (error) {
             if (isAxiosError(error) && error.response) {
                 // FastAPI returns HTTP errors in the format: {"message": "Error message"}

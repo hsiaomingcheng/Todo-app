@@ -13,7 +13,7 @@ class Task(BaseModel):
 @router.get("/tasks")
 def get_tasks(cursor=Depends(db.get_cursor), current_user = Depends(get_current_user)):
     # cursor → use it to query the DB
-    cursor.execute("SELECT * FROM tasks WHERE user_id = %s", (current_user["id"],))
+    cursor.execute("SELECT * FROM tasks WHERE id = %s", (current_user["id"],))
     tasks = cursor.fetchall()
 
     # current_user → a dict of the logged-in user's row from DB

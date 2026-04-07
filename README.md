@@ -3,6 +3,12 @@ A Todo-list app practice
 
 ---
 
+## Account
+
+- alicesmith
+- bobjones
+- charliebrown
+
 user's password are all `password123`
 
 ---

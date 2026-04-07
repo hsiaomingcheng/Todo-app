@@ -93,6 +93,27 @@
                 }
             }
         },
+        "/api/boards": {
+            "get": {
+                "summary": "Get Boards",
+                "operationId": "get_boards_api_boards_get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "OAuth2PasswordBearer": []
+                    }
+                ]
+            }
+        },
         "/api/tasks": {
             "get": {
                 "summary": "Get Tasks",

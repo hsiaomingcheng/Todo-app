@@ -1,11 +1,20 @@
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
+import { getUserDetails } from "@/api/apis";
 
 // 1. Define the shape of our context
 interface AuthContextType {
     token: string | null;
-    login: (token: string) => void;
+    userDetails: UserDetails | null;
+    login: (token: string, userId: number) => void;
     logout: () => void;
+}
+
+interface UserDetails {
+    user_account: string;
+    email: string;
+    first_name: string;
+    last_name: string;
 }
 
 // 2. Create the context with empty default values
@@ -17,23 +26,54 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     // Initialize state from localStorage so the user stays logged in if they refresh
     const [token, setToken] = useState<string | null>(localStorage.getItem("token"));
+    const [userId, setUserId] = useState<number | null>(() => {
+        const userId = localStorage.getItem("userId");
+        return userId ? parseInt(userId) : null;
+    });
+    const [userDetails, setUserDetails] = useState<UserDetails | null>({
+        user_account: '',
+        email: '',
+        first_name: '',
+        last_name: '',
+    });
+
+    // Handle async logic inside useEffect
+    useEffect(() => {
+        const fetchUser = async () => {
+            if (token && userId !== null) {
+                try {
+                    const userDetails = await getUserDetails(userId);
+                    setUserDetails({ ...userDetails.data });
+                } catch (error) {
+                    console.error("Failed to fetch user", error);
+                }
+            }
+        };
+
+        fetchUser();
+    }, [token, userId]); // Dependencies
 
     // The login function saves the token
-    const login = (newToken: string) => {
+    const login = (newToken: string, userId: number) => {
         localStorage.setItem("token", newToken);
+        localStorage.setItem("userId", userId.toString());
         setToken(newToken);
+        setUserId(userId);
+
         navigate("/boards");
     };
 
     // The logout function removes the token and redirects
     const logout = () => {
         localStorage.removeItem("token");
+        localStorage.removeItem("userId");
         setToken(null);
+        setUserId(null);
         navigate("/login");
     };
 
     return (
-        <AuthContext.Provider value={{ token, login, logout }}>
+        <AuthContext.Provider value={{ token, userDetails, login, logout }}>
             {children}
         </AuthContext.Provider>
     );

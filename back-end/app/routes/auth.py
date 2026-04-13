@@ -15,13 +15,25 @@ class RegisterUser(LoginUser):
     first_name: str
     last_name: str
 
+class UserId(BaseModel):
+    user_id: int
 
-@router.get("/users")
-def get_users(cursor = Depends(db.get_cursor)):
-    cursor.execute("SELECT * FROM users")
-    users = cursor.fetchall()
-    return {"message": "Fetching all users", "users": users}
 
+# Get user details
+@router.get("/users/{user_id}")
+def get_user_details(user_id: int, cursor = Depends(db.get_cursor)):
+    cursor.execute("SELECT * FROM users WHERE id = %s", (user_id,))
+    user = cursor.fetchone()
+    return {
+        "data": {
+            "user_account": user['user_account'],
+            "email": user['email'],
+            "first_name": user['first_name'],
+            "last_name": user['last_name'],
+        }
+    }
+
+# User login
 @router.post("/auth/login", status_code=200)
 def login_user(user: LoginUser, cursor = Depends(db.get_cursor)):
     # validate user_account and password
@@ -48,6 +60,7 @@ def login_user(user: LoginUser, cursor = Depends(db.get_cursor)):
         "token_type": "bearer",
         "message": "Login successful",
         "data": {
+            "id": db_user['id'],
             "user_account": db_user['user_account'],
             "email": db_user['email'],
             "first_name": db_user['first_name'],
@@ -55,6 +68,7 @@ def login_user(user: LoginUser, cursor = Depends(db.get_cursor)):
         }
     }
 
+# User registration
 @router.post("/auth/register", status_code=201)
 def register_user(user: RegisterUser, cursor = Depends(db.get_cursor)):
     # validate user_account, password, email, first_name and last_name

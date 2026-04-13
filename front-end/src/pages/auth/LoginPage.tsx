@@ -25,8 +25,11 @@ export default function LoginPage() {
                 password: form.password,
             });
 
+            const token = response.data.access_token;
+            const userId = response.data.data.id;
+
             // Use AuthContext to log in (which safely updates state and redirects)
-            login(response.data.access_token);
+            login(token, userId);
         } catch (error) {
             if (isAxiosError(error) && error.response) {
                 // FastAPI returns HTTP errors in the format: {"message": "Error message"}

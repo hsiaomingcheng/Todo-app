@@ -6,6 +6,7 @@ import AppLayout from "./components/layout/AppLayout";
 
 import LoginPage from "./pages/auth/LoginPage";
 import RegisterPage from "./pages/auth/RegisterPage";
+import ProfilePage from "./pages/auth/ProfilePage";
 import BoardsPage from "./pages/boards/BoardsPage";
 // import BoardPage from "./pages/board/BoardPage";
 import NotFoundPage from "./pages/NotFoundPage";
@@ -23,6 +24,7 @@ export default function App() {
           <Route element={<AppLayout />}>
             <Route path="/boards" element={<BoardsPage />} />
             {/* <Route path="/boards/:boardId" element={<BoardPage />} /> */}
+            <Route path="/profile" element={<ProfilePage />} />
           </Route>
         </Route>
 

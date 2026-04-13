@@ -26,3 +26,22 @@ export async function userLogin(parameters: { user_account: string, password: st
         }
     }
 }
+
+export async function userRegister(parameters: {
+    user_account: string,
+    password: string,
+    first_name: string,
+    last_name: string,
+    email: string
+}) {
+    try {
+        const response = await api.post("/auth/register", parameters);
+        return response.data;
+    } catch (error) {
+        if (isAxiosError(error) && error.response) {
+            throw new Error(error.response.data.message);
+        } else {
+            throw new Error("An unexpected error occurred");
+        }
+    }
+}

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { isAxiosError } from "axios";
-import api from "@/api/client";
+import { userRegister } from "@/api/apis";
 
 export default function RegisterPage() {
     const navigate = useNavigate();
@@ -20,7 +20,7 @@ export default function RegisterPage() {
         setErrorMsg("");
 
         try {
-            await api.post("/auth/register", {
+            await userRegister({
                 user_account: form.accountName,
                 password: form.password,
                 first_name: form.firstName,

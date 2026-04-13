@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { isAxiosError } from "axios";
-import api from "@/api/client";
 import { useAuth } from "@/context/AuthContext";
+import { userLogin } from "@/api/apis";
 
 export default function LoginPage() {
     const { login } = useAuth();
@@ -20,13 +20,13 @@ export default function LoginPage() {
         setErrorMsg("");
 
         try {
-            const response = await api.post("/auth/login", {
+            const response = await userLogin({
                 user_account: form.accountName,
                 password: form.password,
             });
 
-            const token = response.data.access_token;
-            const userId = response.data.data.id;
+            const token = response.access_token;
+            const userId = response.data.id;
 
             // Use AuthContext to log in (which safely updates state and redirects)
             login(token, userId);

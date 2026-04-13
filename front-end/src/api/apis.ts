@@ -14,12 +14,9 @@ export async function getUserDetails(userId: number) {
     }
 }
 
-export async function postUserLogin(form: { accountName: string, password: string }) {
+export async function userLogin(parameters: { user_account: string, password: string }) {
     try {
-        const response = await api.post("/auth/login", {
-            user_account: form.accountName,
-            password: form.password,
-        });
+        const response = await api.post("/auth/login", parameters);
         return response.data;
     } catch (error) {
         if (isAxiosError(error) && error.response) {

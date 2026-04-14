@@ -94,6 +94,11 @@ This intercepts every `HTTPException` across the entire app and reformats it aut
 A file that stores environment variables, and it is not recommended to commit to version control.
 Need to make sure that `python-dotenv` has been installed.
 
+### Sturcture
+```
+users  →  boards (owner_id)  →  lists (board_id)  →  cards (list_id)  →  tasks (card_id)
+```
+
 ---
 
 ## Frontend Setup

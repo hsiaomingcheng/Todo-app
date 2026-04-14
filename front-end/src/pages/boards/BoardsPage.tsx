@@ -1,10 +1,20 @@
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { getBoards } from "@/api/apis";
 
 export default function BoardsPage() {
 
     useEffect(() => {
-        console.log('test')
+        const fetchBoards = async () => {
+            try {
+                const response = await getBoards();
+                console.log(response);
+            } catch (error) {
+                console.error(error);
+            }
+        };
+
+        fetchBoards();
     }, [])
 
     return (

@@ -45,3 +45,16 @@ export async function userRegister(parameters: {
         }
     }
 }
+
+export async function getBoards() {
+    try {
+        const response = await api.get("/boards");
+        return response.data;
+    } catch (error) {
+        if (isAxiosError(error) && error.response) {
+            throw new Error(error.response.data.message);
+        } else {
+            throw new Error("An unexpected error occurred");
+        }
+    }
+}

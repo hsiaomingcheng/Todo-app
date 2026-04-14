@@ -7,6 +7,9 @@
     "paths": {
         "/api/user/detail": {
             "get": {
+                "tags": [
+                    "auth"
+                ],
                 "summary": "Get User Details",
                 "operationId": "get_user_details_api_user_detail_get",
                 "responses": {
@@ -21,13 +24,16 @@
                 },
                 "security": [
                     {
-                        "OAuth2PasswordBearer": []
+                        "HTTPBearer": []
                     }
                 ]
             }
         },
         "/api/auth/login": {
             "post": {
+                "tags": [
+                    "auth"
+                ],
                 "summary": "Login User",
                 "operationId": "login_user_api_auth_login_post",
                 "requestBody": {
@@ -64,6 +70,9 @@
         },
         "/api/auth/register": {
             "post": {
+                "tags": [
+                    "auth"
+                ],
                 "summary": "Register User",
                 "operationId": "register_user_api_auth_register_post",
                 "requestBody": {
@@ -100,6 +109,9 @@
         },
         "/api/boards": {
             "get": {
+                "tags": [
+                    "board"
+                ],
                 "summary": "Get Boards",
                 "operationId": "get_boards_api_boards_get",
                 "responses": {
@@ -114,13 +126,16 @@
                 },
                 "security": [
                     {
-                        "OAuth2PasswordBearer": []
+                        "HTTPBearer": []
                     }
                 ]
             }
         },
         "/api/tasks": {
             "get": {
+                "tags": [
+                    "task"
+                ],
                 "summary": "Get Tasks",
                 "operationId": "get_tasks_api_tasks_get",
                 "responses": {
@@ -135,11 +150,14 @@
                 },
                 "security": [
                     {
-                        "OAuth2PasswordBearer": []
+                        "HTTPBearer": []
                     }
                 ]
             },
             "post": {
+                "tags": [
+                    "task"
+                ],
                 "summary": "Create Task",
                 "operationId": "create_task_api_tasks_post",
                 "requestBody": {
@@ -176,6 +194,9 @@
         },
         "/api/tasks/{task_id}": {
             "delete": {
+                "tags": [
+                    "task"
+                ],
                 "summary": "Delete Task",
                 "operationId": "delete_task_api_tasks__task_id__delete",
                 "parameters": [
@@ -211,6 +232,9 @@
                 }
             },
             "put": {
+                "tags": [
+                    "task"
+                ],
                 "summary": "Update Task",
                 "operationId": "update_task_api_tasks__task_id__put",
                 "parameters": [
@@ -388,14 +412,9 @@
             }
         },
         "securitySchemes": {
-            "OAuth2PasswordBearer": {
-                "type": "oauth2",
-                "flows": {
-                    "password": {
-                        "scopes": {},
-                        "tokenUrl": "/auth/login"
-                    }
-                }
+            "HTTPBearer": {
+                "type": "http",
+                "scheme": "bearer"
             }
         }
     }

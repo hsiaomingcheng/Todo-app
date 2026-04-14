@@ -13,6 +13,12 @@ source venv/bin/activate       # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
+```
+default port is 8000
+
+SWAGGER API doc: http://localhost:8000/docs
+```
+
 ## Technical Architecture
 Frontend: React (Vite) + Axios + Tailwind
 Backend: FastAPI + Pydantic

@@ -1,7 +1,7 @@
 from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError
 from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from datetime import datetime, timedelta, timezone
 from jose import jwt, JWTError
 from dotenv import load_dotenv
@@ -46,12 +46,12 @@ def decode_access_token(token: str) -> dict:
     return jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
 
 
-# ── OAuth2PasswordBearer ──────────────────────────────────────────────────────
-# OAuth2PasswordBearer is used to extract the token from the Authorization header
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
+# ── HTTPBearer ──────────────────────────────────────────────────────────────
+# HTTPBearer is used to extract the token from the Authorization header
+bearer_scheme = HTTPBearer()
 
 def get_current_user(
-    token: str = Depends(oauth2_scheme), # Extract the raw JWT token string from the Authorization: Bearer <token> header
+    credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme), # Extract the raw JWT token string from the Authorization: Bearer <token> header
     cursor=Depends(db.get_cursor)
 ):
     """Dependency that extracts and validates the JWT from the request header."""
@@ -61,6 +61,7 @@ def get_current_user(
         headers={"WWW-Authenticate": "Bearer"},
     )
 
+    token = credentials.credentials
     try:
         payload = decode_access_token(token) # Decode & verify the token using SECRET_KEY
         raw_sub = payload.get("sub") # Pull out sub from the decoded payload (the user ID stored at login)

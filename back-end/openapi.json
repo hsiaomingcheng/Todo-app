@@ -5,21 +5,10 @@
         "version": "0.1.0"
     },
     "paths": {
-        "/api/users/{user_id}": {
+        "/api/user/detail": {
             "get": {
                 "summary": "Get User Details",
-                "operationId": "get_user_details_api_users__user_id__get",
-                "parameters": [
-                    {
-                        "name": "user_id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "integer",
-                            "title": "User Id"
-                        }
-                    }
-                ],
+                "operationId": "get_user_details_api_user_detail_get",
                 "responses": {
                     "200": {
                         "description": "Successful Response",
@@ -28,18 +17,13 @@
                                 "schema": {}
                             }
                         }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "OAuth2PasswordBearer": []
+                    }
+                ]
             }
         },
         "/api/auth/login": {

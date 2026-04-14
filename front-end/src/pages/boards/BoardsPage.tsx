@@ -1,6 +1,12 @@
+import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 
 export default function BoardsPage() {
+
+    useEffect(() => {
+        console.log('test')
+    }, [])
+
     return (
         <div>
             <h1>Boards</h1>

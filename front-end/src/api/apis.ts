@@ -1,9 +1,9 @@
 import { isAxiosError } from "axios";
 import api from "@/api/client";
 
-export async function getUserDetails(userId: number) {
+export async function getUserDetails() {
     try {
-        const response = await api.get(`/users/${userId}`);
+        const response = await api.get(`/user/detail`);
         return response.data;
     } catch (error) {
         if (isAxiosError(error) && error.response) {

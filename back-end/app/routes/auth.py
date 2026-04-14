@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, field_validator
-from app.security import hash_password, verify_password, create_access_token
+from app.security import hash_password, verify_password, create_access_token, get_current_user
 from app.validators import validate_not_blank
 import app.db as db
 
@@ -20,16 +20,14 @@ class UserId(BaseModel):
 
 
 # Get user details
-@router.get("/users/{user_id}")
-def get_user_details(user_id: int, cursor = Depends(db.get_cursor)):
-    cursor.execute("SELECT * FROM users WHERE id = %s", (user_id,))
-    user = cursor.fetchone()
+@router.get("/user/detail")
+def get_user_details(current_user = Depends(get_current_user)):
     return {
         "data": {
-            "user_account": user['user_account'],
-            "email": user['email'],
-            "first_name": user['first_name'],
-            "last_name": user['last_name'],
+            "user_account": current_user['user_account'],
+            "email": current_user['email'],
+            "first_name": current_user['first_name'],
+            "last_name": current_user['last_name'],
         }
     }
 

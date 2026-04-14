@@ -6,7 +6,7 @@ import { getUserDetails } from "@/api/apis";
 interface AuthContextType {
     token: string | null;
     userDetails: UserDetails | null;
-    login: (token: string, userId: number) => void;
+    login: (token: string) => void;
     logout: () => void;
 }
 
@@ -26,10 +26,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     // Initialize state from localStorage so the user stays logged in if they refresh
     const [token, setToken] = useState<string | null>(localStorage.getItem("token"));
-    const [userId, setUserId] = useState<number | null>(() => {
-        const userId = localStorage.getItem("userId");
-        return userId ? parseInt(userId) : null;
-    });
     const [userDetails, setUserDetails] = useState<UserDetails | null>({
         user_account: '',
         email: '',
@@ -40,9 +36,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Handle async logic inside useEffect
     useEffect(() => {
         const fetchUser = async () => {
-            if (token && userId !== null) {
+            if (token) {
                 try {
-                    const userDetails = await getUserDetails(userId);
+                    const userDetails = await getUserDetails();
                     setUserDetails({ ...userDetails.data });
                 } catch (error) {
                     console.error("Failed to fetch user", error);
@@ -51,24 +47,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         };
 
         fetchUser();
-    }, [token, userId]); // Dependencies
+    }, [token]); // Dependencies
 
     // The login function saves the token
-    const login = (newToken: string, userId: number) => {
+    const login = (newToken: string) => {
         localStorage.setItem("token", newToken);
-        localStorage.setItem("userId", userId.toString());
         setToken(newToken);
-        setUserId(userId);
-
         navigate("/boards");
     };
 
     // The logout function removes the token and redirects
     const logout = () => {
         localStorage.removeItem("token");
-        localStorage.removeItem("userId");
         setToken(null);
-        setUserId(null);
         navigate("/login");
     };
 

@@ -16,6 +16,7 @@ CREATE TABLE users (
     last_name TEXT NOT NULL,
     user_account TEXT UNIQUE NOT NULL,
     password_hash TEXT NOT NULL,
+    active BOOLEAN NOT NULL DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -24,6 +25,7 @@ CREATE TABLE boards (
     id SERIAL PRIMARY KEY,
     title TEXT NOT NULL,
     owner_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    active BOOLEAN NOT NULL DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

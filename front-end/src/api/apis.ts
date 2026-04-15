@@ -58,3 +58,30 @@ export async function getBoards() {
         }
     }
 }
+
+export async function getBoard(board_id: number) {
+    try {
+        const response = await api.get(`/boards/${board_id}`);
+        return response.data;
+    } catch (error) {
+        if (isAxiosError(error) && error.response) {
+            throw new Error(error.response.data.message);
+        } else {
+            throw new Error("An unexpected error occurred");
+        }
+    }
+}
+
+export async function deleteBoards(board_id: number) {
+    try {
+        const response = await api.delete(`/boards/${board_id}`);
+        console.log('response', response)
+        return response.data;
+    } catch (error) {
+        if (isAxiosError(error) && error.response) {
+            throw new Error(error.response.data.message);
+        } else {
+            throw new Error("An unexpected error occurred");
+        }
+    }
+}

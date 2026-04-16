@@ -132,12 +132,57 @@
             }
         },
         "/api/boards/{board_id}": {
+            "delete": {
+                "tags": [
+                    "board"
+                ],
+                "summary": "Delete Boards",
+                "operationId": "delete_boards_api_boards__board_id__delete",
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "board_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "title": "Board Id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/board-lists/{board_id}": {
             "get": {
                 "tags": [
                     "board"
                 ],
-                "summary": "Get Board",
-                "operationId": "get_board_api_boards__board_id__get",
+                "summary": "Get Board Lists",
+                "operationId": "get_board_lists_api_board_lists__board_id__get",
                 "security": [
                     {
                         "HTTPBearer": []
@@ -175,12 +220,12 @@
                     }
                 }
             },
-            "delete": {
+            "post": {
                 "tags": [
                     "board"
                 ],
-                "summary": "Delete Boards",
-                "operationId": "delete_boards_api_boards__board_id__delete",
+                "summary": "Create Board List",
+                "operationId": "create_board_list_api_board_lists__board_id__post",
                 "security": [
                     {
                         "HTTPBearer": []
@@ -194,6 +239,104 @@
                         "schema": {
                             "type": "integer",
                             "title": "Board Id"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateListRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/board-lists/{list_id}": {
+            "put": {
+                "tags": [
+                    "board"
+                ],
+                "summary": "Update Board List",
+                "operationId": "update_board_list_api_board_lists__list_id__put",
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "list_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "title": "List Id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "board"
+                ],
+                "summary": "Delete Board List",
+                "operationId": "delete_board_list_api_board_lists__list_id__delete",
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "list_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "title": "List Id"
                         }
                     }
                 ],
@@ -371,6 +514,24 @@
     },
     "components": {
         "schemas": {
+            "CreateListRequest": {
+                "properties": {
+                    "title": {
+                        "type": "string",
+                        "title": "Title"
+                    },
+                    "position": {
+                        "type": "integer",
+                        "title": "Position"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "title",
+                    "position"
+                ],
+                "title": "CreateListRequest"
+            },
             "HTTPValidationError": {
                 "properties": {
                     "detail": {

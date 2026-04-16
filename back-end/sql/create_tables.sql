@@ -44,6 +44,7 @@ CREATE TABLE lists (
     board_id INTEGER REFERENCES boards(id) ON DELETE CASCADE,
     title TEXT NOT NULL,
     position INTEGER NOT NULL, -- for ordering lists within a board
+    active BOOLEAN NOT NULL DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

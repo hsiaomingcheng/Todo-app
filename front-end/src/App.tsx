@@ -8,7 +8,7 @@ import LoginPage from "./pages/auth/LoginPage";
 import RegisterPage from "./pages/auth/RegisterPage";
 import ProfilePage from "./pages/auth/ProfilePage";
 import BoardsPage from "./pages/boards/BoardsPage";
-import BoardPage from "./pages/boards/BoardPage";
+import BoardListsPage from "./pages/boards/BoardListsPage";
 import NotFoundPage from "./pages/NotFoundPage";
 
 export default function App() {
@@ -23,7 +23,7 @@ export default function App() {
         <Route element={<ProtectedRoute />}> {/* gatekeeper */}
           <Route element={<AppLayout />}>
             <Route path="/boards" element={<BoardsPage />} />
-            <Route path="/boards/:boardId" element={<BoardPage />} />
+            <Route path="/board-lists/:boardId" element={<BoardListsPage />} />
             <Route path="/profile" element={<ProfilePage />} />
           </Route>
         </Route>

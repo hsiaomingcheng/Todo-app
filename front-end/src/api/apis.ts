@@ -46,22 +46,10 @@ export async function userRegister(parameters: {
     }
 }
 
+// Boards
 export async function getBoards() {
     try {
         const response = await api.get("/boards");
-        return response.data;
-    } catch (error) {
-        if (isAxiosError(error) && error.response) {
-            throw new Error(error.response.data.message);
-        } else {
-            throw new Error("An unexpected error occurred");
-        }
-    }
-}
-
-export async function getBoard(board_id: number) {
-    try {
-        const response = await api.get(`/boards/${board_id}`);
         return response.data;
     } catch (error) {
         if (isAxiosError(error) && error.response) {
@@ -76,6 +64,34 @@ export async function deleteBoards(board_id: number) {
     try {
         const response = await api.delete(`/boards/${board_id}`);
         console.log('response', response)
+        return response.data;
+    } catch (error) {
+        if (isAxiosError(error) && error.response) {
+            throw new Error(error.response.data.message);
+        } else {
+            throw new Error("An unexpected error occurred");
+        }
+    }
+}
+
+
+// Board Lists
+export async function getBoardLists(board_id: number) {
+    try {
+        const response = await api.get(`/board-lists/${board_id}`);
+        return response.data;
+    } catch (error) {
+        if (isAxiosError(error) && error.response) {
+            throw new Error(error.response.data.message);
+        } else {
+            throw new Error("An unexpected error occurred");
+        }
+    }
+}
+
+export async function createBoardList(board_id: number, title: string, position: number) {
+    try {
+        const response = await api.post(`/board-lists/${board_id}`, { title, position });
         return response.data;
     } catch (error) {
         if (isAxiosError(error) && error.response) {

@@ -43,7 +43,7 @@ export default function BoardsPage() {
                         key={board.id}
                         size="sm"
                         className={`w-full max-w-sm bg-gray-100 cursor-pointer`}
-                        onClick={() => navigate(`/boards/${board.id}`)}
+                        onClick={() => navigate(`/board-lists/${board.id}`)}
                     >
                         <CardHeader>
                             <CardTitle>{board.title}</CardTitle>

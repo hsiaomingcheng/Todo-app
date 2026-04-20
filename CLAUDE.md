@@ -62,6 +62,9 @@ Routes live in `app/routes/`: `auth.py`, `board.py`, `task.py`. Each file create
 ### Soft Deletes
 Both `users` and `boards` and `lists` tables have an `active BOOLEAN NOT NULL DEFAULT TRUE` column. Deletion sets `active = false` — never hard deletes.
 
+### UI Components
+shadcn/ui is used as the component library, built on top of Radix UI primitives and Tailwind CSS v4. Components live in `front-end/src/components/ui/`. Add new components via `npx shadcn@latest add <component>`.
+
 ### Frontend (`front-end/src/`)
 - `api/client.ts` — Axios instance with base URL `/api`; request interceptor attaches `Authorization: Bearer <token>` from localStorage; response interceptor clears token and redirects to `/login` on 401
 - `api/apis.ts` — all API call functions; centralised in one file

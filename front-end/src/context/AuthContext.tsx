@@ -5,7 +5,7 @@ import { getUserDetails } from "@/api/apis";
 // 1. Define the shape of our context
 interface AuthContextType {
     token: string | null;
-    userDetails: UserDetails | null;
+    user: UserDetails | null;
     login: (token: string) => void;
     logout: () => void;
 }
@@ -15,6 +15,7 @@ interface UserDetails {
     email: string;
     first_name: string;
     last_name: string;
+    avatar_url?: string;
 }
 
 // 2. Create the context with empty default values
@@ -64,7 +65,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
 
     return (
-        <AuthContext.Provider value={{ token, userDetails, login, logout }}>
+        <AuthContext.Provider value={{ token, user: userDetails, login, logout }}>
             {children}
         </AuthContext.Provider>
     );

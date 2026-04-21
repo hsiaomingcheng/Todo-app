@@ -122,8 +122,19 @@ TodoFlow is a lightweight, Trello-inspired task management web application focus
 
 ### 2.5 Component Library
 
+**Note:** Using [shadcn/ui](https://ui.shadcn.com/) (Radix UI primitives) for all base components.
+
+#### App Layout (Implemented)
+- **Header**: Logo/title (left), search bar (centre), Avatar with DropdownMenu (right)
+  - shadcn components: `Avatar`, `DropdownMenu`, `Button`, `Input`
+  - Search bar: full width on desktop, collapses to icon on mobile
+  - Dropdown items: Profile, Settings, Logout (destructive variant)
+  - Avatar fallback shows user initials with primary blue background
+- **Main**: Full-width content area with `<Outlet />` for nested routes
+- **Footer**: Copyright text with dark blue background
+
 #### Dashboard
-- Grid of Board Cards (min 200px, responsive CSS Grid).
+- Grid of Board Cards (min 200px, responsive CSS Grid) using shadcn `Card` component.
 - "+ New Board" tile at the end of the grid.
 
 #### Board View
@@ -132,32 +143,40 @@ TodoFlow is a lightweight, Trello-inspired task management web application focus
 - "+ Add a list" column appended at the end.
 
 #### List Column
-- Header: editable title (click to edit), `⋮` menu (rename, archive, delete).
+- Header: editable title (click to edit), `⋮` menu (DropdownMenu: rename, archive, delete).
 - Body: vertically scrollable card stack.
-- Footer: "Add a card" inline input.
+- Footer: "Add a card" inline `Input` with submit button.
 
 #### Card
-- Default state: title, completion checkbox, label chips, due date badge.
+- Use shadcn `Card` component as base.
+- Default state: title, completion `Checkbox`, label chips (`Badge`), due date `Badge`.
 - Hover state: edit (pencil) icon appears top-right.
 - Completed state: title strikethrough, green left border.
 - Overdue state: red due date badge.
 
 #### Card Detail Modal
-- Full-screen on mobile, centred modal (600px wide) on desktop.
-- Fields: title (editable h2), description (markdown textarea), due date (date picker), labels (multi-select chips), completion toggle.
-- Actions: Delete card (bottom, danger colour).
+- Use shadcn `Dialog` component.
+- Full-screen on mobile, centred (600px wide) on desktop.
+- Fields: 
+  - Title: editable h2
+  - Description: markdown `Textarea`
+  - Due date: `Popover` + `Calendar` component
+  - Labels: multi-select chips using `Badge`
+  - Completion: `Switch` or `Checkbox`
+- Actions: Delete card (bottom, `Button` with destructive variant).
 
 #### Navigation / Header
-- Logo + app name (left).
-- Global search bar (centre, collapses to icon on mobile).
-- User avatar + dropdown (right): Profile, Settings, Logout.
+- Already implemented in `AppLayout.tsx` with shadcn components.
+- Logo "TodoFlow" (left).
+- Global search bar (centre, collapses to icon on mobile) using `Input` with `Search` icon.
+- User avatar + dropdown (right): displays full name, username, with Profile/Settings/Logout options.
 
 ### 2.6 Motion & Interaction
 
 - Drag-and-drop: `@hello-pangea/dnd` (fork of react-beautiful-dnd).
 - Card drop shadow increases during drag.
 - Card detail modal: fade + slide-up entrance (200ms).
-- Toasts for async operations (success / error) using a lightweight toast library.
+- Toasts for async operations (success / error) using shadcn `Toast` or `Sonner` component.
 
 ---
 
@@ -178,6 +197,52 @@ TodoFlow is a lightweight, Trello-inspired task management web application focus
 | HTTP client | Axios (with interceptors for JWT refresh) |
 | Testing | Vitest + React Testing Library |
 
+#### 3.1.0 Required shadcn/ui Components
+
+Install these shadcn components for the application:
+
+```bash
+# Core UI components
+npx shadcn@latest add button
+npx shadcn@latest add input
+npx shadcn@latest add textarea
+npx shadcn@latest add card
+npx shadcn@latest add badge
+npx shadcn@latest add avatar
+npx shadcn@latest add checkbox
+npx shadcn@latest add switch
+
+# Navigation & modals
+npx shadcn@latest add dropdown-menu
+npx shadcn@latest add dialog
+
+# Date & time
+npx shadcn@latest add popover
+npx shadcn@latest add calendar
+
+# Feedback
+npx shadcn@latest add toast
+# OR use Sonner for toast notifications:
+npx shadcn@latest add sonner
+```
+
+**Component Usage Mapping:**
+
+| App Feature | shadcn Component |
+|-------------|------------------|
+| Primary actions | `Button` |
+| Text input, search | `Input` |
+| Card descriptions | `Textarea` |
+| Board/card containers | `Card` |
+| Labels | `Badge` |
+| User profile | `Avatar` |
+| Task completion | `Checkbox` |
+| Settings toggles | `Switch` |
+| User menu | `DropdownMenu` |
+| Card detail editor | `Dialog` |
+| Due date picker | `Popover` + `Calendar` |
+| Success/error messages | `Toast` or `Sonner` |
+
 #### 3.1.1 Folder Structure
 
 ```
@@ -196,7 +261,33 @@ src/
   main.tsx
 ```
 
-#### 3.1.2 Key TypeScript Interfaces
+#### 3.1.2 Tailwind Configuration (Optional)
+
+Add custom colour tokens to `tailwind.config.js` for easier spec compliance:
+
+```javascript
+export default {
+  theme: {
+    extend: {
+      colors: {
+        'app-bg': '#F4F5F7',
+        'app-surface': '#FFFFFF',
+        'app-list-bg': '#EBECF0',
+        'app-primary': '#0052CC',
+        'app-primary-hover': '#003E99',
+        'app-danger': '#DE350B',
+        'app-success': '#00875A',
+        'app-text': '#172B4D',
+        'app-text-subtle': '#6B778C',
+      }
+    }
+  }
+}
+```
+
+Usage: `bg-app-bg`, `text-app-text`, `text-app-danger`, etc.
+
+#### 3.1.3 Key TypeScript Interfaces
 
 ```typescript
 interface User {
@@ -205,6 +296,7 @@ interface User {
   user_account: string;
   first_name: string;
   last_name: string;
+  avatar_url?: string; // Optional profile picture URL
 }
 
 interface Board {
@@ -243,13 +335,13 @@ interface Label {
 }
 ```
 
-#### 3.1.3 Drag-and-Drop Strategy
+#### 3.1.4 Drag-and-Drop Strategy
 
 - `DragDropContext` wraps the entire board.
 - `Droppable` on each list (vertical) and on the list container (horizontal).
 - On `onDragEnd`, compute new position with a midpoint fractional index, fire optimistic update via Zustand, then call `PATCH /cards/:id` or `PATCH /lists/:id` to persist.
 
-#### 3.1.4 Auth Flow
+#### 3.1.5 Auth Flow
 
 1. On login, store access token in memory (Zustand) and refresh token in an `HttpOnly` cookie.
 2. Axios request interceptor attaches `Authorization: Bearer <token>`.

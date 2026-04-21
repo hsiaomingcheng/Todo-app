@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { getBoards, deleteBoards } from "@/api/apis";
+import { getBoards, createBoard, deleteBoards } from "@/api/apis";
 import {
     Card,
     CardContent,
@@ -19,6 +19,10 @@ interface Board {
 export default function BoardsPage() {
     const navigate = useNavigate();
     const [boards, setBoards] = useState<Board[]>([]);
+    const [isAddingBoard, setIsAddingBoard] = useState(false);
+    const [form, setForm] = useState({
+        boardName: "",
+    });
 
     // Get user's boards
     useEffect(() => {
@@ -33,6 +37,33 @@ export default function BoardsPage() {
 
         fetchBoards();
     }, [])
+
+    const createNewBoard = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        // Prevent empty list name
+        if (!form.boardName) {
+            return console.error("Board name is required");
+        }
+
+        try {
+            await createBoard(form.boardName);
+        } catch (error) {
+            console.error(error);
+        }
+
+        const response = await getBoards();
+        setBoards(response.data);
+
+        cleanAddingBoard();
+    }
+
+    const cleanAddingBoard = () => {
+        setIsAddingBoard(false);
+        setForm({
+            boardName: "",
+        });
+    }
 
     return (
         <div>
@@ -64,6 +95,24 @@ export default function BoardsPage() {
                         </CardFooter>
                     </Card>
                 ))}
+
+                <div>
+                    {!isAddingBoard && <Button onClick={() => setIsAddingBoard(true)}>Add Another Board</Button>}
+
+                    {isAddingBoard &&
+                        <form onSubmit={createNewBoard}>
+                            <input
+                                type="text"
+                                placeholder="Enter board name..."
+                                value={form.boardName}
+                                onChange={(e) => setForm({ ...form, boardName: e.target.value })}
+                            />
+
+                            <Button type="submit">Add Board</Button>
+                            <Button onClick={cleanAddingBoard}>Cancel</Button>
+                        </form>
+                    }
+                </div>
             </div>
         </div >
     );

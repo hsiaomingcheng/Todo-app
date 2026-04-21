@@ -6,6 +6,9 @@ import app.db as db
 
 router = APIRouter()
 
+class CreateBoardRequest(BaseModel):
+    title: str
+
 class CreateListRequest(BaseModel):                                                                                       
     title: str                                                                                                            
     position: int
@@ -19,6 +22,20 @@ def get_boards(cursor=Depends(db.get_cursor), current_user = Depends(get_current
     return {
         "message": "Successfully fetched boards",
         "data": db_boards
+    }
+
+@router.post("/boards")
+def create_board(body: CreateBoardRequest, cursor=Depends(db.get_cursor), current_user = Depends(get_current_user)):
+    # validate title
+    validate_not_blank({
+        "title": body.title,
+    })
+
+    # Create a new board
+    cursor.execute("INSERT INTO boards (owner_id, title) VALUES (%s, %s)", (current_user['id'], body.title.strip()))
+    
+    return {
+        "message": "Successfully create board"
     }
 
 @router.delete("/boards/{board_id}")

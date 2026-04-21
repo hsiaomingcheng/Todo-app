@@ -60,6 +60,19 @@ export async function getBoards() {
     }
 }
 
+export async function createBoard(title: string) {
+    try {
+        const response = await api.post(`/boards`, { title });
+        return response.data;
+    } catch (error) {
+        if (isAxiosError(error) && error.response) {
+            throw new Error(error.response.data.message);
+        } else {
+            throw new Error("An unexpected error occurred");
+        }
+    }
+}
+
 export async function deleteBoards(board_id: number) {
     try {
         const response = await api.delete(`/boards/${board_id}`);

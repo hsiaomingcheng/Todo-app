@@ -129,6 +129,48 @@
                         "HTTPBearer": []
                     }
                 ]
+            },
+            "post": {
+                "tags": [
+                    "board"
+                ],
+                "summary": "Create Board",
+                "operationId": "create_board_api_boards_post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateBoardRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ]
             }
         },
         "/api/boards/{board_id}": {
@@ -514,6 +556,19 @@
     },
     "components": {
         "schemas": {
+            "CreateBoardRequest": {
+                "properties": {
+                    "title": {
+                        "type": "string",
+                        "title": "Title"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "title"
+                ],
+                "title": "CreateBoardRequest"
+            },
             "CreateListRequest": {
                 "properties": {
                     "title": {

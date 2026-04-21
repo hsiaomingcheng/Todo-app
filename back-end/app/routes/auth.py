@@ -10,10 +10,20 @@ class LoginUser(BaseModel):
     user_account: str
     password: str
 
+    @field_validator('user_account', 'password', mode='before')
+    @classmethod
+    def strip_whitespace(cls, value: str) -> str:
+        return value.strip()
+
 class RegisterUser(LoginUser):
     email: str
     first_name: str
     last_name: str
+
+    @field_validator('email', 'first_name', 'last_name', mode='before')
+    @classmethod
+    def strip_whitespace(cls, value: str) -> str:
+        return value.strip()
 
 class UserId(BaseModel):
     user_id: int

@@ -26,13 +26,13 @@ export default function AppLayout() {
     };
 
     return (
-        <div className="flex flex-col min-h-screen bg-[#F4F5F7]">
+        <div className="flex flex-col min-h-screen bg-app-bg">
             {/* Header - spec color palette */}
             <header className="bg-white shadow-sm border-b border-gray-200">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center gap-4">
                     {/* Logo / App title */}
                     <Link to="/boards" className="flex-shrink-0">
-                        <h1 className="text-xl font-bold text-[#172B4D]">TodoFlow</h1>
+                        <h1 className="text-xl font-bold text-app-text">TodoFlow</h1>
                     </Link>
 
                     {/* Global search - center (hidden on mobile, icon only on tablet) */}
@@ -42,7 +42,7 @@ export default function AppLayout() {
                             <Input
                                 type="search"
                                 placeholder="Search cards..."
-                                className="pl-10 bg-[#F4F5F7] border-gray-300 focus:bg-white"
+                                className="pl-10 bg-app-bg border-gray-300 focus:bg-white"
                             />
                         </div>
                     </div>
@@ -66,7 +66,7 @@ export default function AppLayout() {
                                 <Button variant="ghost" size="icon" className="rounded-full">
                                     <Avatar className="h-8 w-8">
                                         <AvatarImage src={user?.avatar_url} alt={user?.first_name} />
-                                        <AvatarFallback className="bg-[#0052CC] text-white text-xs">
+                                        <AvatarFallback className="bg-app-primary text-white text-xs">
                                             {getUserInitials()}
                                         </AvatarFallback>
                                     </Avatar>
@@ -75,10 +75,10 @@ export default function AppLayout() {
 
                             <DropdownMenuContent align="end" className="w-48">
                                 <div className="px-2 py-1.5 text-sm">
-                                    <p className="font-medium text-[#172B4D]">
+                                    <p className="font-medium text-app-text">
                                         {user?.first_name} {user?.last_name}
                                     </p>
-                                    <p className="text-xs text-[#6B778C] truncate">
+                                    <p className="text-xs text-app-text-subtle truncate">
                                         @{user?.user_account}
                                     </p>
                                 </div>
@@ -99,7 +99,7 @@ export default function AppLayout() {
                                 <DropdownMenuGroup>
                                     <DropdownMenuItem
                                         onClick={logout}
-                                        className="text-[#DE350B] focus:text-[#DE350B] focus:bg-red-50"
+                                        className="text-app-danger focus:text-app-danger focus:bg-red-50"
                                     >
                                         Log out
                                     </DropdownMenuItem>
@@ -116,7 +116,7 @@ export default function AppLayout() {
             </main>
 
             {/* Footer */}
-            <footer className="bg-[#172B4D] text-white text-center py-4 mt-auto">
+            <footer className="bg-app-text text-white text-center py-4 mt-auto">
                 <p className="text-sm">
                     &copy; 2026 Chris Hsiao. All rights reserved.
                 </p>

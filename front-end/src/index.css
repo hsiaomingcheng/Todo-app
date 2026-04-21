@@ -80,6 +80,15 @@
   --color-brand-500: #6366f1;
   --color-brand-600: #4f46e5;
   --color-brand-700: #4338ca;
+  --color-app-bg: #F4F5F7;
+  --color-app-surface: #FFFFFF;
+  --color-app-list-bg: #EBECF0;
+  --color-app-primary: #0052CC;
+  --color-app-primary-hover: #003E99;
+  --color-app-danger: #DE350B;
+  --color-app-success: #00875A;
+  --color-app-text: #172B4D;
+  --color-app-text-subtle: #6B778C;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);

@@ -41,6 +41,12 @@ npm run build
 # To add a column to an existing table use ALTER TABLE, not recreating the table
 ```
 
+## UI Improvement Rule
+
+When improving the style of a page or component:
+- Only improve styling — do not change existing logic or behaviour.
+- If adding a new UI element (button, input, etc.) that requires logic not yet implemented, create the shell and leave a comment describing what it should do. Example: `{/* TODO: Add a card — calls POST /lists/:id/cards */}`.
+
 ## Architecture
 
 ### Backend (`back-end/app/`)

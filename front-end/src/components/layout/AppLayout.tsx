@@ -111,7 +111,7 @@ export default function AppLayout() {
             </header>
 
             {/* Main content area */}
-            <main className="flex-grow w-full p-4">
+            <main className="flex-grow w-full p-4 min-h-0 overflow-hidden">
                 <Outlet />
             </main>
 

@@ -9,9 +9,12 @@ router = APIRouter()
 class CreateBoardRequest(BaseModel):
     title: str
 
-class CreateListRequest(BaseModel):                                                                                       
-    title: str                                                                                                            
+class CreateListRequest(BaseModel):
+    title: str
     position: int
+
+class UpdateListRequest(BaseModel):
+    title: str
 
 # Boards
 @router.get("/boards")
@@ -60,14 +63,14 @@ def delete_boards(board_id: int, cursor=Depends(db.get_cursor), current_user = D
 @router.get("/board-lists/{board_id}")
 def get_board_lists(board_id: int, cursor=Depends(db.get_cursor), current_user = Depends(get_current_user)):
     # Verify the board exists AND belongs to the current user
-    cursor.execute("SELECT * FROM boards WHERE id = %s AND owner_id = %s", (board_id, current_user['id']))
+    cursor.execute("SELECT * FROM boards WHERE id = %s AND owner_id = %s AND active = true", (board_id, current_user['id']))
     board = cursor.fetchone()
 
     if board is None:
         raise HTTPException(status_code=404, detail="Board not found")
 
     # Fetch all lists in the board
-    cursor.execute("SELECT * FROM lists WHERE board_id = %s AND active = true ORDER BY created_at ASC", (board_id,))
+    cursor.execute("SELECT * FROM lists WHERE board_id = %s AND active = true ORDER BY position ASC", (board_id,))
     db_lists = cursor.fetchall()
     
     return {
@@ -83,7 +86,7 @@ def create_board_list(board_id: int, body: CreateListRequest, cursor=Depends(db.
     })
 
     # Verify the board exists AND belongs to the current user
-    cursor.execute("SELECT * FROM boards WHERE id = %s AND owner_id = %s", (board_id, current_user['id']))
+    cursor.execute("SELECT * FROM boards WHERE id = %s AND owner_id = %s AND active = true", (board_id, current_user['id']))
     board = cursor.fetchone()
 
     if board is None:
@@ -98,9 +101,11 @@ def create_board_list(board_id: int, body: CreateListRequest, cursor=Depends(db.
         "message": "Successfully create list"
     }
 
-@router.put("/board-lists/{list_id}")
-def update_board_list(list_id: int, cursor=Depends(db.get_cursor), current_user = Depends(get_current_user)):
-    # Verify the board exists AND belongs to the current user
+@router.patch("/board-lists/{list_id}")
+def update_board_list(list_id: int, body: UpdateListRequest, cursor=Depends(db.get_cursor), current_user = Depends(get_current_user)):
+    validate_not_blank({"title": body.title})
+
+    # Verify the list exists AND belongs to the current user
     cursor.execute("""
         SELECT lists.* FROM lists
         JOIN boards ON lists.board_id = boards.id
@@ -112,7 +117,7 @@ def update_board_list(list_id: int, cursor=Depends(db.get_cursor), current_user 
         raise HTTPException(status_code=404, detail="List not found")
 
     # Update the list
-    # cursor.execute("UPDATE lists SET title = %s WHERE id = %s", (new_title, list_id))
+    cursor.execute("UPDATE lists SET title = %s WHERE id = %s", (body.title.strip(), list_id))
 
     return {
         "message": "Successfully update list"

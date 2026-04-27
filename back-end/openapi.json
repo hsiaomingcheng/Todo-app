@@ -317,12 +317,12 @@
             }
         },
         "/api/board-lists/{list_id}": {
-            "put": {
+            "patch": {
                 "tags": [
                     "board"
                 ],
                 "summary": "Update Board List",
-                "operationId": "update_board_list_api_board_lists__list_id__put",
+                "operationId": "update_board_list_api_board_lists__list_id__patch",
                 "security": [
                     {
                         "HTTPBearer": []
@@ -339,6 +339,16 @@
                         }
                     }
                 ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateListRequest"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "200": {
                         "description": "Successful Response",
@@ -673,6 +683,19 @@
                     "title"
                 ],
                 "title": "Task"
+            },
+            "UpdateListRequest": {
+                "properties": {
+                    "title": {
+                        "type": "string",
+                        "title": "Title"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "title"
+                ],
+                "title": "UpdateListRequest"
             },
             "ValidationError": {
                 "properties": {

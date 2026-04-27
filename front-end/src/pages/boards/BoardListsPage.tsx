@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { getBoardLists, createBoardList } from "@/api/apis";
+import { getBoardLists, createBoardList, updateBoardList, deleteBoardList } from "@/api/apis";
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Trash2 } from "lucide-react";
 
 interface BoardList {
     id: number;
@@ -15,10 +16,19 @@ export default function BoardListsPage() {
     const { boardId } = useParams();
     const [boardLists, setBoardList] = useState<BoardList[]>([]);
     const [isAddingList, setIsAddingList] = useState(false);
+    const [addingCardListId, setAddingCardListId] = useState<number | null>(null);
+    const [isEditingTitle, setIsEditingTitle] = useState<number | null>(null);
     const [form, setForm] = useState({
         listName: "",
     });
+    const [formCard, setFormCard] = useState({
+        cardName: "",
+    });
+    const [formBoardListTitle, setFormBoardListTitle] = useState({
+        title: "",
+    })
 
+    // fetch board lists
     useEffect(() => {
         const fetchBoard = async () => {
             try {
@@ -31,6 +41,13 @@ export default function BoardListsPage() {
 
         fetchBoard();
     }, [])
+
+    // Clean up form when user click other lists to edit title, or click outside the list
+    useEffect(() => {
+        if (isEditingTitle) {
+            setFormBoardListTitle({ title: "" });
+        }
+    }, [isEditingTitle])
 
     const createNewList = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -51,10 +68,72 @@ export default function BoardListsPage() {
 
         cleanAddingList();
     }
+    const createNewCard = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        // Prevent empty card name
+        if (!formCard.cardName) {
+            return console.error("Card name is required");
+        }
+
+        // try {
+        //     await createBoardList(Number(boardId), formCard.cardName, boardLists.length + 1)
+        // } catch (error) {
+        //     console.error(error);
+        // }
+
+        // const response = await getBoardLists(Number(boardId));
+        // setBoardList(response.data);
+
+        cleanAddingCard();
+    }
+
+    const updateTitle = async (list_id: number, title: string) => {
+        try {
+            await updateBoardList(list_id, title);
+        } catch (error) {
+            console.error(error);
+        }
+
+        const response = await getBoardLists(Number(boardId));
+        setBoardList(response.data);
+
+        cleanEditingTitle();
+    }
+
+    const deleteList = async (list_id: number) => {
+        try {
+            await deleteBoardList(list_id);
+        } catch (error) {
+            console.error(error);
+        }
+
+        const response = await getBoardLists(Number(boardId));
+        setBoardList(response.data);
+    }
 
     const cleanAddingList = () => {
         setIsAddingList(false);
         setForm({ listName: "" });
+    }
+    const cleanAddingCard = () => {
+        setAddingCardListId(null);
+        setFormCard({ cardName: "" });
+    }
+    const cleanEditingTitle = () => {
+        setIsEditingTitle(null);
+        setFormBoardListTitle({ title: "" });
+    }
+
+    // handle board list title input
+    const handleTitleKeyDown = async (e: React.KeyboardEvent<HTMLInputElement>, listId: number, title: string) => {
+        if (e.key === "Enter") {
+            await updateTitle(listId, title);
+        }
+
+        if (e.key === "Escape") {
+            cleanEditingTitle();
+        }
     }
 
     return (
@@ -66,11 +145,32 @@ export default function BoardListsPage() {
                 >
                     {/* List header */}
                     <div className="flex items-center justify-between px-3 pt-3 pb-2">
-                        <h3 className="font-semibold text-sm text-app-text">{boardList.title}</h3>
+                        {isEditingTitle !== boardList.id ? (
+                            <div
+                                onClick={() => setIsEditingTitle(boardList.id)}
+                                className="w-full cursor-pointer hover:bg-gray-200 rounded p-1 transition-colors duration-150"
+                            >
+                                <h3 className="font-semibold text-sm text-app-text">
+                                    {boardList.title}
+                                </h3>
+                            </div>
+                        ) : (
+                            <Input
+                                autoFocus
+                                type="text"
+                                value={formBoardListTitle.title || boardList.title}
+                                onChange={(e) => setFormBoardListTitle({ ...formBoardListTitle, title: e.target.value })}
+                                onKeyDown={(e) => handleTitleKeyDown(e, boardList.id, formBoardListTitle.title)}
+                                onBlur={() => cleanEditingTitle()}
+                                className="w-full text-sm h-8 border-gray-200 focus-visible:ring-app-primary bg-white"
+                            />
+                        )}
 
-                        {/* TODO: List options menu — rename, archive, delete (calls PATCH /board-lists/:id or DELETE /board-lists/:id) */}
-                        <button className="text-app-text-subtle hover:text-app-text hover:bg-gray-200 rounded p-1 transition-colors duration-150">
-                            <span className="text-base leading-none">⋯</span>
+                        <button
+                            className="cursor-pointer text-app-text-subtle hover:text-app-text hover:bg-gray-200 rounded p-1 transition-colors duration-150"
+                            onClick={() => deleteList(boardList.id)}
+                        >
+                            <Trash2 size={16} color="#dc2626" strokeWidth={2} />
                         </button>
                     </div>
 
@@ -82,9 +182,48 @@ export default function BoardListsPage() {
                     {/* Add a card footer */}
                     <div className="px-2 pb-2 pt-2">
                         {/* TODO: Add a card — show inline input on click, calls POST /lists/:id/cards */}
-                        <button className="w-full text-left text-sm text-app-text-subtle hover:text-app-text hover:bg-gray-200 rounded-lg px-2 py-1.5 transition-colors duration-150">
-                            + Add a card
-                        </button>
+                        {addingCardListId !== boardList.id ? (
+                            <button
+                                className="w-full text-left text-sm text-app-text-subtle hover:text-app-text hover:bg-gray-200 rounded-lg px-2 py-1.5 transition-colors duration-150"
+                                onClick={() => setAddingCardListId(boardList.id)}
+                            >
+                                + Add a card
+                            </button>
+                        ) : (
+                            <form
+                                onSubmit={createNewCard}
+                                className=""
+                            >
+                                <Input
+                                    autoFocus
+                                    type="text"
+                                    placeholder="Card name..."
+                                    value={formCard.cardName}
+                                    onChange={(e) => setFormCard({ ...formCard, cardName: e.target.value })}
+                                    onKeyDown={(e) => e.key === "Escape" && cleanAddingCard()}
+                                    onBlur={() => cleanAddingCard()}
+                                    className="text-sm h-8 border-gray-200 focus-visible:ring-app-primary bg-white"
+                                />
+                                <div className="flex gap-1.5">
+                                    <Button
+                                        type="submit"
+                                        size="sm"
+                                        className="flex-1 h-7 text-xs bg-app-primary hover:bg-app-primary-hover"
+                                    >
+                                        Add card
+                                    </Button>
+                                    <Button
+                                        type="button"
+                                        size="sm"
+                                        variant="ghost"
+                                        className="h-7 text-xs px-2"
+                                        onClick={cleanAddingCard}
+                                    >
+                                        ✕
+                                    </Button>
+                                </div>
+                            </form>
+                        )}
                     </div>
                 </div>
             ))}

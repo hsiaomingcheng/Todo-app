@@ -7,9 +7,10 @@ import {
     deleteBoardList,
     createCard
 } from "@/api/apis";
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Trash2, FilePen } from "lucide-react";
+import DeletingModal from "@/components/common/DeletingModal";
 
 interface Card {
     id: number;
@@ -189,12 +190,19 @@ export default function BoardListsPage() {
                             />
                         )}
 
-                        <button
-                            className="cursor-pointer text-app-text-subtle hover:text-app-text hover:bg-gray-200 rounded p-1 transition-colors duration-150"
-                            onClick={() => deleteList(boardList.id)}
-                        >
-                            <Trash2 size={16} color="#dc2626" strokeWidth={2} />
-                        </button>
+                        {/* TODO: Implement Delete button and delete modal */}
+                        <DeletingModal
+                            title={`Delete ${boardList.title}`}
+                            description={`Are you sure you want to delete "${boardList.title}"?`}
+                            button={
+                                <button
+                                    className="cursor-pointer text-app-text-subtle hover:text-app-text hover:bg-gray-200 rounded p-1 transition-colors duration-150"
+                                >
+                                    <Trash2 size={16} color="#dc2626" strokeWidth={2} />
+                                </button>
+                            }
+                            submission={() => deleteList(boardList.id)}
+                        />
                     </div>
 
                     {/* Cards area */}

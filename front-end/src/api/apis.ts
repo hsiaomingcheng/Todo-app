@@ -87,11 +87,9 @@ export async function deleteBoards(board_id: number) {
     }
 }
 
-
-// Board Lists
-export async function getBoardLists(board_id: number) {
+export async function getBoard(board_id: number) {
     try {
-        const response = await api.get(`/board-lists/${board_id}`);
+        const response = await api.get(`/boards/${board_id}`);
         return response.data;
     } catch (error) {
         if (isAxiosError(error) && error.response) {
@@ -102,6 +100,8 @@ export async function getBoardLists(board_id: number) {
     }
 }
 
+
+// Board Lists
 export async function createBoardList(board_id: number, title: string, position: number) {
     try {
         const response = await api.post(`/board-lists/${board_id}`, { title, position });
@@ -142,15 +142,28 @@ export async function deleteBoardList(list_id: number) {
 }
 
 // Cards
+export async function getCards(list_id: number) {
+    try {
+        const response = await api.get(`/cards/${list_id}`);
+        return response.data;
+    } catch (error) {
+        if (isAxiosError(error) && error.response) {
+            throw new Error(error.response.data.message);
+        } else {
+            throw new Error("An unexpected error occurred");
+        }
+    }
+}
+
 export async function createCard(list_id: number, title: string, position: number) {
-    // try {
-    //     const response = await api.post(`/cards/${list_id}`, { title, position });
-    //     return response.data;
-    // } catch (error) {
-    //     if (isAxiosError(error) && error.response) {
-    //         throw new Error(error.response.data.message);
-    //     } else {
-    //         throw new Error("An unexpected error occurred");
-    //     }
-    // }
+    try {
+        const response = await api.post(`/cards/${list_id}`, { title, position });
+        return response.data;
+    } catch (error) {
+        if (isAxiosError(error) && error.response) {
+            throw new Error(error.response.data.message);
+        } else {
+            throw new Error("An unexpected error occurred");
+        }
+    }
 }

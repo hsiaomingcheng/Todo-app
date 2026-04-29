@@ -39,7 +39,10 @@ export default function DeletingModal({
                 {button}
             </DialogTrigger>
 
-            <DialogContent>
+            <DialogContent
+                onCloseAutoFocus={(e) => e.preventDefault()}
+                onClick={(e) => e.stopPropagation()}
+            >
                 <DialogHeader>
                     <DialogTitle>{title}</DialogTitle>
                     <DialogDescription>

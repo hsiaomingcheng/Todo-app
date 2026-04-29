@@ -73,7 +73,7 @@ export async function createBoard(title: string) {
     }
 }
 
-export async function deleteBoards(board_id: number) {
+export async function deleteBoard(board_id: number) {
     try {
         const response = await api.delete(`/boards/${board_id}`);
         console.log('response', response)

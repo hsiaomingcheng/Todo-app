@@ -190,7 +190,6 @@ export default function BoardListsPage() {
                             />
                         )}
 
-                        {/* TODO: Implement Delete button and delete modal */}
                         <DeletingModal
                             title={`Delete ${boardList.title}`}
                             description={`Are you sure you want to delete "${boardList.title}"?`}

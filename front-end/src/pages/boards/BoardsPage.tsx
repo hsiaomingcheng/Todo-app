@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { getBoards, createBoard, deleteBoards } from "@/api/apis";
+import { getBoards, createBoard, deleteBoard } from "@/api/apis";
+import DeletingModal from "@/components/common/DeletingModal";
+import { Trash2 } from "lucide-react";
 
 interface Board {
     id: number;
@@ -52,6 +54,16 @@ export default function BoardsPage() {
         cleanAddingBoard();
     };
 
+    const handleDeleteBoard = async (boardId: number) => {
+        try {
+            await deleteBoard(boardId);
+        } catch (error) {
+            console.error(error);
+        }
+        const response = await getBoards();
+        setBoards(response.data);
+    };
+
     const cleanAddingBoard = () => {
         setIsAddingBoard(false);
         setForm({ boardName: "" });
@@ -77,10 +89,7 @@ export default function BoardsPage() {
                         board={board}
                         color={BOARD_COLORS[index % BOARD_COLORS.length]}
                         onClick={() => navigate(`/board-lists/${board.id}`)}
-                        onDelete={(e) => {
-                            e.stopPropagation();
-                            deleteBoards(board.id);
-                        }}
+                        onDelete={() => handleDeleteBoard(board.id)}
                     />
                 ))}
 
@@ -141,7 +150,7 @@ function BoardCard({
     board: Board;
     color: string;
     onClick: () => void;
-    onDelete: (e: React.MouseEvent) => void;
+    onDelete: () => void;
 }) {
     return (
         <div
@@ -157,14 +166,21 @@ function BoardCard({
                     {board.title}
                 </p>
 
-                {/* Delete button — appears on hover */}
-                <div className="flex justify-end opacity-0 group-hover:opacity-100 transition-opacity duration-150">
-                    <button
-                        onClick={onDelete}
-                        className="text-xs text-app-text-subtle hover:text-app-danger transition-colors duration-150 px-1.5 py-0.5 rounded hover:bg-red-50"
-                    >
-                        Delete
-                    </button>
+                {/* Delete button */}
+                <div className="flex justify-end">
+                    <DeletingModal
+                        title={`Delete ${board.title}`}
+                        description={`Are you sure you want to delete "${board.title}"?`}
+                        submission={onDelete}
+                        button={
+                            <button
+                                onClick={(e) => e.stopPropagation()}
+                                className="cursor-pointer text-app-text-subtle hover:text-app-text hover:bg-gray-200 rounded p-1 transition-colors duration-150"
+                            >
+                                <Trash2 size={16} color="#dc2626" strokeWidth={2} />
+                            </button>
+                        }
+                    />
                 </div>
             </div>
         </div>

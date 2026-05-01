@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Trash2, FilePen } from "lucide-react";
 import DeletingModal from "@/components/common/DeletingModal";
+import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 
 interface Card {
     id: number;
@@ -114,7 +115,7 @@ export default function BoardListsPage() {
 
     const updateTitle = async (list_id: number, title: string) => {
         try {
-            await updateBoardList(list_id, title);
+            await updateBoardList(list_id, { title });
         } catch (error) {
             console.error(error);
         }
@@ -123,6 +124,33 @@ export default function BoardListsPage() {
         setBoard(response.data);
 
         cleanEditingTitle();
+    }
+
+    const onDragEnd = async (result: any) => {
+        const { destination, source } = result;
+
+        if (!destination) return;
+        if (destination.index === source.index) return;
+
+        // Reorder lists locally (optimistic update)
+        const newLists = Array.from(board!.lists);
+        const [moved] = newLists.splice(source.index, 1);
+        newLists.splice(destination.index, 0, moved);
+        setBoard({ ...board!, lists: newLists });
+
+        // Persist new positions for all lists
+        try {
+            await Promise.all(
+                newLists.map((list, index) =>
+                    updateBoardList(list.id, { position: index + 1 })
+                )
+            );
+        } catch (error) {
+            console.error(error);
+            // Revert on error
+            const response = await getBoard(Number(boardId));
+            setBoard(response.data);
+        }
     }
 
     const deleteList = async (list_id: number) => {
@@ -161,10 +189,22 @@ export default function BoardListsPage() {
     }
 
     return (
+        <DragDropContext onDragEnd={onDragEnd}>
         <div className="flex gap-4 overflow-x-auto pb-4 items-start min-h-0">
+            <Droppable droppableId="board-lists" direction="horizontal">
+                {(provided) => (
+                    <div
+                        ref={provided.innerRef}
+                        {...provided.droppableProps}
+                        className="flex gap-4 items-start"
+                    >
             {board?.lists?.map((boardList, index) => (
+                <Draggable key={boardList.id} draggableId={String(boardList.id)} index={index}>
+                    {(provided) => (
                 <div
-                    key={boardList.id}
+                    ref={provided.innerRef}
+                    {...provided.draggableProps}
+                    {...provided.dragHandleProps}
                     className="flex-shrink-0 w-[272px] bg-app-list-bg rounded-xl shadow-sm flex flex-col"
                 >
                     {/* List header */}
@@ -265,7 +305,13 @@ export default function BoardListsPage() {
                         )}
                     </div>
                 </div>
+                    )}
+                </Draggable>
             ))}
+                        {provided.placeholder}
+                    </div>
+                )}
+            </Droppable>
 
             {/* Add list column */}
             <div className="flex-shrink-0 w-[272px]">
@@ -313,5 +359,6 @@ export default function BoardListsPage() {
                 )}
             </div>
         </div>
+        </DragDropContext>
     );
 }

@@ -14,7 +14,8 @@ class CreateListRequest(BaseModel):
     position: int
 
 class UpdateListRequest(BaseModel):
-    title: str
+    title: str | None = None
+    position: int | None = None
 
 class CreateCardRequest(BaseModel):
     title: str
@@ -151,8 +152,13 @@ def update_board_list(list_id: int, body: UpdateListRequest, cursor=Depends(db.g
     if list_item is None:
         raise HTTPException(status_code=404, detail="List not found")
 
-    # Update the list
-    cursor.execute("UPDATE lists SET title = %s WHERE id = %s", (body.title.strip(), list_id))
+    # Only update fields that were provided
+    if body.title is not None:
+        validate_not_blank({"title": body.title})
+        cursor.execute("UPDATE lists SET title = %s WHERE id = %s", (body.title.strip(), list_id))
+
+    if body.position is not None:
+        cursor.execute("UPDATE lists SET position = %s WHERE id = %s", (body.position, list_id))
 
     return {
         "message": "Successfully update list"

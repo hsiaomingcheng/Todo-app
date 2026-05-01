@@ -940,14 +940,29 @@
             "UpdateListRequest": {
                 "properties": {
                     "title": {
-                        "type": "string",
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
                         "title": "Title"
+                    },
+                    "position": {
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Position"
                     }
                 },
                 "type": "object",
-                "required": [
-                    "title"
-                ],
                 "title": "UpdateListRequest"
             },
             "ValidationError": {

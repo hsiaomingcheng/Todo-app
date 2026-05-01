@@ -115,9 +115,9 @@ export async function createBoardList(board_id: number, title: string, position:
     }
 }
 
-export async function updateBoardList(list_id: number, title: string) {
+export async function updateBoardList(list_id: number, data: { title?: string, position?: number }) {
     try {
-        const response = await api.patch(`/board-lists/${list_id}`, { title });
+        const response = await api.patch(`/board-lists/${list_id}`, data);
         return response.data;
     } catch (error) {
         if (isAxiosError(error) && error.response) {

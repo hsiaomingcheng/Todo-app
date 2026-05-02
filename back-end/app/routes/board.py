@@ -13,9 +13,11 @@ class CreateListRequest(BaseModel):
     title: str
     position: int
 
-class UpdateListRequest(BaseModel):
-    title: str | None = None
-    position: int | None = None
+class UpdateListTitleRequest(BaseModel):
+    title: str
+
+class UpdateListPositionRequest(BaseModel):
+    position: int
 
 class CreateCardRequest(BaseModel):
     title: str
@@ -137,8 +139,8 @@ def create_board_list(board_id: int, body: CreateListRequest, cursor=Depends(db.
         "message": "Successfully create list"
     }
 
-@router.patch("/board-lists/{list_id}")
-def update_board_list(list_id: int, body: UpdateListRequest, cursor=Depends(db.get_cursor), current_user = Depends(get_current_user)):
+@router.patch("/board-list/{list_id}/title")
+def update_board_list_title(list_id: int, body: UpdateListTitleRequest, cursor=Depends(db.get_cursor), current_user = Depends(get_current_user)):
     validate_not_blank({"title": body.title})
 
     # Verify the list exists AND belongs to the current user
@@ -151,17 +153,33 @@ def update_board_list(list_id: int, body: UpdateListRequest, cursor=Depends(db.g
 
     if list_item is None:
         raise HTTPException(status_code=404, detail="List not found")
-
-    # Only update fields that were provided
-    if body.title is not None:
-        validate_not_blank({"title": body.title})
-        cursor.execute("UPDATE lists SET title = %s WHERE id = %s", (body.title.strip(), list_id))
-
-    if body.position is not None:
-        cursor.execute("UPDATE lists SET position = %s WHERE id = %s", (body.position, list_id))
+    
+    # Update the list title
+    cursor.execute("UPDATE lists SET title = %s WHERE id = %s", (body.title.strip(), list_id))
 
     return {
-        "message": "Successfully update list"
+        "message": "Successfully update list title"
+    }
+
+@router.patch("/board-list/{list_id}/position")
+def update_board_list_position(list_id: int, body: UpdateListPositionRequest, cursor=Depends(db.get_cursor), current_user = Depends(get_current_user)):
+
+    # Verify the list exists AND belongs to the current user
+    cursor.execute("""
+        SELECT lists.* FROM lists
+        JOIN boards ON lists.board_id = boards.id
+        WHERE lists.id = %s AND boards.owner_id = %s AND lists.active = true
+    """, (list_id, current_user['id']))
+    list_item = cursor.fetchone()
+
+    if list_item is None:
+        raise HTTPException(status_code=404, detail="List not found")
+
+    # Update the list position
+    cursor.execute("UPDATE lists SET position = %s WHERE id = %s", (body.position, list_id))
+
+    return {
+        "message": "Successfully update list position"
     }
 
 @router.delete("/board-lists/{list_id}")

@@ -115,9 +115,22 @@ export async function createBoardList(board_id: number, title: string, position:
     }
 }
 
-export async function updateBoardList(list_id: number, data: { title?: string, position?: number }) {
+export async function updateBoardListTitle(list_id: number, title: string) {
     try {
-        const response = await api.patch(`/board-lists/${list_id}`, data);
+        const response = await api.patch(`/board-list/${list_id}/title`, { title });
+        return response.data;
+    } catch (error) {
+        if (isAxiosError(error) && error.response) {
+            throw new Error(error.response.data.message);
+        } else {
+            throw new Error("An unexpected error occurred");
+        }
+    }
+}
+
+export async function updateBoardListPosition(list_id: number, position: number) {
+    try {
+        const response = await api.patch(`/board-list/${list_id}/position`, { position });
         return response.data;
     } catch (error) {
         if (isAxiosError(error) && error.response) {

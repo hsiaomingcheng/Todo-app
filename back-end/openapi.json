@@ -316,13 +316,13 @@
                 }
             }
         },
-        "/api/board-lists/{list_id}": {
+        "/api/board-list/{list_id}/title": {
             "patch": {
                 "tags": [
                     "board"
                 ],
-                "summary": "Update Board List",
-                "operationId": "update_board_list_api_board_lists__list_id__patch",
+                "summary": "Update Board List Title",
+                "operationId": "update_board_list_title_api_board_list__list_id__title_patch",
                 "security": [
                     {
                         "HTTPBearer": []
@@ -344,7 +344,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/UpdateListRequest"
+                                "$ref": "#/components/schemas/UpdateListTitleRequest"
                             }
                         }
                     }
@@ -369,7 +369,64 @@
                         }
                     }
                 }
-            },
+            }
+        },
+        "/api/board-list/{list_id}/position": {
+            "patch": {
+                "tags": [
+                    "board"
+                ],
+                "summary": "Update Board List Position",
+                "operationId": "update_board_list_position_api_board_list__list_id__position_patch",
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "list_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "title": "List Id"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateListPositionRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/board-lists/{list_id}": {
             "delete": {
                 "tags": [
                     "board"
@@ -937,33 +994,31 @@
                 "type": "object",
                 "title": "UpdateCardRequest"
             },
-            "UpdateListRequest": {
+            "UpdateListPositionRequest": {
                 "properties": {
-                    "title": {
-                        "anyOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Title"
-                    },
                     "position": {
-                        "anyOf": [
-                            {
-                                "type": "integer"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
+                        "type": "integer",
                         "title": "Position"
                     }
                 },
                 "type": "object",
-                "title": "UpdateListRequest"
+                "required": [
+                    "position"
+                ],
+                "title": "UpdateListPositionRequest"
+            },
+            "UpdateListTitleRequest": {
+                "properties": {
+                    "title": {
+                        "type": "string",
+                        "title": "Title"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "title"
+                ],
+                "title": "UpdateListTitleRequest"
             },
             "ValidationError": {
                 "properties": {

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import {
     getBoard,
@@ -10,44 +10,20 @@ import {
 } from "@/api/apis";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Trash2, FilePen } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import DeletingModal from "@/components/common/DeletingModal";
+import Cards from "@/components/common/Cards";
+import ListsFooter from "@/components/common/ListsFooter";
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
-
-interface Card {
-    id: number;
-    list_id: number;
-    title: string;
-    created_at: string;
-    position: number;
-    description: string;
-}
-interface BoardList {
-    id: number;
-    board_id: number;
-    title: string;
-    created_at: string;
-    position: number;
-    cards: Card[];
-}
-interface Board {
-    id: number;
-    title: string;
-    created_at: string;
-    lists: BoardList[];
-}
+import type { Board } from "@/types/board";
 
 export default function BoardListsPage() {
     const { boardId } = useParams();
     const [board, setBoard] = useState<Board | null>(null);
     const [isAddingList, setIsAddingList] = useState(false);
-    const [addingCardListId, setAddingCardListId] = useState<number | null>(null);
     const [isEditingTitle, setIsEditingTitle] = useState<number | null>(null);
     const [form, setForm] = useState({
         listName: "",
-    });
-    const [formCard, setFormCard] = useState({
-        cardName: "",
     });
     const [formBoardListTitle, setFormBoardListTitle] = useState({
         title: "",
@@ -94,24 +70,15 @@ export default function BoardListsPage() {
 
         cleanAddingList();
     }
-    const createNewCard = async (e: React.FormEvent, listId: number, index: number) => {
-        e.preventDefault();
-
-        // Prevent empty card name
-        if (!formCard.cardName) {
-            return console.error("Card name is required");
-        }
-
+    const createNewCard = async (listId: number, cardName: string, index: number) => {
         try {
-            await createCard(Number(listId), formCard.cardName, (board?.lists[index]?.cards?.length ?? 0) + 1)
+            await createCard(Number(listId), cardName, (board?.lists[index]?.cards?.length ?? 0) + 1)
         } catch (error) {
             console.error(error);
         }
 
         const response = await getBoard(Number(boardId));
         setBoard(response.data);
-
-        cleanAddingCard();
     }
 
     const updateTitle = async (list_id: number, title: string) => {
@@ -168,10 +135,6 @@ export default function BoardListsPage() {
     const cleanAddingList = () => {
         setIsAddingList(false);
         setForm({ listName: "" });
-    }
-    const cleanAddingCard = () => {
-        setAddingCardListId(null);
-        setFormCard({ cardName: "" });
     }
     const cleanEditingTitle = () => {
         setIsEditingTitle(null);
@@ -249,61 +212,19 @@ export default function BoardListsPage() {
                                             <div className="px-2 flex flex-col gap-2 overflow-y-auto max-h-[calc(100vh-280px)]">
                                                 {/* TODO: Render cards — fetch from GET /lists/:id/cards and map over them */}
                                                 {boardList.cards?.map((card) => (
-                                                    <div key={card.id} className="cursor-pointer bg-white group flex justify-between items-center shadow-sm rounded-md p-2 hover:bg-gray-50 transition-colors duration-150">
-                                                        <div className="text-sm">
-                                                            {card.title}
-                                                        </div>
-
-                                                        <FilePen size={16} color="#000" strokeWidth={2} className="opacity-0 group-hover:opacity-100 transition-opacity duration-150" />
-                                                    </div>
+                                                    <Fragment key={card.id}>
+                                                        <Cards card={card} />
+                                                    </Fragment>
                                                 ))}
                                             </div>
 
-                                            {/* Add a card footer */}
+                                            {/* List footer */}
                                             <div className="px-2 pb-2 pt-2">
-                                                {/* TODO: Add a card — show inline input on click, calls POST /lists/:id/cards */}
-                                                {addingCardListId !== boardList.id ? (
-                                                    <button
-                                                        className="cursor-pointer w-full text-left text-sm text-app-text-subtle hover:text-app-text hover:bg-gray-200 rounded-lg px-2 py-1.5 transition-colors duration-150"
-                                                        onClick={() => setAddingCardListId(boardList.id)}
-                                                    >
-                                                        + Add a card
-                                                    </button>
-                                                ) : (
-                                                    <form
-                                                        onSubmit={(e) => createNewCard(e, boardList.id, index)}
-                                                        className=""
-                                                    >
-                                                        <Input
-                                                            autoFocus
-                                                            type="text"
-                                                            placeholder="Card name..."
-                                                            value={formCard.cardName}
-                                                            onChange={(e) => setFormCard({ ...formCard, cardName: e.target.value })}
-                                                            onKeyDown={(e) => e.key === "Escape" && cleanAddingCard()}
-                                                            onBlur={() => cleanAddingCard()}
-                                                            className="text-sm h-8 border-gray-200 focus-visible:ring-app-primary bg-white"
-                                                        />
-                                                        <div className="flex gap-1.5">
-                                                            <Button
-                                                                type="submit"
-                                                                size="sm"
-                                                                className="flex-1 h-7 text-xs bg-app-primary hover:bg-app-primary-hover"
-                                                            >
-                                                                Add card
-                                                            </Button>
-                                                            <Button
-                                                                type="button"
-                                                                size="sm"
-                                                                variant="ghost"
-                                                                className="h-7 text-xs px-2"
-                                                                onClick={cleanAddingCard}
-                                                            >
-                                                                ✕
-                                                            </Button>
-                                                        </div>
-                                                    </form>
-                                                )}
+                                                <ListsFooter
+                                                    index={index}
+                                                    boardList={boardList}
+                                                    handleCreateCard={createNewCard}
+                                                />
                                             </div>
                                         </div>
                                     )}

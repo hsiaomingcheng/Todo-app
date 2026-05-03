@@ -10,10 +10,9 @@ import {
 } from "@/api/apis";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Trash2 } from "lucide-react";
-import DeletingModal from "@/components/common/DeletingModal";
 import Cards from "@/components/common/Cards";
 import ListsFooter from "@/components/common/ListsFooter";
+import ListsHeader from "@/components/common/ListsHeader";
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import type { Board } from "@/types/board";
 
@@ -21,13 +20,9 @@ export default function BoardListsPage() {
     const { boardId } = useParams();
     const [board, setBoard] = useState<Board | null>(null);
     const [isAddingList, setIsAddingList] = useState(false);
-    const [isEditingTitle, setIsEditingTitle] = useState<number | null>(null);
     const [form, setForm] = useState({
         listName: "",
     });
-    const [formBoardListTitle, setFormBoardListTitle] = useState({
-        title: "",
-    })
 
     // fetch board lists
     useEffect(() => {
@@ -43,13 +38,6 @@ export default function BoardListsPage() {
 
         fetchBoard();
     }, [])
-
-    // Clean up form when user click other lists to edit title, or click outside the list
-    useEffect(() => {
-        if (isEditingTitle) {
-            setFormBoardListTitle({ title: "" });
-        }
-    }, [isEditingTitle])
 
     const createNewList = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -90,8 +78,16 @@ export default function BoardListsPage() {
 
         const response = await getBoard(Number(boardId));
         setBoard(response.data);
+    }
+    const deleteList = async (list_id: number) => {
+        try {
+            await deleteBoardList(list_id);
+        } catch (error) {
+            console.error(error);
+        }
 
-        cleanEditingTitle();
+        const response = await getBoard(Number(boardId));
+        setBoard(response.data);
     }
 
     const onDragEnd = async (result: any) => {
@@ -121,35 +117,9 @@ export default function BoardListsPage() {
         }
     }
 
-    const deleteList = async (list_id: number) => {
-        try {
-            await deleteBoardList(list_id);
-        } catch (error) {
-            console.error(error);
-        }
-
-        const response = await getBoard(Number(boardId));
-        setBoard(response.data);
-    }
-
     const cleanAddingList = () => {
         setIsAddingList(false);
         setForm({ listName: "" });
-    }
-    const cleanEditingTitle = () => {
-        setIsEditingTitle(null);
-        setFormBoardListTitle({ title: "" });
-    }
-
-    // handle board list title input
-    const handleTitleKeyDown = async (e: React.KeyboardEvent<HTMLInputElement>, listId: number, title: string) => {
-        if (e.key === "Enter") {
-            await updateTitle(listId, title);
-        }
-
-        if (e.key === "Escape") {
-            cleanEditingTitle();
-        }
     }
 
     return (
@@ -173,44 +143,15 @@ export default function BoardListsPage() {
                                         >
                                             {/* List header */}
                                             <div className="flex items-center justify-between px-3 pt-3 pb-2">
-                                                {isEditingTitle !== boardList.id ? (
-                                                    <div
-                                                        onClick={() => setIsEditingTitle(boardList.id)}
-                                                        className="w-full cursor-pointer hover:bg-gray-200 rounded p-1 transition-colors duration-150"
-                                                    >
-                                                        <h3 className="font-bold text-sm text-app-text">
-                                                            {boardList.title}
-                                                        </h3>
-                                                    </div>
-                                                ) : (
-                                                    <Input
-                                                        autoFocus
-                                                        type="text"
-                                                        value={formBoardListTitle.title || boardList.title}
-                                                        onChange={(e) => setFormBoardListTitle({ ...formBoardListTitle, title: e.target.value })}
-                                                        onKeyDown={(e) => handleTitleKeyDown(e, boardList.id, formBoardListTitle.title)}
-                                                        onBlur={() => cleanEditingTitle()}
-                                                        className="w-full text-sm h-8 border-gray-200 focus-visible:ring-app-primary bg-white"
-                                                    />
-                                                )}
-
-                                                <DeletingModal
-                                                    title={`Delete ${boardList.title}`}
-                                                    description={`Are you sure you want to delete "${boardList.title}"?`}
-                                                    button={
-                                                        <button
-                                                            className="cursor-pointer text-app-text-subtle hover:text-app-text hover:bg-gray-200 rounded p-1 transition-colors duration-150"
-                                                        >
-                                                            <Trash2 size={16} color="#dc2626" strokeWidth={2} />
-                                                        </button>
-                                                    }
-                                                    submission={() => deleteList(boardList.id)}
+                                                <ListsHeader
+                                                    boardList={boardList}
+                                                    submitFunc={updateTitle}
+                                                    deleteFunc={deleteList}
                                                 />
                                             </div>
 
                                             {/* Cards area */}
                                             <div className="px-2 flex flex-col gap-2 overflow-y-auto max-h-[calc(100vh-280px)]">
-                                                {/* TODO: Render cards — fetch from GET /lists/:id/cards and map over them */}
                                                 {boardList.cards?.map((card) => (
                                                     <Fragment key={card.id}>
                                                         <Cards card={card} />

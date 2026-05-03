@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import {
     getBoard,
@@ -6,7 +6,8 @@ import {
     updateBoardListTitle,
     updateBoardListPosition,
     deleteBoardList,
-    createCard
+    createCard,
+    updateCardPosition
 } from "@/api/apis";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -91,29 +92,72 @@ export default function BoardListsPage() {
     }
 
     const onDragEnd = async (result: any) => {
-        const { destination, source } = result;
+        const { destination, source, type } = result;
 
         if (!destination) return;
-        if (destination.index === source.index) return;
+        if (destination.droppableId === source.droppableId && destination.index === source.index) return;
 
-        // Reorder lists locally (optimistic update)
-        const newLists = Array.from(board!.lists);
-        const [moved] = newLists.splice(source.index, 1);
-        newLists.splice(destination.index, 0, moved);
-        setBoard({ ...board!, lists: newLists });
+        // ── List reorder ──────────────────────────────────────────────────────
+        if (type === "LIST") {
+            const newLists = Array.from(board!.lists);
+            const [moved] = newLists.splice(source.index, 1);
+            newLists.splice(destination.index, 0, moved);
+            setBoard({ ...board!, lists: newLists });
 
-        // Persist new positions for all lists
-        try {
-            await Promise.all(
-                newLists.map((list, index) =>
-                    updateBoardListPosition(list.id, index + 1)
-                )
-            );
-        } catch (error) {
-            console.error(error);
-            // Revert on error
-            const response = await getBoard(Number(boardId));
-            setBoard(response.data);
+            try {
+                await Promise.all(
+                    newLists.map((list, index) =>
+                        updateBoardListPosition(list.id, index + 1)
+                    )
+                );
+            } catch (error) {
+                console.error(error);
+                const response = await getBoard(Number(boardId));
+                setBoard(response.data);
+            }
+            return;
+        }
+
+        // ── Card move ─────────────────────────────────────────────────────────
+        if (type === "CARD") {
+            const sourceListId = parseInt(source.droppableId);
+            const destListId = parseInt(destination.droppableId);
+            const newLists = board!.lists.map(l => ({ ...l, cards: [...l.cards] }));
+            const sourceList = newLists.find(l => l.id === sourceListId)!;
+            const destList = newLists.find(l => l.id === destListId)!;
+
+            const [movedCard] = sourceList.cards.splice(source.index, 1);
+            destList.cards.splice(destination.index, 0, movedCard);
+            setBoard({ ...board!, lists: newLists });
+
+            try {
+                // Update moved card — include list_id if moved to a different list
+                await updateCardPosition(
+                    movedCard.id,
+                    destination.index + 1,
+                    sourceListId !== destListId ? destListId : undefined
+                );
+
+                // Re-index source list cards if card moved to a different list
+                if (sourceListId !== destListId) {
+                    await Promise.all(
+                        sourceList.cards.map((card, index) =>
+                            updateCardPosition(card.id, index + 1)
+                        )
+                    );
+                }
+
+                // Re-index destination list cards
+                await Promise.all(
+                    destList.cards.map((card, index) =>
+                        updateCardPosition(card.id, index + 1)
+                    )
+                );
+            } catch (error) {
+                console.error(error);
+                const response = await getBoard(Number(boardId));
+                setBoard(response.data);
+            }
         }
     }
 
@@ -125,7 +169,7 @@ export default function BoardListsPage() {
     return (
         <DragDropContext onDragEnd={onDragEnd}>
             <div className="flex gap-4 overflow-x-auto pb-4 items-start min-h-0">
-                <Droppable droppableId="board-lists" direction="horizontal">
+                <Droppable droppableId="board-lists" direction="horizontal" type="LIST">
                     {(provided) => (
                         <div
                             ref={provided.innerRef}
@@ -138,11 +182,13 @@ export default function BoardListsPage() {
                                         <div
                                             ref={provided.innerRef}
                                             {...provided.draggableProps}
-                                            {...provided.dragHandleProps}
                                             className="flex-shrink-0 w-[272px] bg-app-list-bg rounded-xl shadow-sm flex flex-col"
                                         >
-                                            {/* List header */}
-                                            <div className="flex items-center justify-between px-3 pt-3 pb-2">
+                                            {/* List header — drag handle is here only */}
+                                            <div
+                                                {...provided.dragHandleProps}
+                                                className="flex items-center justify-between px-3 pt-3 pb-2"
+                                            >
                                                 <ListsHeader
                                                     boardList={boardList}
                                                     submitFunc={updateTitle}
@@ -151,13 +197,30 @@ export default function BoardListsPage() {
                                             </div>
 
                                             {/* Cards area */}
-                                            <div className="px-2 flex flex-col gap-2 overflow-y-auto max-h-[calc(100vh-280px)]">
-                                                {boardList.cards?.map((card) => (
-                                                    <Fragment key={card.id}>
-                                                        <Cards card={card} />
-                                                    </Fragment>
-                                                ))}
-                                            </div>
+                                            <Droppable droppableId={String(boardList.id)} type="CARD">
+                                                {(provided) => (
+                                                    <div
+                                                        ref={provided.innerRef}
+                                                        {...provided.droppableProps}
+                                                        className="px-2 flex flex-col gap-2 overflow-y-auto max-h-[calc(100vh-280px)] min-h-[4px]"
+                                                    >
+                                                        {boardList.cards?.map((card, cardIndex) => (
+                                                            <Draggable key={card.id} draggableId={`card-${card.id}`} index={cardIndex}>
+                                                                {(provided) => (
+                                                                    <div
+                                                                        ref={provided.innerRef}
+                                                                        {...provided.draggableProps}
+                                                                        {...provided.dragHandleProps}
+                                                                    >
+                                                                        <Cards card={card} />
+                                                                    </div>
+                                                                )}
+                                                            </Draggable>
+                                                        ))}
+                                                        {provided.placeholder}
+                                                    </div>
+                                                )}
+                                            </Droppable>
 
                                             {/* List footer */}
                                             <div className="px-2 pb-2 pt-2">

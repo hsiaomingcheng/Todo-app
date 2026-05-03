@@ -168,6 +168,19 @@ export async function getCards(list_id: number) {
     }
 }
 
+export async function updateCardPosition(card_id: number, position: number, list_id?: number) {
+    try {
+        const response = await api.patch(`/cards/${card_id}`, { position, ...(list_id !== undefined && { list_id }) });
+        return response.data;
+    } catch (error) {
+        if (isAxiosError(error) && error.response) {
+            throw new Error(error.response.data.message);
+        } else {
+            throw new Error("An unexpected error occurred");
+        }
+    }
+}
+
 export async function createCard(list_id: number, title: string, position: number) {
     try {
         const response = await api.post(`/cards/${list_id}`, { title, position });

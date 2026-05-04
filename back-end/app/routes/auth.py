@@ -28,12 +28,23 @@ class RegisterUser(LoginUser):
 class UserId(BaseModel):
     user_id: int
 
+class UpdateUserProfile(BaseModel):
+    email: str
+    first_name: str
+    last_name: str
+
+    @field_validator('email', 'first_name', 'last_name', mode='before')
+    @classmethod
+    def strip_whitespace(cls, value: str) -> str:
+        return value.strip()
+
 
 # Get user details
 @router.get("/user/detail")
 def get_user_details(current_user = Depends(get_current_user)):
     return {
         "data": {
+            "id": current_user['id'],
             "user_account": current_user['user_account'],
             "email": current_user['email'],
             "first_name": current_user['first_name'],
@@ -102,4 +113,22 @@ def register_user(user: RegisterUser, cursor = Depends(db.get_cursor)):
 
     return {
         "message": f"User {user.user_account} has been registered successfully!"
+    }
+
+
+# User profile update
+@router.put("/user/profile")
+def update_user_profile(body: UpdateUserProfile, cursor = Depends(db.get_cursor), current_user = Depends(get_current_user)):
+    # validate first_name, last_name, email
+    validate_not_blank({
+        "first_name": body.first_name,
+        "last_name": body.last_name,
+        "email": body.email,
+    })
+
+    # Update the user profile
+    cursor.execute("UPDATE users SET first_name = %s, last_name = %s, email = %s WHERE id = %s", (body.first_name, body.last_name, body.email, current_user['id']))
+    
+    return {
+        "message": "User profile has been updated successfully!"
     }

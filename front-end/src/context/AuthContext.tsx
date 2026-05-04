@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import { getUserDetails } from "@/api/apis";
+import type { UserDetails } from "@/types/board";
 
 // 1. Define the shape of our context
 interface AuthContextType {
@@ -8,14 +9,6 @@ interface AuthContextType {
     user: UserDetails | null;
     login: (token: string) => void;
     logout: () => void;
-}
-
-interface UserDetails {
-    user_account: string;
-    email: string;
-    first_name: string;
-    last_name: string;
-    avatar_url?: string;
 }
 
 // 2. Create the context with empty default values
@@ -28,6 +21,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Initialize state from localStorage so the user stays logged in if they refresh
     const [token, setToken] = useState<string | null>(localStorage.getItem("token"));
     const [userDetails, setUserDetails] = useState<UserDetails | null>({
+        id: 0,
         user_account: '',
         email: '',
         first_name: '',

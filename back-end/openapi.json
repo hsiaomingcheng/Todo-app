@@ -107,6 +107,50 @@
                 }
             }
         },
+        "/api/user/profile": {
+            "put": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Update User Profile",
+                "operationId": "update_user_profile_api_user_profile_put",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateUserProfile"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ]
+            }
+        },
         "/api/boards": {
             "get": {
                 "tags": [
@@ -1041,6 +1085,29 @@
                     "title"
                 ],
                 "title": "UpdateListTitleRequest"
+            },
+            "UpdateUserProfile": {
+                "properties": {
+                    "email": {
+                        "type": "string",
+                        "title": "Email"
+                    },
+                    "first_name": {
+                        "type": "string",
+                        "title": "First Name"
+                    },
+                    "last_name": {
+                        "type": "string",
+                        "title": "Last Name"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "email",
+                    "first_name",
+                    "last_name"
+                ],
+                "title": "UpdateUserProfile"
             },
             "ValidationError": {
                 "properties": {

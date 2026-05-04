@@ -1,3 +1,12 @@
+export interface UserDetails {
+    id: number;
+    user_account: string;
+    email: string;
+    first_name: string;
+    last_name: string;
+    avatar_url?: string;
+}
+
 export interface Card {
     id: number;
     list_id: number;

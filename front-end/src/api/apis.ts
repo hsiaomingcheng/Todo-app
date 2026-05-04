@@ -193,3 +193,18 @@ export async function createCard(list_id: number, title: string, position: numbe
         }
     }
 }
+
+
+// User Profile
+export async function updateProfile(id: number, email: string, first_name: string, last_name: string) {
+    try {
+        const response = await api.put(`/user/profile`, { id, email, first_name, last_name });
+        return response.data;
+    } catch (error) {
+        if (isAxiosError(error) && error.response) {
+            throw new Error(error.response.data.message);
+        } else {
+            throw new Error("An unexpected error occurred");
+        }
+    }
+}

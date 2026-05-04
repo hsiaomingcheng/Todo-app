@@ -5,7 +5,12 @@ import EditProfileModal from "@/components/common/EditProfileModal";
 import { updateProfile } from "@/api/apis";
 
 export default function ProfilePage() {
-    const { user } = useAuth();
+    const { user, updateUser } = useAuth();
+
+    const handleUpdateProfile = async (id: number, email: string, first_name: string, last_name: string) => {
+        await updateProfile(id, email, first_name, last_name);
+        updateUser({ ...user!, email, first_name, last_name });
+    };
 
     const getUserInitials = () => {
         const first = user?.first_name?.[0] || "";
@@ -54,7 +59,7 @@ export default function ProfilePage() {
             {user &&
                 <EditProfileModal
                     user={user}
-                    submitFunc={updateProfile}
+                    submitFunc={handleUpdateProfile}
                 />
             }
 

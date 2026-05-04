@@ -9,6 +9,7 @@ interface AuthContextType {
     user: UserDetails | null;
     login: (token: string) => void;
     logout: () => void;
+    updateUser: (updated: UserDetails) => void;
 }
 
 // 2. Create the context with empty default values
@@ -51,6 +52,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         navigate("/boards");
     };
 
+    const updateUser = (updated: UserDetails) => {
+        setUserDetails(updated);
+    };
+
     // The logout function removes the token and redirects
     const logout = () => {
         localStorage.removeItem("token");
@@ -59,7 +64,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
 
     return (
-        <AuthContext.Provider value={{ token, user: userDetails, login, logout }}>
+        <AuthContext.Provider value={{ token, user: userDetails, login, logout, updateUser }}>
             {children}
         </AuthContext.Provider>
     );

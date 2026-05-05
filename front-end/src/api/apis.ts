@@ -208,3 +208,16 @@ export async function updateProfile(id: number, email: string, first_name: strin
         }
     }
 }
+
+export async function updatePassword(current_password: string, new_password: string, new_password_confirmation: string) {
+    try {
+        const response = await api.patch(`/user/password`, { current_password, new_password, new_password_confirmation });
+        return response.data;
+    } catch (error) {
+        if (isAxiosError(error) && error.response) {
+            throw new Error(error.response.data.message);
+        } else {
+            throw new Error("An unexpected error occurred");
+        }
+    }
+}

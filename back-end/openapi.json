@@ -151,6 +151,50 @@
                 ]
             }
         },
+        "/api/user/password": {
+            "patch": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Update User Password",
+                "operationId": "update_user_password_api_user_password_patch",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateUserPassword"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ]
+            }
+        },
         "/api/boards": {
             "get": {
                 "tags": [
@@ -1085,6 +1129,29 @@
                     "title"
                 ],
                 "title": "UpdateListTitleRequest"
+            },
+            "UpdateUserPassword": {
+                "properties": {
+                    "current_password": {
+                        "type": "string",
+                        "title": "Current Password"
+                    },
+                    "new_password": {
+                        "type": "string",
+                        "title": "New Password"
+                    },
+                    "new_password_confirmation": {
+                        "type": "string",
+                        "title": "New Password Confirmation"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "current_password",
+                    "new_password",
+                    "new_password_confirmation"
+                ],
+                "title": "UpdateUserPassword"
             },
             "UpdateUserProfile": {
                 "properties": {

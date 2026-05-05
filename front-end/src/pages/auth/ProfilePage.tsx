@@ -1,8 +1,8 @@
 import { useAuth } from "@/context/AuthContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button"
 import EditProfileModal from "@/components/common/EditProfileModal";
-import { updateProfile } from "@/api/apis";
+import ChangePasswordModal from "@/components/common/ChangePasswordModal";
+import { updateProfile, updatePassword } from "@/api/apis";
 
 export default function ProfilePage() {
     const { user, updateUser } = useAuth();
@@ -65,7 +65,11 @@ export default function ProfilePage() {
 
 
             {/* TODO: Change password section — separate form for current password + new password (calls PATCH /api/user/password) */}
-            <Button>Change Password</Button>
+            {user &&
+                <ChangePasswordModal
+                    submitFunc={updatePassword}
+                />
+            }
         </div>
     );
 }

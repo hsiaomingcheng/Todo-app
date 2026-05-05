@@ -65,7 +65,7 @@ export default function DeletingModal({
                         asChild
                         onClick={() => setText("")}
                     >
-                        <Button variant="outline">Cancel</Button>
+                        <Button variant="outline" className="cursor-pointer">Cancel</Button>
                     </DialogClose>
 
                     <Button

@@ -38,6 +38,15 @@ class UpdateUserProfile(BaseModel):
     def strip_whitespace(cls, value: str) -> str:
         return value.strip()
 
+class UpdateUserPassword(BaseModel):
+    current_password: str
+    new_password: str
+    new_password_confirmation: str
+
+    @field_validator('current_password', 'new_password', 'new_password_confirmation', mode='before')
+    @classmethod
+    def strip_whitespace(cls, value: str) -> str:
+        return value.strip()
 
 # Get user details
 @router.get("/user/detail")
@@ -131,4 +140,33 @@ def update_user_profile(body: UpdateUserProfile, cursor = Depends(db.get_cursor)
     
     return {
         "message": "User profile has been updated successfully!"
+    }
+
+# User password update
+@router.patch("/user/password")
+def update_user_password(body: UpdateUserPassword, cursor = Depends(db.get_cursor), current_user = Depends(get_current_user)):
+    # validate password
+    validate_not_blank({
+        "current_password": body.current_password,
+        "new_password": body.new_password,
+        "new_password_confirmation": body.new_password_confirmation,
+    })
+
+    if body.new_password != body.new_password_confirmation:
+        raise HTTPException(status_code=400, detail="New password and confirmation do not match")
+
+    cursor.execute("SELECT * FROM users WHERE id = %s", (current_user['id'],))
+    db_user = cursor.fetchone()
+    if not db_user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    if not verify_password(db_user['password_hash'], body.current_password):
+        raise HTTPException(status_code=401, detail="Invalid current password")
+    
+
+    # Update the user password
+    cursor.execute("UPDATE users SET password_hash = %s WHERE id = %s", (hash_password(body.new_password), current_user['id']))
+    
+    return {
+        "message": "User password has been updated successfully!"
     }

@@ -49,7 +49,7 @@ export default function EditProfileModal(
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button>Edit Profile</Button>
+                <Button className="cursor-pointer">Edit Profile</Button>
             </DialogTrigger>
 
             <DialogContent>

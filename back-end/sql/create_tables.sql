@@ -56,6 +56,7 @@ CREATE TABLE cards (
     description TEXT,
     position INTEGER NOT NULL, -- for ordering cards within a list
     due_date TIMESTAMP,
+    completed BOOLEAN NOT NULL DEFAULT FALSE,
     active BOOLEAN NOT NULL DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

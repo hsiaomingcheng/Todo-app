@@ -13,7 +13,9 @@ export interface Card {
     title: string;
     created_at: string;
     position: number;
-    description: string;
+    description: string | null;
+    due_date: string | null;
+    completed: boolean;
 }
 
 export interface BoardList {

@@ -29,6 +29,7 @@ class UpdateCardRequest(BaseModel):
     due_date: str | None = None
     position: int | None = None
     list_id: int | None = None
+    completed: bool | None = None
 
 # Boards
 @router.get("/boards")
@@ -282,6 +283,9 @@ def update_card(card_id: int, body: UpdateCardRequest, cursor=Depends(db.get_cur
 
     if body.list_id is not None:
         cursor.execute("UPDATE cards SET list_id = %s WHERE id = %s", (body.list_id, card_id))
+
+    if body.completed is not None:
+        cursor.execute("UPDATE cards SET completed = %s WHERE id = %s", (body.completed, card_id))
 
     return {
         "message": "Successfully updated card"

@@ -194,6 +194,37 @@ export async function createCard(list_id: number, title: string, position: numbe
     }
 }
 
+export async function updateCard(card_id: number, updates: {
+    title?: string,
+    description?: string,
+    due_date?: string,
+    completed?: boolean
+}) {
+    try {
+        const response = await api.patch(`/cards/${card_id}`, updates);
+        return response.data;
+    } catch (error) {
+        if (isAxiosError(error) && error.response) {
+            throw new Error(error.response.data.message);
+        } else {
+            throw new Error("An unexpected error occurred");
+        }
+    }
+}
+
+export async function deleteCard(card_id: number) {
+    try {
+        const response = await api.delete(`/cards/${card_id}`);
+        return response.data;
+    } catch (error) {
+        if (isAxiosError(error) && error.response) {
+            throw new Error(error.response.data.message);
+        } else {
+            throw new Error("An unexpected error occurred");
+        }
+    }
+}
+
 
 // User Profile
 export async function updateProfile(id: number, email: string, first_name: string, last_name: string) {

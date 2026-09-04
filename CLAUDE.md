@@ -41,6 +41,10 @@ npm run build
 # To add a column to an existing table use ALTER TABLE, not recreating the table
 ```
 
+## Git Commit Messages
+
+Do not add a `Co-Authored-By: Claude ...` trailer (or any AI-attribution trailer) to commit messages in this repository.
+
 ## UI Improvement Rule
 
 When improving the style of a page or component:

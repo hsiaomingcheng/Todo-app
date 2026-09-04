@@ -7,7 +7,9 @@ import {
     updateBoardListPosition,
     deleteBoardList,
     createCard,
-    updateCardPosition
+    updateCardPosition,
+    updateCard,
+    deleteCard
 } from "@/api/apis";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -83,6 +85,33 @@ export default function BoardListsPage() {
     const deleteList = async (list_id: number) => {
         try {
             await deleteBoardList(list_id);
+        } catch (error) {
+            console.error(error);
+        }
+
+        const response = await getBoard(Number(boardId));
+        setBoard(response.data);
+    }
+
+    const updateCardDetails = async (card_id: number, updates: {
+        title?: string;
+        description?: string;
+        due_date?: string;
+        completed?: boolean;
+    }) => {
+        try {
+            await updateCard(card_id, updates);
+        } catch (error) {
+            console.error(error);
+        }
+
+        const response = await getBoard(Number(boardId));
+        setBoard(response.data);
+    }
+
+    const deleteCardHandler = async (card_id: number) => {
+        try {
+            await deleteCard(card_id);
         } catch (error) {
             console.error(error);
         }
@@ -212,7 +241,11 @@ export default function BoardListsPage() {
                                                                         {...provided.draggableProps}
                                                                         {...provided.dragHandleProps}
                                                                     >
-                                                                        <Cards card={card} />
+                                                                        <Cards
+                                                                            card={card}
+                                                                            submitFunc={updateCardDetails}
+                                                                            deleteFunc={deleteCardHandler}
+                                                                        />
                                                                     </div>
                                                                 )}
                                                             </Draggable>

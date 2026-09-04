@@ -7,6 +7,7 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
     port: 5173,
+    host: true, // allow LAN devices (e.g. testing on a phone) to reach the dev server
     proxy: {
       "/api": "http://localhost:8000",
     },

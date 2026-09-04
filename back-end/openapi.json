@@ -1099,6 +1099,17 @@
                             }
                         ],
                         "title": "List Id"
+                    },
+                    "completed": {
+                        "anyOf": [
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Completed"
                     }
                 },
                 "type": "object",

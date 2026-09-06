@@ -1,11 +1,12 @@
 import json
 import os
 
-from fastapi import FastAPI, Request
+from fastapi import Depends, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import HTTPException
 from app import lifespan, router
+import app.db as db
 
 
 app = FastAPI(lifespan=lifespan)
@@ -22,6 +23,16 @@ app.add_middleware(
 )
 
 app.include_router(router.api_router, prefix="/api")
+
+# Unauthenticated, read-only endpoint for uptime monitors (UptimeRobot,
+# cron-job.org, etc). Deliberately outside the /api prefix and requires no
+# token, since ping services can't hold a JWT. Runs a trivial query so a hit
+# here counts as "activity" for the free-tier database too, not just the
+# backend process.
+@app.get("/health")
+def health_check(cursor=Depends(db.get_cursor)):
+    cursor.execute("SELECT 1")
+    return {"status": "ok"}
 
 # Custom format for HTTP exceptions
 @app.exception_handler(HTTPException)

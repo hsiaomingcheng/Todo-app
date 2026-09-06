@@ -1,7 +1,11 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "/api", // /api is the prefix for all API routes defined in the backend
+  // In dev, Vite proxies /api -> the local backend, so the relative path
+  // works with no config. In production the frontend and backend are
+  // deployed to separate origins (see DEPLOYMENT.md), so VITE_API_URL
+  // points straight at the deployed backend's /api prefix.
+  baseURL: import.meta.env.VITE_API_URL || "/api",
   headers: { "Content-Type": "application/json" },
 });
 

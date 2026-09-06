@@ -9,13 +9,17 @@ import {
     createCard,
     updateCardPosition,
     updateCard,
-    deleteCard
+    deleteCard,
+    createLabel,
+    updateLabel,
+    deleteLabel
 } from "@/api/apis";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Cards from "@/components/common/Cards";
 import ListsFooter from "@/components/common/ListsFooter";
 import ListsHeader from "@/components/common/ListsHeader";
+import ManageLabelsModal from "@/components/common/ManageLabelsModal";
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import type { Board } from "@/types/board";
 
@@ -120,6 +124,39 @@ export default function BoardListsPage() {
         setBoard(response.data);
     }
 
+    const createLabelHandler = async (name: string, color: string) => {
+        try {
+            await createLabel(Number(boardId), name, color);
+        } catch (error) {
+            console.error(error);
+        }
+
+        const response = await getBoard(Number(boardId));
+        setBoard(response.data);
+    }
+
+    const updateLabelHandler = async (label_id: number, updates: { name?: string; color?: string }) => {
+        try {
+            await updateLabel(label_id, updates);
+        } catch (error) {
+            console.error(error);
+        }
+
+        const response = await getBoard(Number(boardId));
+        setBoard(response.data);
+    }
+
+    const deleteLabelHandler = async (label_id: number) => {
+        try {
+            await deleteLabel(label_id);
+        } catch (error) {
+            console.error(error);
+        }
+
+        const response = await getBoard(Number(boardId));
+        setBoard(response.data);
+    }
+
     const onDragEnd = async (result: any) => {
         const { destination, source, type } = result;
 
@@ -197,6 +234,14 @@ export default function BoardListsPage() {
 
     return (
         <DragDropContext onDragEnd={onDragEnd}>
+            <div className="mb-3">
+                <ManageLabelsModal
+                    labels={board?.labels ?? []}
+                    createFunc={createLabelHandler}
+                    updateFunc={updateLabelHandler}
+                    deleteFunc={deleteLabelHandler}
+                />
+            </div>
             <div className="flex gap-4 overflow-x-auto pb-4 items-start min-h-0">
                 <Droppable droppableId="board-lists" direction="horizontal" type="LIST">
                     {(provided) => (

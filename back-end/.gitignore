@@ -74,5 +74,3 @@ dmypy.json
 .pytype/
 .ruff_cache/
 .pypirc
-
-connect.py

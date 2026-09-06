@@ -12,7 +12,8 @@ import {
     deleteCard,
     createLabel,
     updateLabel,
-    deleteLabel
+    deleteLabel,
+    setCardLabels
 } from "@/api/apis";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -157,6 +158,17 @@ export default function BoardListsPage() {
         setBoard(response.data);
     }
 
+    const setCardLabelsHandler = async (card_id: number, label_ids: number[]) => {
+        try {
+            await setCardLabels(card_id, label_ids);
+        } catch (error) {
+            console.error(error);
+        }
+
+        const response = await getBoard(Number(boardId));
+        setBoard(response.data);
+    }
+
     const onDragEnd = async (result: any) => {
         const { destination, source, type } = result;
 
@@ -288,8 +300,10 @@ export default function BoardListsPage() {
                                                                     >
                                                                         <Cards
                                                                             card={card}
+                                                                            boardLabels={board?.labels ?? []}
                                                                             submitFunc={updateCardDetails}
                                                                             deleteFunc={deleteCardHandler}
+                                                                            setLabelsFunc={setCardLabelsHandler}
                                                                         />
                                                                     </div>
                                                                 )}

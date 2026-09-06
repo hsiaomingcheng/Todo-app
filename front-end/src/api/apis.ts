@@ -291,6 +291,22 @@ export async function detachLabelFromCard(card_id: number, label_id: number) {
     }
 }
 
+// Batch equivalent of attachLabelToCard/detachLabelFromCard — replaces a
+// card's entire label set in one request. Used by the Card Detail Modal,
+// which lets a user toggle several labels before hitting Save.
+export async function setCardLabels(card_id: number, label_ids: number[]) {
+    try {
+        const response = await api.put(`/cards/${card_id}/labels`, { label_ids });
+        return response.data;
+    } catch (error) {
+        if (isAxiosError(error) && error.response) {
+            throw new Error(error.response.data.message);
+        } else {
+            throw new Error("An unexpected error occurred");
+        }
+    }
+}
+
 
 // User Profile
 export async function updateProfile(id: number, email: string, first_name: string, last_name: string) {

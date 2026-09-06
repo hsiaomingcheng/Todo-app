@@ -39,6 +39,9 @@ class UpdateLabelRequest(BaseModel):
     name: str | None = None
     color: str | None = None
 
+class SetCardLabelsRequest(BaseModel):
+    label_ids: list[int]
+
 # Boards
 @router.get("/boards")
 def get_boards(cursor=Depends(db.get_cursor), current_user = Depends(get_current_user)):
@@ -476,4 +479,58 @@ def detach_label_from_card(card_id: int, label_id: int, cursor=Depends(db.get_cu
 
     return {
         "message": "Successfully detached label from card"
+    }
+
+@router.put("/cards/{card_id}/labels")
+def set_card_labels(card_id: int, body: SetCardLabelsRequest, cursor=Depends(db.get_cursor), current_user=Depends(get_current_user)):
+    # Batch equivalent of attach_label_to_card/detach_label_from_card, for
+    # callers (like the Card Detail Modal) that want to replace a card's
+    # entire label set in one request instead of diffing it into a series
+    # of single attach/detach calls. Those two stay as-is for callers that
+    # only ever touch one label at a time (e.g. a future quick-toggle menu).
+    #
+    # Note: this connection runs with autocommit on (see db.py), like every
+    # other route in this file — the delete-then-insert below is not
+    # wrapped in an explicit transaction, so it isn't truly all-or-nothing
+    # if the process dies mid-way. That matches this codebase's existing
+    # conventions rather than introducing a one-off exception.
+
+    # Verify the card exists AND belongs to the current user, and get its board_id
+    cursor.execute("""
+        SELECT cards.id, lists.board_id FROM cards
+        JOIN lists ON cards.list_id = lists.id
+        JOIN boards ON lists.board_id = boards.id
+        WHERE cards.id = %s AND boards.owner_id = %s AND lists.active = true AND cards.active = true
+    """, (card_id, current_user['id']))
+    card = cursor.fetchone()
+
+    if card is None:
+        raise HTTPException(status_code=404, detail="Card not found")
+
+    # Verify every requested label exists, belongs to the current user, AND
+    # belongs to the same board as the card
+    label_ids = list(set(body.label_ids))
+    if label_ids:
+        cursor.execute("""
+            SELECT labels.id FROM labels
+            JOIN boards ON labels.board_id = boards.id
+            WHERE labels.id = ANY(%s) AND boards.owner_id = %s AND boards.active = true AND labels.board_id = %s
+        """, (label_ids, current_user['id'], card['board_id']))
+        valid_ids = {row['id'] for row in cursor.fetchall()}
+
+        if valid_ids != set(label_ids):
+            raise HTTPException(status_code=404, detail="One or more labels not found")
+
+    # Replace the full set: clear existing associations, then insert the
+    # requested ones
+    cursor.execute("DELETE FROM card_labels WHERE card_id = %s", (card_id,))
+
+    if label_ids:
+        cursor.executemany(
+            "INSERT INTO card_labels (card_id, label_id) VALUES (%s, %s)",
+            [(card_id, label_id) for label_id in label_ids]
+        )
+
+    return {
+        "message": "Successfully set card labels"
     }

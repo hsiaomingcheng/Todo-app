@@ -1,14 +1,17 @@
 import { useState } from "react";
 import { FilePen } from "lucide-react";
-import type { Card } from "@/types/board";
+import type { BoardLabel, Card } from "@/types/board";
 import CardDetailModal from "@/components/common/CardDetailModal";
 
 export default function Cards({
     card,
+    boardLabels,
     submitFunc,
     deleteFunc,
+    setLabelsFunc,
 }: {
     card: Card;
+    boardLabels: BoardLabel[];
     submitFunc: (card_id: number, updates: {
         title?: string;
         description?: string;
@@ -16,6 +19,7 @@ export default function Cards({
         completed?: boolean;
     }) => Promise<void>;
     deleteFunc: (card_id: number) => Promise<void>;
+    setLabelsFunc: (card_id: number, label_ids: number[]) => Promise<void>;
 }) {
     const [open, setOpen] = useState(false);
 
@@ -37,8 +41,10 @@ export default function Cards({
                 card={card}
                 open={open}
                 onOpenChange={setOpen}
+                boardLabels={boardLabels}
                 submitFunc={submitFunc}
                 deleteFunc={deleteFunc}
+                setLabelsFunc={setLabelsFunc}
             />
         </>
     )

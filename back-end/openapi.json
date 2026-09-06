@@ -1013,6 +1013,61 @@
                     }
                 }
             }
+        },
+        "/api/cards/{card_id}/labels": {
+            "put": {
+                "tags": [
+                    "board"
+                ],
+                "summary": "Set Card Labels",
+                "operationId": "set_card_labels_api_cards__card_id__labels_put",
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "card_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "title": "Card Id"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SetCardLabelsRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "components": {
@@ -1147,6 +1202,22 @@
                     "last_name"
                 ],
                 "title": "RegisterUser"
+            },
+            "SetCardLabelsRequest": {
+                "properties": {
+                    "label_ids": {
+                        "items": {
+                            "type": "integer"
+                        },
+                        "type": "array",
+                        "title": "Label Ids"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "label_ids"
+                ],
+                "title": "SetCardLabelsRequest"
             },
             "UpdateCardRequest": {
                 "properties": {

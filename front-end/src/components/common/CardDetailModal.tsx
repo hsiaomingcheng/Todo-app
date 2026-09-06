@@ -15,7 +15,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import DeletingModal from "@/components/common/DeletingModal";
-import type { Card } from "@/types/board";
+import type { BoardLabel, Card } from "@/types/board";
 
 // Parse a "YYYY-MM-DD" (or ISO timestamp) date-only value as a local date,
 // avoiding the UTC interpretation `new Date(str)` uses for date-only strings.
@@ -38,12 +38,15 @@ export default function CardDetailModal({
     card,
     open,
     onOpenChange,
+    boardLabels,
     submitFunc,
     deleteFunc,
+    setLabelsFunc,
 }: {
     card: Card;
     open: boolean;
     onOpenChange: (open: boolean) => void;
+    boardLabels: BoardLabel[];
     submitFunc: (card_id: number, updates: {
         title?: string;
         description?: string;
@@ -51,6 +54,7 @@ export default function CardDetailModal({
         completed?: boolean;
     }) => Promise<void>;
     deleteFunc: (card_id: number) => Promise<void>;
+    setLabelsFunc: (card_id: number, label_ids: number[]) => Promise<void>;
 }) {
     const [title, setTitle] = useState(card.title);
     const [description, setDescription] = useState(card.description ?? "");
@@ -58,6 +62,14 @@ export default function CardDetailModal({
         card.due_date ? parseDateOnly(card.due_date) : undefined
     );
     const [completed, setCompleted] = useState(card.completed);
+    // Label toggles are only applied on Save (see handleSubmit) rather than
+    // firing attach/detach immediately — an immediate call would refetch the
+    // board and hand this modal a new `card` prop, which the effect below
+    // would use to re-sync title/description/etc, silently discarding any
+    // unsaved edits the user was mid-typing.
+    const [selectedLabelIds, setSelectedLabelIds] = useState<Set<number>>(
+        () => new Set(card.labels.map((l) => l.id))
+    );
     const [isProcessing, setIsProcessing] = useState(false);
 
     useEffect(() => {
@@ -71,7 +83,20 @@ export default function CardDetailModal({
         setDescription(card.description ?? "");
         setDueDate(card.due_date ? parseDateOnly(card.due_date) : undefined);
         setCompleted(card.completed);
+        setSelectedLabelIds(new Set(card.labels.map((l) => l.id)));
     }, [card, open]);
+
+    const toggleLabel = (label_id: number) => {
+        setSelectedLabelIds((prev) => {
+            const next = new Set(prev);
+            if (next.has(label_id)) {
+                next.delete(label_id);
+            } else {
+                next.add(label_id);
+            }
+            return next;
+        });
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -80,12 +105,24 @@ export default function CardDetailModal({
         if (!title.trim()) return;
 
         setIsProcessing(true);
+
         await submitFunc(card.id, {
             title: title.trim(),
             description,
             ...(dueDate && { due_date: formatDateOnly(dueDate) }),
             completed,
         });
+
+        // Only call the labels endpoint if the selection actually changed
+        // from what the card had when the modal opened.
+        const originalLabelIds = new Set(card.labels.map((l) => l.id));
+        const labelsChanged =
+            originalLabelIds.size !== selectedLabelIds.size ||
+            [...originalLabelIds].some((id) => !selectedLabelIds.has(id));
+        if (labelsChanged) {
+            await setLabelsFunc(card.id, [...selectedLabelIds]);
+        }
+
         setIsProcessing(false);
 
         onOpenChange(false);
@@ -174,6 +211,35 @@ export default function CardDetailModal({
                                 )}
                             </PopoverContent>
                         </Popover>
+                    </div>
+
+                    <div>
+                        <label className="block text-gray-700 text-sm font-bold mb-1">
+                            Labels
+                        </label>
+                        {boardLabels.length === 0 ? (
+                            <p className="text-sm text-app-text-subtle">
+                                No labels on this board yet — add some from "Manage labels".
+                            </p>
+                        ) : (
+                            <div className="flex flex-wrap gap-2">
+                                {boardLabels.map((label) => {
+                                    const isSelected = selectedLabelIds.has(label.id);
+                                    return (
+                                        <button
+                                            key={label.id}
+                                            type="button"
+                                            onClick={() => toggleLabel(label.id)}
+                                            className={`px-3 py-1 rounded-full text-xs font-medium cursor-pointer transition-opacity ${isSelected ? "text-white" : "text-app-text border border-current opacity-60 hover:opacity-100"
+                                                }`}
+                                            style={isSelected ? { backgroundColor: label.color } : { color: label.color }}
+                                        >
+                                            {label.name}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        )}
                     </div>
 
                     <DialogFooter className="justify-between sm:justify-between">

@@ -7,6 +7,20 @@ export interface UserDetails {
     avatar_url?: string;
 }
 
+export interface Label {
+    id: number;
+    name: string;
+    color: string;
+}
+
+// The board-level label list additionally carries how many active cards
+// currently use each label (see GET /boards/{id} in board.py) — used to
+// warn before deleting a label that's still in use.
+export interface BoardLabel extends Label {
+    board_id: number;
+    card_count: number;
+}
+
 export interface Card {
     id: number;
     list_id: number;
@@ -16,6 +30,7 @@ export interface Card {
     description: string | null;
     due_date: string | null;
     completed: boolean;
+    labels: Label[];
 }
 
 export interface BoardList {
@@ -32,4 +47,5 @@ export interface Board {
     title: string;
     created_at: string;
     lists: BoardList[];
+    labels: BoardLabel[];
 }

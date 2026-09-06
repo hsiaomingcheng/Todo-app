@@ -225,6 +225,72 @@ export async function deleteCard(card_id: number) {
     }
 }
 
+// Labels
+export async function createLabel(board_id: number, name: string, color: string) {
+    try {
+        const response = await api.post(`/boards/${board_id}/labels`, { name, color });
+        return response.data;
+    } catch (error) {
+        if (isAxiosError(error) && error.response) {
+            throw new Error(error.response.data.message);
+        } else {
+            throw new Error("An unexpected error occurred");
+        }
+    }
+}
+
+export async function updateLabel(label_id: number, updates: { name?: string, color?: string }) {
+    try {
+        const response = await api.patch(`/labels/${label_id}`, updates);
+        return response.data;
+    } catch (error) {
+        if (isAxiosError(error) && error.response) {
+            throw new Error(error.response.data.message);
+        } else {
+            throw new Error("An unexpected error occurred");
+        }
+    }
+}
+
+export async function deleteLabel(label_id: number) {
+    try {
+        const response = await api.delete(`/labels/${label_id}`);
+        return response.data;
+    } catch (error) {
+        if (isAxiosError(error) && error.response) {
+            throw new Error(error.response.data.message);
+        } else {
+            throw new Error("An unexpected error occurred");
+        }
+    }
+}
+
+export async function attachLabelToCard(card_id: number, label_id: number) {
+    try {
+        const response = await api.post(`/cards/${card_id}/labels/${label_id}`);
+        return response.data;
+    } catch (error) {
+        if (isAxiosError(error) && error.response) {
+            throw new Error(error.response.data.message);
+        } else {
+            throw new Error("An unexpected error occurred");
+        }
+    }
+}
+
+export async function detachLabelFromCard(card_id: number, label_id: number) {
+    try {
+        const response = await api.delete(`/cards/${card_id}/labels/${label_id}`);
+        return response.data;
+    } catch (error) {
+        if (isAxiosError(error) && error.response) {
+            throw new Error(error.response.data.message);
+        } else {
+            throw new Error("An unexpected error occurred");
+        }
+    }
+}
+
 
 // User Profile
 export async function updateProfile(id: number, email: string, first_name: string, last_name: string) {

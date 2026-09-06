@@ -71,11 +71,14 @@ Subtasks living *inside* a card (a checklist within a card — e.g. card "Plan t
 ### `labels`
 A named, coloured tag scoped to one board (e.g. "Bug" / red, "Frontend" / blue). Board-scoped, not global — two different boards can each have their own "Urgent" label.
 - `board_id → boards.id`, `name`, `color`
-- **Used by backend:** ❌ No. Planned in [`todo-app-spec.md`](todo-app-spec.md) (§4.5) but no API routes exist yet.
+- **Used by backend:** ✅ Yes (`board.py`) — CRUD at `/boards/{board_id}/labels` and `/labels/{label_id}`.
+- `DELETE /labels/{label_id}` is a **hard delete** (this table has no `active` column) and relies on `ON DELETE CASCADE` to clean up `card_labels`. There is no ownership-transfer or "in use" block — deleting a label that's currently attached to cards silently detaches it from all of them. `GET /boards/{board_id}` annotates each label with `card_count` (active cards currently using it) specifically so the frontend can warn about this before calling delete.
 
 ### `card_labels`
 Join table — which `labels` are applied to which `cards`. `(card_id, label_id)`, many-to-many.
-- **Used by backend:** ❌ No. Same status as `labels` — schema exists, routes don't.
+- **Used by backend:** ✅ Yes (`board.py`) — attach/detach at `POST`/`DELETE /cards/{card_id}/labels/{label_id}`. `attach_label_to_card` additionally checks the label and the card belong to the *same* board, since a label's `board_id` FK doesn't stop you from passing in a label ID from a different board.
+
+**Known edge case (harmless today, no fix needed unless card restore ever ships):** `card_count` above only counts cards where `active = true`, so a label still attached to a *soft-deleted* card reads as unused once that's the only card left referencing it. If someone then deletes that "unused" label, `ON DELETE CASCADE` removes the `card_labels` row for the soft-deleted card too — it doesn't check the card's `active` flag, it just cleans up every row referencing that `label_id`. Nothing breaks (no orphaned FK, no error): the card simply loses that label permanently. The only way this becomes observable is if a "restore a deleted card" feature is ever added — a restored card could silently be missing a label it used to have, with no error to explain why. Revisit then: either count soft-deleted cards too before showing the delete warning, or make `labels` soft-deletable as well.
 
 ## Soft deletes
 

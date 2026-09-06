@@ -86,13 +86,33 @@ def get_board(board_id: int, cursor=Depends(db.get_cursor), current_user=Depends
     """, (board_id,))
     db_cards = cursor.fetchall()
 
+    # Fetch every label attached to any card on this board, so each card can
+    # get its own "labels" list below
+    cursor.execute("""
+        SELECT card_labels.card_id, labels.id, labels.name, labels.color
+        FROM card_labels
+        JOIN labels ON labels.id = card_labels.label_id
+        JOIN cards ON cards.id = card_labels.card_id
+        JOIN lists ON lists.id = cards.list_id
+        WHERE lists.board_id = %s AND lists.active = true AND cards.active = true
+    """, (board_id,))
+    db_card_labels = cursor.fetchall()
+
+    labels_by_card = {}
+    for row in db_card_labels:
+        labels_by_card.setdefault(row['card_id'], []).append({
+            "id": row['id'],
+            "name": row['name'],
+            "color": row['color'],
+        })
+
     # Group cards by list_id and nest them into each list
     cards_by_list = {}
     for card in db_cards:
         list_id = card['list_id']
-        if list_id not in cards_by_list:
-            cards_by_list[list_id] = []
-        cards_by_list[list_id].append(dict(card))
+        card_dict = dict(card)
+        card_dict['labels'] = labels_by_card.get(card_dict['id'], [])
+        cards_by_list.setdefault(list_id, []).append(card_dict)
 
     lists_with_cards = []
     for lst in db_lists:
@@ -100,11 +120,25 @@ def get_board(board_id: int, cursor=Depends(db.get_cursor), current_user=Depends
         lst_dict['cards'] = cards_by_list.get(lst_dict['id'], [])
         lists_with_cards.append(lst_dict)
 
+    # Fetch this board's labels, each annotated with how many active cards
+    # currently have it attached (used by the frontend to warn before delete)
+    cursor.execute("""
+        SELECT labels.*, COUNT(cards.id) AS card_count
+        FROM labels
+        LEFT JOIN card_labels ON card_labels.label_id = labels.id
+        LEFT JOIN cards ON cards.id = card_labels.card_id AND cards.active = true
+        WHERE labels.board_id = %s
+        GROUP BY labels.id
+        ORDER BY labels.id ASC
+    """, (board_id,))
+    db_labels = cursor.fetchall()
+
     return {
         "message": "Successfully fetched board",
         "data": {
             **dict(board),
-            "lists": lists_with_cards
+            "lists": lists_with_cards,
+            "labels": db_labels
         }
     }
 

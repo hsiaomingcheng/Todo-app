@@ -31,6 +31,14 @@ class UpdateCardRequest(BaseModel):
     list_id: int | None = None
     completed: bool | None = None
 
+class CreateLabelRequest(BaseModel):
+    name: str
+    color: str
+
+class UpdateLabelRequest(BaseModel):
+    name: str | None = None
+    color: str | None = None
+
 # Boards
 @router.get("/boards")
 def get_boards(cursor=Depends(db.get_cursor), current_user = Depends(get_current_user)):
@@ -310,4 +318,128 @@ def delete_card(card_id: int, cursor=Depends(db.get_cursor), current_user=Depend
 
     return {
         "message": "Successfully deleted card"
+    }
+
+
+# Labels
+@router.post("/boards/{board_id}/labels")
+def create_label(board_id: int, body: CreateLabelRequest, cursor=Depends(db.get_cursor), current_user=Depends(get_current_user)):
+    validate_not_blank({"name": body.name, "color": body.color})
+
+    # Verify the board exists AND belongs to the current user
+    cursor.execute("SELECT * FROM boards WHERE id = %s AND owner_id = %s AND active = true", (board_id, current_user['id']))
+    board = cursor.fetchone()
+
+    if board is None:
+        raise HTTPException(status_code=404, detail="Board not found")
+
+    cursor.execute(
+        "INSERT INTO labels (board_id, name, color) VALUES (%s, %s, %s)",
+        (board_id, body.name.strip(), body.color.strip())
+    )
+
+    return {
+        "message": "Successfully created label"
+    }
+
+@router.patch("/labels/{label_id}")
+def update_label(label_id: int, body: UpdateLabelRequest, cursor=Depends(db.get_cursor), current_user=Depends(get_current_user)):
+    # Verify the label exists AND belongs to the current user
+    cursor.execute("""
+        SELECT labels.* FROM labels
+        JOIN boards ON labels.board_id = boards.id
+        WHERE labels.id = %s AND boards.owner_id = %s AND boards.active = true
+    """, (label_id, current_user['id']))
+    label = cursor.fetchone()
+
+    if label is None:
+        raise HTTPException(status_code=404, detail="Label not found")
+
+    if body.name is not None:
+        validate_not_blank({"name": body.name})
+        cursor.execute("UPDATE labels SET name = %s WHERE id = %s", (body.name.strip(), label_id))
+
+    if body.color is not None:
+        validate_not_blank({"color": body.color})
+        cursor.execute("UPDATE labels SET color = %s WHERE id = %s", (body.color.strip(), label_id))
+
+    return {
+        "message": "Successfully updated label"
+    }
+
+@router.delete("/labels/{label_id}")
+def delete_label(label_id: int, cursor=Depends(db.get_cursor), current_user=Depends(get_current_user)):
+    # Verify the label exists AND belongs to the current user
+    cursor.execute("""
+        SELECT labels.* FROM labels
+        JOIN boards ON labels.board_id = boards.id
+        WHERE labels.id = %s AND boards.owner_id = %s AND boards.active = true
+    """, (label_id, current_user['id']))
+    label = cursor.fetchone()
+
+    if label is None:
+        raise HTTPException(status_code=404, detail="Label not found")
+
+    # Labels have no `active` column — cascades to card_labels via ON DELETE CASCADE
+    cursor.execute("DELETE FROM labels WHERE id = %s", (label_id,))
+
+    return {
+        "message": "Successfully deleted label"
+    }
+
+@router.post("/cards/{card_id}/labels/{label_id}")
+def attach_label_to_card(card_id: int, label_id: int, cursor=Depends(db.get_cursor), current_user=Depends(get_current_user)):
+    # Verify the card exists AND belongs to the current user, and get its board_id
+    cursor.execute("""
+        SELECT cards.id, lists.board_id FROM cards
+        JOIN lists ON cards.list_id = lists.id
+        JOIN boards ON lists.board_id = boards.id
+        WHERE cards.id = %s AND boards.owner_id = %s AND lists.active = true AND cards.active = true
+    """, (card_id, current_user['id']))
+    card = cursor.fetchone()
+
+    if card is None:
+        raise HTTPException(status_code=404, detail="Card not found")
+
+    # Verify the label exists, belongs to the current user, AND belongs to the same board as the card
+    cursor.execute("""
+        SELECT labels.* FROM labels
+        JOIN boards ON labels.board_id = boards.id
+        WHERE labels.id = %s AND boards.owner_id = %s AND boards.active = true
+    """, (label_id, current_user['id']))
+    label = cursor.fetchone()
+
+    if label is None or label['board_id'] != card['board_id']:
+        raise HTTPException(status_code=404, detail="Label not found")
+
+    cursor.execute(
+        "INSERT INTO card_labels (card_id, label_id) VALUES (%s, %s) ON CONFLICT DO NOTHING",
+        (card_id, label_id)
+    )
+
+    return {
+        "message": "Successfully attached label to card"
+    }
+
+@router.delete("/cards/{card_id}/labels/{label_id}")
+def detach_label_from_card(card_id: int, label_id: int, cursor=Depends(db.get_cursor), current_user=Depends(get_current_user)):
+    # Verify the card exists AND belongs to the current user
+    cursor.execute("""
+        SELECT cards.id FROM cards
+        JOIN lists ON cards.list_id = lists.id
+        JOIN boards ON lists.board_id = boards.id
+        WHERE cards.id = %s AND boards.owner_id = %s AND lists.active = true AND cards.active = true
+    """, (card_id, current_user['id']))
+    card = cursor.fetchone()
+
+    if card is None:
+        raise HTTPException(status_code=404, detail="Card not found")
+
+    cursor.execute(
+        "DELETE FROM card_labels WHERE card_id = %s AND label_id = %s",
+        (card_id, label_id)
+    )
+
+    return {
+        "message": "Successfully detached label from card"
     }

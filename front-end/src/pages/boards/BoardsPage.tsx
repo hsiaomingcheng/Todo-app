@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { getBoards, createBoard, deleteBoard } from "@/api/apis";
+import { getBoards, createBoard, updateBoard, deleteBoard } from "@/api/apis";
 import DeletingModal from "@/components/common/DeletingModal";
 import { Trash2 } from "lucide-react";
 
@@ -54,6 +54,16 @@ export default function BoardsPage() {
         cleanAddingBoard();
     };
 
+    const handleRenameBoard = async (boardId: number, title: string) => {
+        try {
+            await updateBoard(boardId, title);
+        } catch (error) {
+            console.error(error);
+        }
+        const response = await getBoards();
+        setBoards(response.data);
+    };
+
     const handleDeleteBoard = async (boardId: number) => {
         try {
             await deleteBoard(boardId);
@@ -89,6 +99,7 @@ export default function BoardsPage() {
                         board={board}
                         color={BOARD_COLORS[index % BOARD_COLORS.length]}
                         onClick={() => navigate(`/board-lists/${board.id}`)}
+                        onRename={(title) => handleRenameBoard(board.id, title)}
                         onDelete={() => handleDeleteBoard(board.id)}
                     />
                 ))}
@@ -145,13 +156,49 @@ function BoardCard({
     board,
     color,
     onClick,
+    onRename,
     onDelete,
 }: {
     board: Board;
     color: string;
     onClick: () => void;
+    onRename: (title: string) => Promise<void>;
     onDelete: () => void;
 }) {
+    const [isEditingTitle, setIsEditingTitle] = useState(false);
+    const [isProcessing, setIsProcessing] = useState(false);
+    const [titleInput, setTitleInput] = useState(board.title);
+
+    const startEditing = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        setTitleInput(board.title);
+        setIsEditingTitle(true);
+    };
+
+    const cleanInput = () => {
+        setIsEditingTitle(false);
+        setTitleInput(board.title);
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (isProcessing) return;
+
+        const trimmed = titleInput.trim();
+        if (!trimmed || trimmed === board.title) {
+            cleanInput();
+            return;
+        }
+
+        setIsProcessing(true);
+        await onRename(trimmed);
+        setIsProcessing(false);
+
+        setIsEditingTitle(false);
+    };
+
     return (
         <div
             onClick={onClick}
@@ -162,9 +209,27 @@ function BoardCard({
 
             {/* Content */}
             <div className="p-3 flex flex-col justify-between h-[calc(100%-8px)]">
-                <p className="font-semibold text-app-text text-sm leading-snug line-clamp-2">
-                    {board.title}
-                </p>
+                {!isEditingTitle ? (
+                    <p
+                        onClick={startEditing}
+                        className="font-semibold text-app-text text-sm leading-snug line-clamp-2 hover:bg-gray-100 rounded p-0.5 -m-0.5 transition-colors duration-150"
+                    >
+                        {board.title}
+                    </p>
+                ) : (
+                    <form onSubmit={handleSubmit} onClick={(e) => e.stopPropagation()}>
+                        <Input
+                            autoFocus
+                            type="text"
+                            value={titleInput}
+                            onChange={(e) => setTitleInput(e.target.value)}
+                            onKeyDown={(e) => e.key === "Escape" && cleanInput()}
+                            onBlur={() => cleanInput()}
+                            disabled={isProcessing}
+                            className="text-sm h-7 border-gray-200 focus-visible:ring-app-primary"
+                        />
+                    </form>
+                )}
 
                 {/* Delete button */}
                 <div className="flex justify-end">

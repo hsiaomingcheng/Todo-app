@@ -73,6 +73,19 @@ export async function createBoard(title: string) {
     }
 }
 
+export async function updateBoard(board_id: number, title: string) {
+    try {
+        const response = await api.patch(`/boards/${board_id}`, { title });
+        return response.data;
+    } catch (error) {
+        if (isAxiosError(error) && error.response) {
+            throw new Error(error.response.data.message);
+        } else {
+            throw new Error("An unexpected error occurred");
+        }
+    }
+}
+
 export async function deleteBoard(board_id: number) {
     try {
         const response = await api.delete(`/boards/${board_id}`);

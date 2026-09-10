@@ -48,7 +48,7 @@ class SetCardLabelsRequest(BaseModel):
 # Boards
 @router.get("/boards")
 def get_boards(cursor=Depends(db.get_cursor), current_user = Depends(get_current_user)):
-    cursor.execute("SELECT * FROM boards WHERE owner_id = %s AND active = true", (current_user['id'],))
+    cursor.execute("SELECT * FROM boards WHERE owner_id = %s AND active = true ORDER BY id DESC", (current_user['id'],))
     db_boards = cursor.fetchall()
 
     return {

@@ -1,8 +1,11 @@
+import { useState } from "react";
 import { Outlet, Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import GlobalSearch from "@/components/common/GlobalSearch";
+import { Search } from "lucide-react";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -15,6 +18,7 @@ import {
 export default function AppLayout() {
     const navigate = useNavigate();
     const { user, logout } = useAuth();
+    const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
 
     // Get user initials for avatar fallback
     const getUserInitials = () => {
@@ -44,11 +48,9 @@ export default function AppLayout() {
                         variant="ghost"
                         size="icon"
                         className="md:hidden"
-                        onClick={() => {
-                            // TODO: Open mobile search modal
-                        }}
+                        onClick={() => setIsMobileSearchOpen(true)}
                     >
-                        {/* <Search className="h-5 w-5 text-[#6B778C]" /> */}
+                        <Search className="h-5 w-5 text-[#6B778C]" />
                     </Button>
 
                     {/* User menu */}
@@ -101,6 +103,17 @@ export default function AppLayout() {
                     </div>
                 </div>
             </header>
+
+            {/* Mobile search modal — desktop uses the inline GlobalSearch above instead */}
+            <Dialog open={isMobileSearchOpen} onOpenChange={setIsMobileSearchOpen}>
+                <DialogContent className="top-[8%] translate-y-0 sm:max-w-md" showCloseButton={false}>
+                    <DialogTitle className="sr-only">Search cards</DialogTitle>
+                    <GlobalSearch
+                        autoFocus
+                        onResultSelect={() => setIsMobileSearchOpen(false)}
+                    />
+                </DialogContent>
+            </Dialog>
 
             {/* Main content area */}
             <main className="flex-grow w-full p-4 min-h-0 overflow-hidden">

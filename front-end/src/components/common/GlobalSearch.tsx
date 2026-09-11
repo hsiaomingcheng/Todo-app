@@ -6,7 +6,17 @@ import type { SearchResult } from "@/types/board";
 
 const SEARCH_DEBOUNCE_MS = 300;
 
-export default function GlobalSearch({ className }: { className?: string }) {
+export default function GlobalSearch({
+    className,
+    autoFocus,
+    onResultSelect,
+}: {
+    className?: string;
+    autoFocus?: boolean;
+    // Called after navigating to a result — lets a parent (e.g. the mobile
+    // search modal) close itself too, on top of GlobalSearch's own reset.
+    onResultSelect?: () => void;
+}) {
     const navigate = useNavigate();
     const containerRef = useRef<HTMLDivElement>(null);
     const [query, setQuery] = useState("");
@@ -52,11 +62,13 @@ export default function GlobalSearch({ className }: { className?: string }) {
         setResults([]);
         setIsOpen(false);
         navigate(`/board-lists/${result.board_id}`);
+        onResultSelect?.();
     };
 
     return (
         <div ref={containerRef} className={`relative w-full ${className ?? ""}`}>
             <Input
+                autoFocus={autoFocus}
                 type="search"
                 placeholder="Search cards..."
                 value={query}

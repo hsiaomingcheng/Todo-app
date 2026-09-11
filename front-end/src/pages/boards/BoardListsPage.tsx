@@ -21,8 +21,9 @@ import Cards from "@/components/common/Cards";
 import ListsFooter from "@/components/common/ListsFooter";
 import ListsHeader from "@/components/common/ListsHeader";
 import ManageLabelsModal from "@/components/common/ManageLabelsModal";
+import CardFilter, { type CompletionFilter } from "@/components/common/CardFilter";
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
-import type { Board } from "@/types/board";
+import type { Board, Card } from "@/types/board";
 
 export default function BoardListsPage() {
     const { boardId } = useParams();
@@ -31,6 +32,8 @@ export default function BoardListsPage() {
     const [form, setForm] = useState({
         listName: "",
     });
+    const [filterLabelIds, setFilterLabelIds] = useState<Set<number>>(new Set());
+    const [completionFilter, setCompletionFilter] = useState<CompletionFilter>("all");
 
     // fetch board lists
     useEffect(() => {
@@ -244,14 +247,59 @@ export default function BoardListsPage() {
         setForm({ listName: "" });
     }
 
+    const isFilterActive = filterLabelIds.size > 0 || completionFilter !== "all";
+
+    const cardMatchesFilter = (card: Card): boolean => {
+        const matchesLabels =
+            filterLabelIds.size === 0 || card.labels.some((label) => filterLabelIds.has(label.id));
+        const matchesCompletion =
+            completionFilter === "all" ||
+            (completionFilter === "active" && !card.completed) ||
+            (completionFilter === "completed" && card.completed);
+        return matchesLabels && matchesCompletion;
+    };
+
+    const toggleFilterLabel = (label_id: number) => {
+        setFilterLabelIds((prev) => {
+            const next = new Set(prev);
+            if (next.has(label_id)) {
+                next.delete(label_id);
+            } else {
+                next.add(label_id);
+            }
+            return next;
+        });
+    };
+
+    const clearFilters = () => {
+        setFilterLabelIds(new Set());
+        setCompletionFilter("all");
+    };
+
+    const totalMatchCount =
+        board?.lists?.reduce(
+            (sum, list) => sum + (list.cards?.filter(cardMatchesFilter).length ?? 0),
+            0
+        ) ?? 0;
+
     return (
         <DragDropContext onDragEnd={onDragEnd}>
-            <div className="mb-3">
+            <div className="mb-3 flex items-center gap-2 flex-wrap">
                 <ManageLabelsModal
                     labels={board?.labels ?? []}
                     createFunc={createLabelHandler}
                     updateFunc={updateLabelHandler}
                     deleteFunc={deleteLabelHandler}
+                />
+                <CardFilter
+                    boardLabels={board?.labels ?? []}
+                    selectedLabelIds={filterLabelIds}
+                    onToggleLabel={toggleFilterLabel}
+                    completionFilter={completionFilter}
+                    onCompletionFilterChange={setCompletionFilter}
+                    matchCount={totalMatchCount}
+                    isFilterActive={isFilterActive}
+                    onClear={clearFilters}
                 />
             </div>
             <div className="flex gap-4 overflow-x-auto pb-4 items-start min-h-0">
@@ -280,6 +328,11 @@ export default function BoardListsPage() {
                                                     submitFunc={updateTitle}
                                                     deleteFunc={deleteList}
                                                 />
+                                                {isFilterActive && (
+                                                    <span className="text-xs text-app-text-subtle shrink-0 ml-1">
+                                                        ({boardList.cards?.filter(cardMatchesFilter).length ?? 0})
+                                                    </span>
+                                                )}
                                             </div>
 
                                             {/* Cards area */}
@@ -291,7 +344,12 @@ export default function BoardListsPage() {
                                                         className="px-2 flex flex-col gap-2 overflow-y-auto max-h-[calc(100vh-280px)] min-h-[4px]"
                                                     >
                                                         {boardList.cards?.map((card, cardIndex) => (
-                                                            <Draggable key={card.id} draggableId={`card-${card.id}`} index={cardIndex}>
+                                                            <Draggable
+                                                                key={card.id}
+                                                                draggableId={`card-${card.id}`}
+                                                                index={cardIndex}
+                                                                isDragDisabled={isFilterActive}
+                                                            >
                                                                 {(provided) => (
                                                                     <div
                                                                         ref={provided.innerRef}
@@ -304,6 +362,7 @@ export default function BoardListsPage() {
                                                                             submitFunc={updateCardDetails}
                                                                             deleteFunc={deleteCardHandler}
                                                                             setLabelsFunc={setCardLabelsHandler}
+                                                                            isFilteredOut={isFilterActive && !cardMatchesFilter(card)}
                                                                         />
                                                                     </div>
                                                                 )}

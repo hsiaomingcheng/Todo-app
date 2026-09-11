@@ -2,8 +2,7 @@ import { Outlet, Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Input } from "@/components/ui/input";
-// import { Search } from "lucide-react";
+import GlobalSearch from "@/components/common/GlobalSearch";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -37,14 +36,7 @@ export default function AppLayout() {
 
                     {/* Global search - center (hidden on mobile, icon only on tablet) */}
                     <div className="hidden md:flex flex-1 max-w-md mx-4">
-                        <div className="relative w-full">
-                            {/* <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#6B778C]" /> */}
-                            <Input
-                                type="search"
-                                placeholder="Search cards..."
-                                className="pl-10 bg-app-bg border-gray-300 focus:bg-white"
-                            />
-                        </div>
+                        <GlobalSearch />
                     </div>
 
                     {/* Search icon only on mobile/tablet */}

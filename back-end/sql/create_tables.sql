@@ -26,6 +26,7 @@ CREATE TABLE boards (
     title TEXT NOT NULL,
     owner_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
     active BOOLEAN NOT NULL DEFAULT TRUE,
+    background TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

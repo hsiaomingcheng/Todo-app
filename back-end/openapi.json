@@ -1192,6 +1192,17 @@
                     "title": {
                         "type": "string",
                         "title": "Title"
+                    },
+                    "background": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Background"
                     }
                 },
                 "type": "object",
@@ -1337,14 +1348,29 @@
             "UpdateBoardRequest": {
                 "properties": {
                     "title": {
-                        "type": "string",
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
                         "title": "Title"
+                    },
+                    "background": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Background"
                     }
                 },
                 "type": "object",
-                "required": [
-                    "title"
-                ],
                 "title": "UpdateBoardRequest"
             },
             "UpdateCardRequest": {

@@ -49,3 +49,13 @@ export interface Board {
     lists: BoardList[];
     labels: BoardLabel[];
 }
+
+// One row from GET /search — a card match plus enough context (which list,
+// which board) to make sense of a result found outside its own board.
+export interface SearchResult {
+    id: number;
+    title: string;
+    list_title: string;
+    board_id: number;
+    board_title: string;
+}

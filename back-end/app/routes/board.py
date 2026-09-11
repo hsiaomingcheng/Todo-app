@@ -554,3 +554,31 @@ def set_card_labels(card_id: int, body: SetCardLabelsRequest, cursor=Depends(db.
     return {
         "message": "Successfully set card labels"
     }
+
+
+# Search
+@router.get("/search")
+def search_cards(q: str = "", cursor=Depends(db.get_cursor), current_user=Depends(get_current_user)):
+    query = q.strip()
+    if not query:
+        return {
+            "message": "Successfully searched cards",
+            "data": []
+        }
+
+    cursor.execute("""
+        SELECT cards.id, cards.title, lists.title AS list_title, boards.id AS board_id, boards.title AS board_title
+        FROM cards
+        JOIN lists ON cards.list_id = lists.id
+        JOIN boards ON lists.board_id = boards.id
+        WHERE boards.owner_id = %s AND boards.active = true AND lists.active = true AND cards.active = true
+        AND cards.title ILIKE %s
+        ORDER BY cards.title ASC
+        LIMIT 20
+    """, (current_user['id'], f"%{query}%"))
+    results = cursor.fetchall()
+
+    return {
+        "message": "Successfully searched cards",
+        "data": results
+    }

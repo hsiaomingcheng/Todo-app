@@ -321,6 +321,21 @@ export async function setCardLabels(card_id: number, label_ids: number[]) {
 }
 
 
+// Search
+export async function searchCards(q: string) {
+    try {
+        const response = await api.get(`/search`, { params: { q } });
+        return response.data;
+    } catch (error) {
+        if (isAxiosError(error) && error.response) {
+            throw new Error(error.response.data.message);
+        } else {
+            throw new Error("An unexpected error occurred");
+        }
+    }
+}
+
+
 // User Profile
 export async function updateProfile(id: number, email: string, first_name: string, last_name: string) {
     try {

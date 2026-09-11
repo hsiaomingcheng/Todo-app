@@ -415,7 +415,7 @@ CREATE TABLE lists (
   id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   board_id    UUID NOT NULL REFERENCES boards(id) ON DELETE CASCADE,
   title       TEXT NOT NULL,
-  position    FLOAT NOT NULL DEFAULT 1.0,
+  position    INTEGER NOT NULL DEFAULT 1,
   archived    BOOLEAN DEFAULT FALSE,
   created_at  TIMESTAMPTZ DEFAULT now()
 );
@@ -426,7 +426,7 @@ CREATE TABLE cards (
   list_id     UUID NOT NULL REFERENCES lists(id) ON DELETE CASCADE,
   title       TEXT NOT NULL,
   description TEXT,
-  position    FLOAT NOT NULL DEFAULT 1.0,
+  position    INTEGER NOT NULL DEFAULT 1,
   completed   BOOLEAN DEFAULT FALSE,
   due_date    DATE,
   created_at  TIMESTAMPTZ DEFAULT now(),
@@ -449,7 +449,11 @@ CREATE TABLE card_labels (
 );
 ```
 
-**Position strategy:** Use a float `position` field. When reordering, set `position = (prev_position + next_position) / 2`. Periodically normalise positions (1.0, 2.0, 3.0…) when the gap between floats becomes too small (< 0.001).
+**Position strategy (as implemented — differs from the original plan below):** `position` is a plain integer, not a float. Reordering doesn't insert at a midpoint value — instead, every list (or card) in the affected list(s) is reassigned a fresh sequential position (1, 2, 3…) after a drag-and-drop move, via one `PATCH` request per affected row. This is simpler to reason about than float midpoint insertion, at the cost of one write per row in the list on every reorder instead of a single row update — acceptable for lists this short (a handful to a few dozen cards), but worth revisiting if a list ever grows large enough for that to matter.
+
+One direct consequence of full-list reindexing: it assumes you can see each row's true index within its complete, unfiltered list. This is why drag-and-drop is disabled entirely while card filtering (§1.4, "filter cards by label or completion status") is active, rather than trying to keep the index math correct against a partially-hidden view — see `DATABASE.md` for more on this trade-off.
+
+*(Original plan, not implemented: a float `position` field, with `position = (prev_position + next_position) / 2` on reorder and periodic normalisation back to whole numbers once the gap between floats got too small (< 0.001) — this would have let a card keep a stable position value even while other cards around it are hidden by a filter, avoiding the drag-disable-while-filtering restriction above. Worth reconsidering if drag-while-filtering becomes a real user request.)*
 
 #### 3.2.3 Environment Variables
 

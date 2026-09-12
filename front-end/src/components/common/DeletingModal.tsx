@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useSuppressOutsideClickThrough } from "@/lib/useSuppressOutsideClickThrough";
 import { useState } from "react";
 
 export default function DeletingModal({
@@ -24,6 +25,8 @@ export default function DeletingModal({
     submission: () => void;
 }) {
     const [text, setText] = useState("");
+    const [isOpen, setIsOpen] = useState(false);
+    const contentRef = useSuppressOutsideClickThrough<HTMLDivElement>(isOpen);
 
     const submissionHandler = () => {
         submission();
@@ -31,7 +34,7 @@ export default function DeletingModal({
     }
 
     return (
-        <Dialog>
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger
                 asChild
                 onClick={() => setText("")}
@@ -40,6 +43,7 @@ export default function DeletingModal({
             </DialogTrigger>
 
             <DialogContent
+                ref={contentRef}
                 onCloseAutoFocus={(e) => e.preventDefault()}
                 onClick={(e) => e.stopPropagation()}
             >

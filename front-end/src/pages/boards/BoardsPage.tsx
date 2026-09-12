@@ -13,6 +13,7 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
+import { useSuppressOutsideClickThrough } from "@/lib/useSuppressOutsideClickThrough";
 import { Trash2, Palette } from "lucide-react";
 
 interface Board {
@@ -193,6 +194,7 @@ function BoardCard({
     const [isColorDialogOpen, setIsColorDialogOpen] = useState(false);
     const [isSavingColor, setIsSavingColor] = useState(false);
     const [selectedColor, setSelectedColor] = useState(board.background || BOARD_COLORS[0]);
+    const colorDialogContentRef = useSuppressOutsideClickThrough<HTMLDivElement>(isColorDialogOpen);
     const color = board.background || DEFAULT_BOARD_COLOR;
 
     const handleColorDialogOpenChange = (open: boolean) => {
@@ -285,6 +287,7 @@ function BoardCard({
                         </DialogTrigger>
 
                         <DialogContent
+                            ref={colorDialogContentRef}
                             onClick={(e) => e.stopPropagation()}
                         >
                             <DialogHeader>

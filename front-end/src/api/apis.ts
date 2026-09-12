@@ -73,9 +73,9 @@ export async function createBoard(title: string) {
     }
 }
 
-export async function updateBoard(board_id: number, title: string) {
+export async function updateBoard(board_id: number, updates: { title?: string; background?: string }) {
     try {
-        const response = await api.patch(`/boards/${board_id}`, { title });
+        const response = await api.patch(`/boards/${board_id}`, updates);
         return response.data;
     } catch (error) {
         if (isAxiosError(error) && error.response) {

@@ -45,6 +45,7 @@ export interface BoardList {
 export interface Board {
     id: number;
     title: string;
+    background: string | null;
     created_at: string;
     lists: BoardList[];
     labels: BoardLabel[];

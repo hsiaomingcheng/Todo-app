@@ -4,11 +4,22 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { getBoards, createBoard, updateBoard, deleteBoard } from "@/api/apis";
 import DeletingModal from "@/components/common/DeletingModal";
-import { Trash2 } from "lucide-react";
+import {
+    Dialog,
+    DialogClose,
+    DialogContent,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog";
+import { useSuppressOutsideClickThrough } from "@/lib/useSuppressOutsideClickThrough";
+import { Trash2, Palette } from "lucide-react";
 
 interface Board {
     id: number;
     title: string;
+    background: string | null;
     active: boolean;
 }
 
@@ -22,6 +33,8 @@ const BOARD_COLORS = [
     "#F2D600",
     "#61BD4F",
 ];
+
+const DEFAULT_BOARD_COLOR = "#DFE1E6";
 
 export default function BoardsPage() {
     const navigate = useNavigate();
@@ -56,7 +69,17 @@ export default function BoardsPage() {
 
     const handleRenameBoard = async (boardId: number, title: string) => {
         try {
-            await updateBoard(boardId, title);
+            await updateBoard(boardId, { title });
+        } catch (error) {
+            console.error(error);
+        }
+        const response = await getBoards();
+        setBoards(response.data);
+    };
+
+    const handleChangeBoardBackground = async (boardId: number, background: string) => {
+        try {
+            await updateBoard(boardId, { background });
         } catch (error) {
             console.error(error);
         }
@@ -93,13 +116,13 @@ export default function BoardsPage() {
 
             {/* Board grid */}
             <div className="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-4">
-                {activeBoards.map((board, index) => (
+                {activeBoards.map((board) => (
                     <BoardCard
                         key={board.id}
                         board={board}
-                        color={BOARD_COLORS[index % BOARD_COLORS.length]}
                         onClick={() => navigate(`/board-lists/${board.id}`)}
                         onRename={(title) => handleRenameBoard(board.id, title)}
+                        onChangeBackground={(background) => handleChangeBoardBackground(board.id, background)}
                         onDelete={() => handleDeleteBoard(board.id)}
                     />
                 ))}
@@ -154,20 +177,37 @@ export default function BoardsPage() {
 
 function BoardCard({
     board,
-    color,
     onClick,
     onRename,
+    onChangeBackground,
     onDelete,
 }: {
     board: Board;
-    color: string;
     onClick: () => void;
     onRename: (title: string) => Promise<void>;
+    onChangeBackground: (background: string) => Promise<void>;
     onDelete: () => void;
 }) {
     const [isEditingTitle, setIsEditingTitle] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
     const [titleInput, setTitleInput] = useState(board.title);
+    const [isColorDialogOpen, setIsColorDialogOpen] = useState(false);
+    const [isSavingColor, setIsSavingColor] = useState(false);
+    const [selectedColor, setSelectedColor] = useState(board.background || BOARD_COLORS[0]);
+    const colorDialogContentRef = useSuppressOutsideClickThrough<HTMLDivElement>(isColorDialogOpen);
+    const color = board.background || DEFAULT_BOARD_COLOR;
+
+    const handleColorDialogOpenChange = (open: boolean) => {
+        setIsColorDialogOpen(open);
+        if (open) setSelectedColor(board.background || BOARD_COLORS[0]);
+    };
+
+    const handleSaveColor = async () => {
+        setIsSavingColor(true);
+        await onChangeBackground(selectedColor);
+        setIsSavingColor(false);
+        setIsColorDialogOpen(false);
+    };
 
     const startEditing = (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -231,8 +271,57 @@ function BoardCard({
                     </form>
                 )}
 
-                {/* Delete button */}
-                <div className="flex justify-end">
+                {/* Color and delete actions */}
+                <div className="flex justify-end items-center gap-1">
+                    <Dialog open={isColorDialogOpen} onOpenChange={handleColorDialogOpenChange}>
+                        <DialogTrigger
+                            asChild
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <button
+                                className="cursor-pointer text-app-text-subtle hover:text-app-text hover:bg-gray-200 rounded p-1 transition-colors duration-150"
+                                aria-label="Change board color"
+                            >
+                                <Palette size={16} strokeWidth={2} />
+                            </button>
+                        </DialogTrigger>
+
+                        <DialogContent
+                            ref={colorDialogContentRef}
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <DialogHeader>
+                                <DialogTitle>Board color</DialogTitle>
+                            </DialogHeader>
+
+                            <div className="flex gap-2 flex-wrap">
+                                {BOARD_COLORS.map((swatch) => (
+                                    <button
+                                        key={swatch}
+                                        onClick={() => setSelectedColor(swatch)}
+                                        className={`w-8 h-8 rounded-full cursor-pointer border-2 transition-transform duration-100 ${selectedColor === swatch ? "border-app-text scale-110" : "border-black/10 hover:scale-110"}`}
+                                        style={{ backgroundColor: swatch }}
+                                        aria-label={`Set board color to ${swatch}`}
+                                    />
+                                ))}
+                            </div>
+
+                            <DialogFooter>
+                                <DialogClose asChild>
+                                    <Button variant="outline" className="cursor-pointer">Cancel</Button>
+                                </DialogClose>
+
+                                <Button
+                                    onClick={handleSaveColor}
+                                    disabled={isSavingColor}
+                                    className="cursor-pointer bg-app-primary hover:bg-app-primary-hover"
+                                >
+                                    Save
+                                </Button>
+                            </DialogFooter>
+                        </DialogContent>
+                    </Dialog>
+
                     <DeletingModal
                         title={`Delete ${board.title}`}
                         description={`Are you sure you want to delete "${board.title}"?`}

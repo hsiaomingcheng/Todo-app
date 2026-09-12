@@ -8,9 +8,11 @@ router = APIRouter()
 
 class CreateBoardRequest(BaseModel):
     title: str
+    background: str | None = None
 
 class UpdateBoardRequest(BaseModel):
-    title: str
+    title: str | None = None
+    background: str | None = None
 
 class CreateListRequest(BaseModel):
     title: str
@@ -64,15 +66,19 @@ def create_board(body: CreateBoardRequest, cursor=Depends(db.get_cursor), curren
     })
 
     # Create a new board
-    cursor.execute("INSERT INTO boards (owner_id, title) VALUES (%s, %s)", (current_user['id'], body.title.strip()))
-    
+    cursor.execute(
+        "INSERT INTO boards (owner_id, title, background) VALUES (%s, %s, %s)",
+        (current_user['id'], body.title.strip(), body.background)
+    )
+
     return {
         "message": "Successfully create board"
     }
 
 @router.patch("/boards/{board_id}")
 def update_board(board_id: int, body: UpdateBoardRequest, cursor=Depends(db.get_cursor), current_user = Depends(get_current_user)):
-    validate_not_blank({"title": body.title})
+    if body.title is not None:
+        validate_not_blank({"title": body.title})
 
     # Verify the board exists AND belongs to the current user
     cursor.execute("SELECT * FROM boards WHERE id = %s AND owner_id = %s AND active = true", (board_id, current_user['id']))
@@ -81,7 +87,11 @@ def update_board(board_id: int, body: UpdateBoardRequest, cursor=Depends(db.get_
     if board is None:
         raise HTTPException(status_code=404, detail="Board not found")
 
-    cursor.execute("UPDATE boards SET title = %s WHERE id = %s", (body.title.strip(), board_id))
+    if body.title is not None:
+        cursor.execute("UPDATE boards SET title = %s WHERE id = %s", (body.title.strip(), board_id))
+
+    if body.background is not None:
+        cursor.execute("UPDATE boards SET background = %s WHERE id = %s", (body.background, board_id))
 
     return {
         "message": "Successfully updated board"

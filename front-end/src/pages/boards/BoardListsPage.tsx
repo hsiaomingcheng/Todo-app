@@ -5,6 +5,7 @@ import {
     createBoardList,
     updateBoardListTitle,
     updateBoardListPosition,
+    updateBoardListArchived,
     deleteBoardList,
     createCard,
     updateCardPosition,
@@ -21,6 +22,7 @@ import Cards from "@/components/common/Cards";
 import ListsFooter from "@/components/common/ListsFooter";
 import ListsHeader from "@/components/common/ListsHeader";
 import ManageLabelsModal from "@/components/common/ManageLabelsModal";
+import ArchivedListsModal from "@/components/common/ArchivedListsModal";
 import CardFilter, { type CompletionFilter } from "@/components/common/CardFilter";
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import type { Board, Card } from "@/types/board";
@@ -97,6 +99,22 @@ export default function BoardListsPage() {
             console.error(error);
         }
 
+        const response = await getBoard(Number(boardId));
+        setBoard(response.data);
+    }
+
+    const archiveList = async (list_id: number) => {
+        try {
+            await updateBoardListArchived(list_id, true);
+        } catch (error) {
+            console.error(error);
+        }
+
+        const response = await getBoard(Number(boardId));
+        setBoard(response.data);
+    }
+
+    const refetchBoard = async () => {
         const response = await getBoard(Number(boardId));
         setBoard(response.data);
     }
@@ -291,6 +309,10 @@ export default function BoardListsPage() {
                     updateFunc={updateLabelHandler}
                     deleteFunc={deleteLabelHandler}
                 />
+                <ArchivedListsModal
+                    boardId={Number(boardId)}
+                    onRestored={refetchBoard}
+                />
                 <CardFilter
                     boardLabels={board?.labels ?? []}
                     selectedLabelIds={filterLabelIds}
@@ -327,6 +349,7 @@ export default function BoardListsPage() {
                                                     boardList={boardList}
                                                     submitFunc={updateTitle}
                                                     deleteFunc={deleteList}
+                                                    archiveFunc={archiveList}
                                                 />
                                                 {isFilterActive && (
                                                     <span className="text-xs text-app-text-subtle shrink-0 ml-1">

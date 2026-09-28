@@ -39,7 +39,19 @@ export interface BoardList {
     title: string;
     created_at: string;
     position: number;
+    archived: boolean;
     cards: Card[];
+}
+
+// A row from GET /boards/{id}/archived-lists — just the list itself, no
+// nested cards (unlike BoardList, which comes from GET /boards/{id}).
+export interface ArchivedBoardList {
+    id: number;
+    board_id: number;
+    title: string;
+    created_at: string;
+    position: number;
+    archived: boolean;
 }
 
 export interface Board {

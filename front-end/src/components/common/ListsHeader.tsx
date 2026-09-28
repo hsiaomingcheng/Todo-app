@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import DeletingModal from "@/components/common/DeletingModal";
-import { Trash2 } from "lucide-react";
+import { Trash2, Archive } from "lucide-react";
 import type { BoardList } from "@/types/board";
 
-export default function ListsHeader({ boardList, submitFunc, deleteFunc }: { boardList: BoardList, submitFunc: (listId: number, title: string) => Promise<void>, deleteFunc: (list_id: number) => Promise<void> }) {
+export default function ListsHeader({ boardList, submitFunc, deleteFunc, archiveFunc }: { boardList: BoardList, submitFunc: (listId: number, title: string) => Promise<void>, deleteFunc: (list_id: number) => Promise<void>, archiveFunc: (list_id: number) => Promise<void> }) {
     const [isEditingTitle, setIsEditingTitle] = useState<number | null>(null);
     const [isProcessing, setIsProcessing] = useState<boolean>(false);
 
@@ -56,6 +56,14 @@ export default function ListsHeader({ boardList, submitFunc, deleteFunc }: { boa
                     />
                 </form>
             )}
+
+            <button
+                onClick={() => archiveFunc(boardList.id)}
+                className="cursor-pointer text-app-text-subtle hover:text-app-text hover:bg-gray-200 rounded p-1 transition-colors duration-150"
+                aria-label="Archive list"
+            >
+                <Archive size={16} strokeWidth={2} />
+            </button>
 
             <DeletingModal
                 title={`Delete ${boardList.title}`}

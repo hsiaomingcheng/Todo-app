@@ -167,6 +167,32 @@ export async function deleteBoardList(list_id: number) {
     }
 }
 
+export async function updateBoardListArchived(list_id: number, archived: boolean) {
+    try {
+        const response = await api.patch(`/board-list/${list_id}/archive`, { archived });
+        return response.data;
+    } catch (error) {
+        if (isAxiosError(error) && error.response) {
+            throw new Error(error.response.data.message);
+        } else {
+            throw new Error("An unexpected error occurred");
+        }
+    }
+}
+
+export async function getArchivedBoardLists(board_id: number) {
+    try {
+        const response = await api.get(`/boards/${board_id}/archived-lists`);
+        return response.data;
+    } catch (error) {
+        if (isAxiosError(error) && error.response) {
+            throw new Error(error.response.data.message);
+        } else {
+            throw new Error("An unexpected error occurred");
+        }
+    }
+}
+
 // Cards
 export async function getCards(list_id: number) {
     try {

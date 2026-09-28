@@ -46,6 +46,7 @@ CREATE TABLE lists (
     title TEXT NOT NULL,
     position INTEGER NOT NULL, -- for ordering lists within a board
     active BOOLEAN NOT NULL DEFAULT TRUE,
+    archived BOOLEAN NOT NULL DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

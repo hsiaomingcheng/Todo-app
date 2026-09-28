@@ -24,6 +24,9 @@ class UpdateListTitleRequest(BaseModel):
 class UpdateListPositionRequest(BaseModel):
     position: int
 
+class UpdateListArchivedRequest(BaseModel):
+    archived: bool
+
 class CreateCardRequest(BaseModel):
     title: str
     position: int
@@ -106,15 +109,15 @@ def get_board(board_id: int, cursor=Depends(db.get_cursor), current_user=Depends
     if board is None:
         raise HTTPException(status_code=404, detail="Board not found")
 
-    # Fetch all active lists for this board
-    cursor.execute("SELECT * FROM lists WHERE board_id = %s AND active = true ORDER BY position ASC", (board_id,))
+    # Fetch all active, non-archived lists for this board
+    cursor.execute("SELECT * FROM lists WHERE board_id = %s AND active = true AND archived = false ORDER BY position ASC", (board_id,))
     db_lists = cursor.fetchall()
 
     # Fetch all active cards for this board in one query
     cursor.execute("""
         SELECT cards.* FROM cards
         JOIN lists ON cards.list_id = lists.id
-        WHERE lists.board_id = %s AND lists.active = true AND cards.active = true
+        WHERE lists.board_id = %s AND lists.active = true AND lists.archived = false AND cards.active = true
         ORDER BY cards.position ASC
     """, (board_id,))
     db_cards = cursor.fetchall()
@@ -279,6 +282,45 @@ def delete_board_list(list_id: int, cursor=Depends(db.get_cursor), current_user 
 
     return {
         "message": "Successfully delete list"
+    }
+
+@router.patch("/board-list/{list_id}/archive")
+def update_board_list_archived(list_id: int, body: UpdateListArchivedRequest, cursor=Depends(db.get_cursor), current_user = Depends(get_current_user)):
+    # Verify the list exists AND belongs to the current user (archived lists included — this is also how unarchiving finds them)
+    cursor.execute("""
+        SELECT lists.* FROM lists
+        JOIN boards ON lists.board_id = boards.id
+        WHERE lists.id = %s AND boards.owner_id = %s AND lists.active = true
+    """, (list_id, current_user['id']))
+    list_item = cursor.fetchone()
+
+    if list_item is None:
+        raise HTTPException(status_code=404, detail="List not found")
+
+    cursor.execute("UPDATE lists SET archived = %s WHERE id = %s", (body.archived, list_id))
+
+    return {
+        "message": "Successfully archived list" if body.archived else "Successfully unarchived list"
+    }
+
+@router.get("/boards/{board_id}/archived-lists")
+def get_archived_board_lists(board_id: int, cursor=Depends(db.get_cursor), current_user = Depends(get_current_user)):
+    # Verify the board exists AND belongs to the current user
+    cursor.execute("SELECT * FROM boards WHERE id = %s AND owner_id = %s AND active = true", (board_id, current_user['id']))
+    board = cursor.fetchone()
+
+    if board is None:
+        raise HTTPException(status_code=404, detail="Board not found")
+
+    cursor.execute(
+        "SELECT * FROM lists WHERE board_id = %s AND active = true AND archived = true ORDER BY position ASC",
+        (board_id,)
+    )
+    db_lists = cursor.fetchall()
+
+    return {
+        "message": "Successfully fetched archived lists",
+        "data": db_lists
     }
 
 
@@ -581,7 +623,7 @@ def search_cards(q: str = "", cursor=Depends(db.get_cursor), current_user=Depend
         FROM cards
         JOIN lists ON cards.list_id = lists.id
         JOIN boards ON lists.board_id = boards.id
-        WHERE boards.owner_id = %s AND boards.active = true AND lists.active = true AND cards.active = true
+        WHERE boards.owner_id = %s AND boards.active = true AND lists.active = true AND lists.archived = false AND cards.active = true
         AND cards.title ILIKE %s
         ORDER BY cards.title ASC
         LIMIT 20

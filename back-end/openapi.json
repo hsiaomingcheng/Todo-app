@@ -612,6 +612,106 @@
                 }
             }
         },
+        "/api/board-list/{list_id}/archive": {
+            "patch": {
+                "tags": [
+                    "board"
+                ],
+                "summary": "Update Board List Archived",
+                "operationId": "update_board_list_archived_api_board_list__list_id__archive_patch",
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "list_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "title": "List Id"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateListArchivedRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/boards/{board_id}/archived-lists": {
+            "get": {
+                "tags": [
+                    "board"
+                ],
+                "summary": "Get Archived Board Lists",
+                "operationId": "get_archived_board_lists_api_boards__board_id__archived_lists_get",
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "board_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "title": "Board Id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/cards/{list_id}": {
             "get": {
                 "tags": [
@@ -1472,6 +1572,19 @@
                 },
                 "type": "object",
                 "title": "UpdateLabelRequest"
+            },
+            "UpdateListArchivedRequest": {
+                "properties": {
+                    "archived": {
+                        "type": "boolean",
+                        "title": "Archived"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "archived"
+                ],
+                "title": "UpdateListArchivedRequest"
             },
             "UpdateListPositionRequest": {
                 "properties": {

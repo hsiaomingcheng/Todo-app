@@ -12,14 +12,6 @@ INSERT INTO boards (id, title, owner_id) VALUES
 (3, 'Development Sprint', 2);
 SELECT setval('boards_id_seq', 3);
 
--- Board members (Who can see what boards)
-INSERT INTO board_members (board_id, user_id, role) VALUES
-(1, 1, 'owner'),
-(1, 2, 'member'),
-(2, 1, 'owner'),
-(3, 2, 'owner'),
-(3, 3, 'member');
-
 -- Lists (Columns in the board)
 INSERT INTO lists (id, board_id, title, position) VALUES
 (1, 1, 'To Do', 1),
@@ -38,12 +30,6 @@ INSERT INTO cards (id, list_id, title, description, position) VALUES
 (5, 4, 'Buy Eggs', 'Dozen free range.', 2),
 (6, 5, 'Vacuum the living room', NULL, 1);
 SELECT setval('cards_id_seq', 6);
-
--- Card Assignees
-INSERT INTO card_assignees (card_id, user_id) VALUES
-(1, 1),
-(2, 2),
-(3, 1);
 
 -- Subtasks (Tasks inside a specific card)
 INSERT INTO tasks (id, card_id, content, is_completed, position) VALUES

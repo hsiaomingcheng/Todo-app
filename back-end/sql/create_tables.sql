@@ -1,9 +1,7 @@
 DROP TABLE IF EXISTS users CASCADE;
 DROP TABLE IF EXISTS boards CASCADE;
-DROP TABLE IF EXISTS board_members CASCADE;
 DROP TABLE IF EXISTS lists CASCADE;
 DROP TABLE IF EXISTS cards CASCADE;
-DROP TABLE IF EXISTS card_assignees CASCADE;
 DROP TABLE IF EXISTS tasks CASCADE;
 DROP TABLE IF EXISTS labels CASCADE;
 DROP TABLE IF EXISTS card_labels CASCADE;
@@ -30,15 +28,6 @@ CREATE TABLE boards (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Board members（Multi-person collaboration）
-CREATE TABLE board_members (
-    id SERIAL PRIMARY KEY,
-    board_id INTEGER REFERENCES boards(id) ON DELETE CASCADE,
-    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-    role TEXT DEFAULT 'member', -- owner / member
-    UNIQUE(board_id, user_id)
-);
-
 -- List（Todo column. For example: Todo / Doing / Done）
 CREATE TABLE lists (
     id SERIAL PRIMARY KEY,
@@ -61,13 +50,6 @@ CREATE TABLE cards (
     completed BOOLEAN NOT NULL DEFAULT FALSE,
     active BOOLEAN NOT NULL DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Card Assignees
-CREATE TABLE card_assignees (
-    card_id INTEGER REFERENCES cards(id) ON DELETE CASCADE,
-    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-    PRIMARY KEY (card_id, user_id)
 );
 
 -- Subtasks

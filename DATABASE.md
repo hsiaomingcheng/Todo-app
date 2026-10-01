@@ -2,26 +2,22 @@
 
 PostgreSQL. Full source of truth for the schema is [`back-end/sql/create_tables.sql`](back-end/sql/create_tables.sql) (⚠️ that file *drops and recreates* every table — never rerun it against data you want to keep. To change a live table, write an `ALTER TABLE` instead). Sample data lives in [`back-end/sql/population.sql`](back-end/sql/population.sql).
 
-**"Used by backend?"** below means: is there actually a route in `back-end/app/routes/` that queries or writes this table today. A "No" doesn't mean the table is dead — it means the schema was planned ahead of the feature that will use it.
+**"Used by backend?"** below means: is there actually a route in `back-end/app/routes/` that queries or writes this table today. Every table below is in use.
 
 ## At a glance
 
 ```mermaid
 erDiagram
     users ||--o{ boards : owns
-    users ||--o{ board_members : "is a member via"
-    boards ||--o{ board_members : has
     boards ||--o{ lists : contains
     boards ||--o{ labels : defines
     lists ||--o{ cards : contains
-    cards ||--o{ card_assignees : has
-    users ||--o{ card_assignees : "is assigned via"
     cards ||--o{ tasks : "has subtasks"
     cards ||--o{ card_labels : has
     labels ||--o{ card_labels : "applied via"
 ```
 
-Hierarchy in one line: **`users` → `boards` → `lists` → `cards`**, with `tasks` as subtasks *inside* a card, and `labels`/`board_members`/`card_assignees` as side-tables hanging off `boards`/`cards`.
+Hierarchy in one line: **`users` → `boards` → `lists` → `cards`**, with `tasks` as subtasks *inside* a card, and `labels`/`card_labels` as side-tables hanging off `boards`/`cards`. A board has exactly one person who can see it — its owner (`boards.owner_id`); multi-person collaboration is intentionally out of scope.
 
 ## Table reference
 
@@ -39,11 +35,6 @@ A Kanban board (e.g. "Groceries & Home"). Top-level container a user creates.
 - `background` — the board's chosen color as a hex string (e.g. `#0052CC`), nullable; `NULL` means no color chosen yet and the dashboard card shows a neutral default. Set via `PATCH /boards/{board_id}`, which treats `title` and `background` as independent optional fields.
 - **Used by backend:** ✅ Yes (`board.py`)
 
-### `board_members`
-Join table for **multi-person collaboration** on a board — `(board_id, user_id, role)`, where `role` is `'owner'` or `'member'`.
-- This is the mechanism that would let a board be shared with more than one person.
-- **Used by backend:** ❌ No. The table and its sample data exist, but every route still checks `boards.owner_id` directly instead of joining through `board_members` — so today a board only has exactly one person who can see it, its actual owner. Sharing a board with someone else is schema-ready but not implemented.
-
 ### `lists`
 A column within a board (e.g. "To Do" / "Doing" / "Done").
 - `board_id → boards.id`
@@ -59,11 +50,6 @@ A single task/todo item, living inside a list.
 - `description`, `due_date`, `completed` — the fields editable from the Card Detail Modal
 - `active` — soft-delete flag
 - **Used by backend:** ✅ Yes (`board.py`)
-
-### `card_assignees`
-Join table — which `users` are assigned to a `cards` row. `(card_id, user_id)`.
-- Would support "assign this card to a teammate," which depends on multi-person boards (`board_members`) existing first.
-- **Used by backend:** ❌ No.
 
 ### `tasks`
 Subtasks living *inside* a card (a checklist within a card — e.g. card "Plan trip" → subtasks "Book flights", "Book hotel").
@@ -89,4 +75,4 @@ Join table — which `labels` are applied to which `cards`. `(card_id, label_id)
 
 `users`, `boards`, `lists`, and `cards` all have `active BOOLEAN NOT NULL DEFAULT TRUE`. Deleting one of these sets `active = false` — the app never issues a hard `DELETE` on them. Every `SELECT` against these tables should filter `WHERE active = true`. For `lists`, any query that feeds a normal (non-archive) view must also filter `archived = false` — `archived` is a separate, reversible flag, not a soft delete.
 
-`board_members`, `card_assignees`, `tasks`, `labels`, and `card_labels` don't have an `active` column — since they're join/detail tables, they rely on `ON DELETE CASCADE` from their parent instead (e.g. delete a `boards` row → its `labels` and `board_members` rows go with it automatically).
+`tasks`, `labels`, and `card_labels` don't have an `active` column — since they're join/detail tables, they rely on `ON DELETE CASCADE` from their parent instead (e.g. delete a `boards` row → its `labels` go with it automatically).

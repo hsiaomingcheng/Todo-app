@@ -29,7 +29,7 @@ TodoFlow is a lightweight, Trello-inspired task management web application focus
 
 ### 1.3 Non-Goals (v1.0)
 
-- Team collaboration / real-time multiplayer (post-v1)
+- Team collaboration / real-time multiplayer
 - File attachments
 - Time tracking
 - Native mobile apps

@@ -15,7 +15,7 @@
 
 ### 4. Consolidated Scattered Documentation
 - Replaced three separate, partly-outdated README files (root, `back-end/`, `front-end/`) with `BACKEND.md` and `FRONTEND.md` at the project root, folding in accurate details that had drifted into `CLAUDE.md`/`AGENTS.md` instead.
-- Added `DATABASE.md`: a Mermaid ER diagram plus a table-by-table reference that explicitly marks which tables the backend actually queries today versus schema built ahead of a feature (`board_members`, `card_assignees`, `tasks`, `labels`, `card_labels` — the last two now flipped to "yes" after today's work).
+- Added `DATABASE.md`: a Mermaid ER diagram plus a table-by-table reference that explicitly marks which tables the backend actually queries today versus schema built ahead of a feature (`board_members`, `card_assignees`, `tasks`, `labels`, `card_labels` — the last two now flipped to "yes" after today's work). *(Later note: `board_members` and `card_assignees` were subsequently removed when multi-person collaboration was dropped from scope.)*
 - Turned `AGENTS.md` into a one-line pointer at `CLAUDE.md`, so AI tooling guidance has a single source of truth instead of two files that quietly drift apart.
 
 ***

@@ -85,4 +85,4 @@ shadcn/ui is used as the component library, built on top of Radix UI primitives 
 The frontend dev server proxies `/api/*` → `http://localhost:8000`, so frontend calls like `api.get('/boards')` hit the backend at `http://localhost:8000/api/boards`.
 
 ### Database Schema
-PostgreSQL. Key tables: `users`, `boards`, `board_members`, `lists`, `cards`, `card_assignees`, `tasks`, `labels`, `card_labels`. Full schema in `back-end/sql/create_tables.sql`.
+PostgreSQL. Key tables: `users`, `boards`, `lists`, `cards`, `tasks`, `labels`, `card_labels`. Full schema in `back-end/sql/create_tables.sql`.

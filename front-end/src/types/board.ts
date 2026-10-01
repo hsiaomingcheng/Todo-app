@@ -21,6 +21,14 @@ export interface BoardLabel extends Label {
     card_count: number;
 }
 
+export interface Task {
+    id: number;
+    card_id: number;
+    content: string;
+    is_completed: boolean;
+    position: number;
+}
+
 export interface Card {
     id: number;
     list_id: number;
@@ -31,6 +39,7 @@ export interface Card {
     due_date: string | null;
     completed: boolean;
     labels: Label[];
+    tasks: Task[];
 }
 
 export interface BoardList {

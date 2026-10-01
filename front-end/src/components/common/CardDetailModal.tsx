@@ -42,6 +42,9 @@ export default function CardDetailModal({
     submitFunc,
     deleteFunc,
     setLabelsFunc,
+    createTaskFunc,
+    updateTaskFunc,
+    deleteTaskFunc,
 }: {
     card: Card;
     open: boolean;
@@ -55,6 +58,9 @@ export default function CardDetailModal({
     }) => Promise<void>;
     deleteFunc: (card_id: number) => Promise<void>;
     setLabelsFunc: (card_id: number, label_ids: number[]) => Promise<void>;
+    createTaskFunc: (card_id: number, content: string) => Promise<void>;
+    updateTaskFunc: (task_id: number, updates: { content?: string; is_completed?: boolean }) => Promise<void>;
+    deleteTaskFunc: (task_id: number) => Promise<void>;
 }) {
     const [title, setTitle] = useState(card.title);
     const [description, setDescription] = useState(card.description ?? "");
@@ -71,12 +77,17 @@ export default function CardDetailModal({
         () => new Set(card.labels.map((l) => l.id))
     );
     const [isProcessing, setIsProcessing] = useState(false);
+    const [newTaskContent, setNewTaskContent] = useState("");
+    const [isAddingTask, setIsAddingTask] = useState(false);
 
     useEffect(() => {
-        // Re-sync whenever the modal opens, not just when `card` changes —
-        // if the previous session was closed without saving (Cancel/Escape/
-        // backdrop click), `card` never changed, so this is the only signal
-        // that local edits need to be discarded in favor of the latest data.
+        // Re-sync only when the modal opens — if the previous session was
+        // closed without saving (Cancel/Escape/backdrop click), `card` never
+        // changed, so opening is the signal that local edits need to be
+        // discarded in favor of the latest data. Deliberately NOT keyed on
+        // `card`: subtask add/toggle/delete apply immediately and refetch the
+        // board, which hands this modal a new `card`; re-syncing then would
+        // wipe unsaved title/description/due date/label edits.
         if (!open) return;
 
         setTitle(card.title);
@@ -84,7 +95,18 @@ export default function CardDetailModal({
         setDueDate(card.due_date ? parseDateOnly(card.due_date) : undefined);
         setCompleted(card.completed);
         setSelectedLabelIds(new Set(card.labels.map((l) => l.id)));
-    }, [card, open]);
+        setNewTaskContent("");
+    }, [open]);
+
+    const handleAddTask = async () => {
+        const content = newTaskContent.trim();
+        if (!content || isAddingTask) return;
+
+        setIsAddingTask(true);
+        await createTaskFunc(card.id, content);
+        setIsAddingTask(false);
+        setNewTaskContent("");
+    };
 
     const toggleLabel = (label_id: number) => {
         setSelectedLabelIds((prev) => {
@@ -240,6 +262,71 @@ export default function CardDetailModal({
                                 })}
                             </div>
                         )}
+                    </div>
+
+                    <div>
+                        <label className="block text-gray-700 text-sm font-bold mb-1">
+                            Subtasks
+                            {card.tasks.length > 0 && (
+                                <span className="ml-2 font-normal text-app-text-subtle">
+                                    {card.tasks.filter((t) => t.is_completed).length}/{card.tasks.length}
+                                </span>
+                            )}
+                        </label>
+
+                        {card.tasks.length > 0 && (
+                            <div className="flex flex-col gap-1 mb-2 max-h-[200px] overflow-y-auto">
+                                {card.tasks.map((task) => (
+                                    <div key={task.id} className="flex items-center gap-2">
+                                        <Checkbox
+                                            checked={task.is_completed}
+                                            onCheckedChange={(checked) =>
+                                                updateTaskFunc(task.id, { is_completed: checked === true })
+                                            }
+                                        />
+                                        <span
+                                            className={`flex-1 text-sm ${task.is_completed ? "line-through text-app-text-subtle" : ""}`}
+                                        >
+                                            {task.content}
+                                        </span>
+                                        <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="icon-sm"
+                                            className="cursor-pointer text-app-danger shrink-0"
+                                            aria-label="Delete subtask"
+                                            onClick={() => deleteTaskFunc(task.id)}
+                                        >
+                                            ✕
+                                        </Button>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
+                        <div className="flex gap-2">
+                            <Input
+                                type="text"
+                                placeholder="Add a subtask..."
+                                value={newTaskContent}
+                                onChange={(e) => setNewTaskContent(e.target.value)}
+                                onKeyDown={(e) => {
+                                    // Enter would otherwise submit the whole card form (Save + close)
+                                    if (e.key === "Enter") {
+                                        e.preventDefault();
+                                        handleAddTask();
+                                    }
+                                }}
+                            />
+                            <Button
+                                type="button"
+                                variant="outline"
+                                disabled={isAddingTask || !newTaskContent.trim()}
+                                onClick={handleAddTask}
+                            >
+                                Add
+                            </Button>
+                        </div>
                     </div>
 
                     <DialogFooter className="justify-between sm:justify-between">

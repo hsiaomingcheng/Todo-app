@@ -50,6 +50,13 @@ class UpdateLabelRequest(BaseModel):
 class SetCardLabelsRequest(BaseModel):
     label_ids: list[int]
 
+class CreateTaskRequest(BaseModel):
+    content: str
+
+class UpdateTaskRequest(BaseModel):
+    content: str | None = None
+    is_completed: bool | None = None
+
 # Boards
 @router.get("/boards")
 def get_boards(cursor=Depends(db.get_cursor), current_user = Depends(get_current_user)):
@@ -142,12 +149,28 @@ def get_board(board_id: int, cursor=Depends(db.get_cursor), current_user=Depends
             "color": row['color'],
         })
 
+    # Fetch every subtask on any card of this board, so each card can get its
+    # own "tasks" list below
+    cursor.execute("""
+        SELECT tasks.* FROM tasks
+        JOIN cards ON cards.id = tasks.card_id
+        JOIN lists ON lists.id = cards.list_id
+        WHERE lists.board_id = %s AND lists.active = true AND lists.archived = false AND cards.active = true
+        ORDER BY tasks.position ASC, tasks.id ASC
+    """, (board_id,))
+    db_tasks = cursor.fetchall()
+
+    tasks_by_card = {}
+    for task in db_tasks:
+        tasks_by_card.setdefault(task['card_id'], []).append(dict(task))
+
     # Group cards by list_id and nest them into each list
     cards_by_list = {}
     for card in db_cards:
         list_id = card['list_id']
         card_dict = dict(card)
         card_dict['labels'] = labels_by_card.get(card_dict['id'], [])
+        card_dict['tasks'] = tasks_by_card.get(card_dict['id'], [])
         cards_by_list.setdefault(list_id, []).append(card_dict)
 
     lists_with_cards = []
@@ -605,6 +628,83 @@ def set_card_labels(card_id: int, body: SetCardLabelsRequest, cursor=Depends(db.
 
     return {
         "message": "Successfully set card labels"
+    }
+
+
+# Tasks (subtasks inside a card)
+@router.post("/cards/{card_id}/tasks")
+def create_task(card_id: int, body: CreateTaskRequest, cursor=Depends(db.get_cursor), current_user=Depends(get_current_user)):
+    validate_not_blank({"content": body.content})
+
+    # Verify the card exists AND belongs to the current user
+    cursor.execute("""
+        SELECT cards.id FROM cards
+        JOIN lists ON cards.list_id = lists.id
+        JOIN boards ON lists.board_id = boards.id
+        WHERE cards.id = %s AND boards.owner_id = %s AND lists.active = true AND cards.active = true
+    """, (card_id, current_user['id']))
+    card = cursor.fetchone()
+
+    if card is None:
+        raise HTTPException(status_code=404, detail="Card not found")
+
+    # Append after the card's existing tasks
+    cursor.execute(
+        "INSERT INTO tasks (card_id, content, position) VALUES (%s, %s, (SELECT COALESCE(MAX(position), 0) + 1 FROM tasks WHERE card_id = %s))",
+        (card_id, body.content.strip(), card_id)
+    )
+
+    return {
+        "message": "Successfully created task"
+    }
+
+@router.patch("/tasks/{task_id}")
+def update_task(task_id: int, body: UpdateTaskRequest, cursor=Depends(db.get_cursor), current_user=Depends(get_current_user)):
+    # Verify the task exists AND belongs to the current user
+    cursor.execute("""
+        SELECT tasks.id FROM tasks
+        JOIN cards ON tasks.card_id = cards.id
+        JOIN lists ON cards.list_id = lists.id
+        JOIN boards ON lists.board_id = boards.id
+        WHERE tasks.id = %s AND boards.owner_id = %s AND lists.active = true AND cards.active = true
+    """, (task_id, current_user['id']))
+    task = cursor.fetchone()
+
+    if task is None:
+        raise HTTPException(status_code=404, detail="Task not found")
+
+    # Only update fields that were provided
+    if body.content is not None:
+        validate_not_blank({"content": body.content})
+        cursor.execute("UPDATE tasks SET content = %s WHERE id = %s", (body.content.strip(), task_id))
+
+    if body.is_completed is not None:
+        cursor.execute("UPDATE tasks SET is_completed = %s WHERE id = %s", (body.is_completed, task_id))
+
+    return {
+        "message": "Successfully updated task"
+    }
+
+@router.delete("/tasks/{task_id}")
+def delete_task(task_id: int, cursor=Depends(db.get_cursor), current_user=Depends(get_current_user)):
+    # Verify the task exists AND belongs to the current user
+    cursor.execute("""
+        SELECT tasks.id FROM tasks
+        JOIN cards ON tasks.card_id = cards.id
+        JOIN lists ON cards.list_id = lists.id
+        JOIN boards ON lists.board_id = boards.id
+        WHERE tasks.id = %s AND boards.owner_id = %s AND lists.active = true AND cards.active = true
+    """, (task_id, current_user['id']))
+    task = cursor.fetchone()
+
+    if task is None:
+        raise HTTPException(status_code=404, detail="Task not found")
+
+    # tasks has no `active` column, so this is a real delete
+    cursor.execute("DELETE FROM tasks WHERE id = %s", (task_id,))
+
+    return {
+        "message": "Successfully deleted task"
     }
 
 

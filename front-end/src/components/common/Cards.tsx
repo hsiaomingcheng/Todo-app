@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FilePen } from "lucide-react";
+import { FilePen, ListChecks } from "lucide-react";
 import type { BoardLabel, Card } from "@/types/board";
 import { Badge } from "@/components/ui/badge";
 import CardDetailModal from "@/components/common/CardDetailModal";
@@ -10,6 +10,9 @@ export default function Cards({
     submitFunc,
     deleteFunc,
     setLabelsFunc,
+    createTaskFunc,
+    updateTaskFunc,
+    deleteTaskFunc,
     isFilteredOut = false,
 }: {
     card: Card;
@@ -22,12 +25,16 @@ export default function Cards({
     }) => Promise<void>;
     deleteFunc: (card_id: number) => Promise<void>;
     setLabelsFunc: (card_id: number, label_ids: number[]) => Promise<void>;
+    createTaskFunc: (card_id: number, content: string) => Promise<void>;
+    updateTaskFunc: (task_id: number, updates: { content?: string; is_completed?: boolean }) => Promise<void>;
+    deleteTaskFunc: (task_id: number) => Promise<void>;
     // When a filter is active and this card doesn't match it, keep it in
     // place (so list/board layout stays stable and scroll position keeps
     // meaning) but dim it and block opening it.
     isFilteredOut?: boolean;
 }) {
     const [open, setOpen] = useState(false);
+    const doneTaskCount = card.tasks.filter((t) => t.is_completed).length;
 
     return (
         <>
@@ -55,6 +62,15 @@ export default function Cards({
                     <div className={`text-sm ${card.completed ? "line-through text-app-text-subtle" : ""}`}>
                         {card.title}
                     </div>
+
+                    {card.tasks.length > 0 && (
+                        <div
+                            className={`flex items-center gap-1 text-xs ${doneTaskCount === card.tasks.length ? "text-app-success" : "text-app-text-subtle"}`}
+                        >
+                            <ListChecks size={14} strokeWidth={2} />
+                            <span>{doneTaskCount}/{card.tasks.length}</span>
+                        </div>
+                    )}
                 </div>
 
                 {!isFilteredOut && (
@@ -70,6 +86,9 @@ export default function Cards({
                 submitFunc={submitFunc}
                 deleteFunc={deleteFunc}
                 setLabelsFunc={setLabelsFunc}
+                createTaskFunc={createTaskFunc}
+                updateTaskFunc={updateTaskFunc}
+                deleteTaskFunc={deleteTaskFunc}
             />
         </>
     )

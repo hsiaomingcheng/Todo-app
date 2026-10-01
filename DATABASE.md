@@ -36,6 +36,7 @@ The account. Everything else in the app ultimately traces back to a `users.id`.
 A Kanban board (e.g. "Groceries & Home"). Top-level container a user creates.
 - `owner_id → users.id` — who created it; the backend currently authorizes almost everything by checking `owner_id = current_user['id']`
 - `active` — soft-delete flag
+- `background` — the board's chosen color as a hex string (e.g. `#0052CC`), nullable; `NULL` means no color chosen yet and the dashboard card shows a neutral default. Set via `PATCH /boards/{board_id}`, which treats `title` and `background` as independent optional fields.
 - **Used by backend:** ✅ Yes (`board.py`)
 
 ### `board_members`
@@ -47,7 +48,8 @@ Join table for **multi-person collaboration** on a board — `(board_id, user_id
 A column within a board (e.g. "To Do" / "Doing" / "Done").
 - `board_id → boards.id`
 - `position` — integer used to order lists left-to-right within a board
-- `active` — soft-delete flag
+- `active` — soft-delete flag (delete; there is no UI to undo it)
+- `archived` — separate from `active` on purpose: archiving is the *reversible* "hide this for now" action, restored from the "Archived lists" modal via `PATCH /board-list/{list_id}/archive`. `GET /boards/{board_id}` and `GET /search` exclude archived lists (and therefore their cards); `GET /boards/{board_id}/archived-lists` lists them for restoring.
 - **Used by backend:** ✅ Yes (`board.py`)
 
 ### `cards`
@@ -66,7 +68,10 @@ Join table — which `users` are assigned to a `cards` row. `(card_id, user_id)`
 ### `tasks`
 Subtasks living *inside* a card (a checklist within a card — e.g. card "Plan trip" → subtasks "Book flights", "Book hotel").
 - `card_id → cards.id`, `content`, `is_completed`, `position`
-- **Used by backend:** ❌ No. There used to be a `back-end/app/routes/task.py` touching a similarly-named concept, but it was leftover scaffolding from the very first commit that never actually queried this table (and had no auth checks) — it was removed. This table itself is still schema-ready for a real subtask feature.
+- **Used by backend:** ✅ Yes (`board.py`) — `POST /cards/{card_id}/tasks` (appends: `position` is computed server-side as the card's current max + 1), `PATCH /tasks/{task_id}` (`content` and/or `is_completed`), `DELETE /tasks/{task_id}`. `GET /boards/{board_id}` nests each card's tasks under `card.tasks`, ordered by `position`.
+- Subtasks have no drag-to-reorder, so `position` is only ever assigned on create.
+- `tasks` has no `active` column, so `DELETE /tasks/{task_id}` is a real delete. Cards themselves are only soft-deleted, so `ON DELETE CASCADE` never fires for a "deleted" card — its tasks stay in the table, still correctly linked to the (hidden) card, just unreachable from the app.
+- (History: an older `back-end/app/routes/task.py` from the very first commit touched a similarly-named concept without ever querying this table, and had no auth checks — it was removed before this feature was built.)
 
 ### `labels`
 A named, coloured tag scoped to one board (e.g. "Bug" / red, "Frontend" / blue). Board-scoped, not global — two different boards can each have their own "Urgent" label.
@@ -82,6 +87,6 @@ Join table — which `labels` are applied to which `cards`. `(card_id, label_id)
 
 ## Soft deletes
 
-`users`, `boards`, `lists`, and `cards` all have `active BOOLEAN NOT NULL DEFAULT TRUE`. Deleting one of these sets `active = false` — the app never issues a hard `DELETE` on them. Every `SELECT` against these tables should filter `WHERE active = true`.
+`users`, `boards`, `lists`, and `cards` all have `active BOOLEAN NOT NULL DEFAULT TRUE`. Deleting one of these sets `active = false` — the app never issues a hard `DELETE` on them. Every `SELECT` against these tables should filter `WHERE active = true`. For `lists`, any query that feeds a normal (non-archive) view must also filter `archived = false` — `archived` is a separate, reversible flag, not a soft delete.
 
 `board_members`, `card_assignees`, `tasks`, `labels`, and `card_labels` don't have an `active` column — since they're join/detail tables, they rely on `ON DELETE CASCADE` from their parent instead (e.g. delete a `boards` row → its `labels` and `board_members` rows go with it automatically).

@@ -58,11 +58,11 @@ When improving the style of a page or component:
 - `__init__.py` — lifespan handler that initialises the DB connection
 - `connect.py` — reads DB credentials from `.env` (`DB_USER`, `DB_PASS`, `DB_HOST`, `DB_PORT`, `DB_NAME`)
 - `db.py` — provides `get_cursor()` dependency (RealDictCursor — rows are dicts keyed by column name)
-- `router.py` — aggregates all route modules; tags them for Swagger UI (`auth`, `board`, `task`)
+- `router.py` — aggregates all route modules; tags them for Swagger UI (`auth`, `board`)
 - `security.py` — `HTTPBearer` token extraction + `get_current_user` dependency that decodes JWT and returns the user row
 - `validators.py` — `validate_not_blank()` utility for field validation
 
-Routes live in `app/routes/`: `auth.py`, `board.py`, `task.py`. Each file creates its own `APIRouter` and is registered in `router.py`.
+Routes live in `app/routes/`: `auth.py`, `board.py` (boards, lists, cards, labels, subtasks, search). Each file creates its own `APIRouter` and is registered in `router.py`.
 
 ### Auth Flow
 - Login returns a JWT signed with `SECRET_KEY` (HS256, 60 min expiry), with `sub` set to the user's integer ID
@@ -70,7 +70,7 @@ Routes live in `app/routes/`: `auth.py`, `board.py`, `task.py`. Each file create
 - `SECRET_KEY` must be set in `back-end/.env`
 
 ### Soft Deletes
-Both `users` and `boards` and `lists` tables have an `active BOOLEAN NOT NULL DEFAULT TRUE` column. Deletion sets `active = false` — never hard deletes.
+The `users`, `boards`, `lists`, and `cards` tables have an `active BOOLEAN NOT NULL DEFAULT TRUE` column. Deletion sets `active = false` — never hard deletes. (`tasks`, `labels`, `card_labels` have no `active` column and are really deleted.) `lists` also has a separate, reversible `archived` flag — queries feeding a normal board view filter both `active = true` and `archived = false`.
 
 ### UI Components
 shadcn/ui is used as the component library, built on top of Radix UI primitives and Tailwind CSS v4. Components live in `front-end/src/components/ui/`. Add new components via `npx shadcn@latest add <component>`.

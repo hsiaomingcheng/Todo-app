@@ -15,6 +15,7 @@ A full-stack, Trello-like Kanban/todo app — boards, lists, and cards with drag
 - Board create, rename, delete, and per-board background color
 - Lists: create, rename, reorder, delete, and archive (hide without deleting, restore anytime)
 - Cards: create, edit (description, due date), mark complete, delete
+- Subtasks: a checklist inside each card (add, check off, delete) with an `x/y` progress badge on the card
 - Drag-and-drop reordering — cards within/across lists, and lists within a board
 - Labels: create, recolor, attach/detach from cards
 - Filter cards by label or completion status

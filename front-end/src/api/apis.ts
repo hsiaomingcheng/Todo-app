@@ -346,6 +346,46 @@ export async function setCardLabels(card_id: number, label_ids: number[]) {
     }
 }
 
+// Tasks (subtasks inside a card)
+export async function createTask(card_id: number, content: string) {
+    try {
+        const response = await api.post(`/cards/${card_id}/tasks`, { content });
+        return response.data;
+    } catch (error) {
+        if (isAxiosError(error) && error.response) {
+            throw new Error(error.response.data.message);
+        } else {
+            throw new Error("An unexpected error occurred");
+        }
+    }
+}
+
+export async function updateTask(task_id: number, updates: { content?: string; is_completed?: boolean }) {
+    try {
+        const response = await api.patch(`/tasks/${task_id}`, updates);
+        return response.data;
+    } catch (error) {
+        if (isAxiosError(error) && error.response) {
+            throw new Error(error.response.data.message);
+        } else {
+            throw new Error("An unexpected error occurred");
+        }
+    }
+}
+
+export async function deleteTask(task_id: number) {
+    try {
+        const response = await api.delete(`/tasks/${task_id}`);
+        return response.data;
+    } catch (error) {
+        if (isAxiosError(error) && error.response) {
+            throw new Error(error.response.data.message);
+        } else {
+            throw new Error("An unexpected error occurred");
+        }
+    }
+}
+
 
 // Search
 export async function searchCards(q: string) {

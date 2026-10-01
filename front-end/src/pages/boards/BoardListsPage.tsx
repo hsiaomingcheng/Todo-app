@@ -14,7 +14,10 @@ import {
     createLabel,
     updateLabel,
     deleteLabel,
-    setCardLabels
+    setCardLabels,
+    createTask,
+    updateTask,
+    deleteTask
 } from "@/api/apis";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -182,6 +185,39 @@ export default function BoardListsPage() {
     const setCardLabelsHandler = async (card_id: number, label_ids: number[]) => {
         try {
             await setCardLabels(card_id, label_ids);
+        } catch (error) {
+            console.error(error);
+        }
+
+        const response = await getBoard(Number(boardId));
+        setBoard(response.data);
+    }
+
+    const createTaskHandler = async (card_id: number, content: string) => {
+        try {
+            await createTask(card_id, content);
+        } catch (error) {
+            console.error(error);
+        }
+
+        const response = await getBoard(Number(boardId));
+        setBoard(response.data);
+    }
+
+    const updateTaskHandler = async (task_id: number, updates: { content?: string; is_completed?: boolean }) => {
+        try {
+            await updateTask(task_id, updates);
+        } catch (error) {
+            console.error(error);
+        }
+
+        const response = await getBoard(Number(boardId));
+        setBoard(response.data);
+    }
+
+    const deleteTaskHandler = async (task_id: number) => {
+        try {
+            await deleteTask(task_id);
         } catch (error) {
             console.error(error);
         }
@@ -385,6 +421,9 @@ export default function BoardListsPage() {
                                                                             submitFunc={updateCardDetails}
                                                                             deleteFunc={deleteCardHandler}
                                                                             setLabelsFunc={setCardLabelsHandler}
+                                                                            createTaskFunc={createTaskHandler}
+                                                                            updateTaskFunc={updateTaskHandler}
+                                                                            deleteTaskFunc={deleteTaskHandler}
                                                                             isFilteredOut={isFilterActive && !cardMatchesFilter(card)}
                                                                         />
                                                                     </div>

@@ -7,7 +7,8 @@ interface Shot {
     description: string;
     frameTitle: string;
     pills?: string[];
-    src?: string; // TODO: set to the real screenshot path once the image is added
+    src?: string;
+    alt?: string;
 }
 
 const SHOTS: Shot[] = [
@@ -17,14 +18,16 @@ const SHOTS: Shot[] = [
         description: "Lists sit side by side, and cards move between them as work progresses.",
         frameTitle: "Board view screenshot",
         src: "/board-view.png",
+        alt: "A board with Shopping, Chores, To do and In progress lists",
     },
     {
         tag: "Card detail",
         heading: "Everything about a task in one place",
         description: "Open a card to add labels, check off subtasks and set a due date.",
         frameTitle: "Card detail screenshot",
-        pills: ["Labels", "Subtasks", "Due date"],
         src: "/card-detail.png",
+        alt: "The card details dialog with labels, due date and subtasks",
+        pills: ["Labels", "Subtasks", "Due date"],
     },
 ];
 
@@ -84,7 +87,7 @@ export default function ScreenshotsSection() {
                             )}
                         </div>
                         <div className="min-w-0 lg:flex-[2]">
-                            <ScreenshotFrame title={shot.frameTitle} src={shot.src} />
+                            <ScreenshotFrame title={shot.frameTitle} src={shot.src} alt={shot.alt} />
                         </div>
                     </div>
                 ))}

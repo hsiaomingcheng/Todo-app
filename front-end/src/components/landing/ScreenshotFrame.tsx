@@ -16,11 +16,8 @@ export default function ScreenshotFrame({ title, src, alt }: ScreenshotFrameProp
                 <span className="ml-3 h-5 max-w-[280px] flex-1 rounded-md bg-[#ECEEF1]" />
             </div>
             {src ? (
-                <img
-                    src={src}
-                    alt={alt ?? title}
-                    className="block aspect-video w-full object-cover"
-                />
+                // Real screenshots keep their own aspect ratio so nothing gets cropped
+                <img src={src} alt={alt ?? title} className="block h-auto w-full" />
             ) : (
                 <div className="flex aspect-video flex-col items-center justify-center gap-2 bg-[#FBFBFC] text-[#5B6270] outline-[1.5px] -outline-offset-16 outline-dashed outline-[#C9CED6]">
                     <ImageIcon className="size-7" strokeWidth={1.75} aria-hidden="true" />

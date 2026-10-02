@@ -3,6 +3,10 @@ import { Link } from "react-router-dom";
 import { isAxiosError } from "axios";
 import { useAuth } from "@/context/AuthContext";
 import { userLogin } from "@/api/apis";
+import { Button } from "@/components/ui/button";
+import AuthShell from "@/components/auth/AuthShell";
+import AuthField from "@/components/auth/AuthField";
+import AuthError from "@/components/auth/AuthError";
 
 export default function LoginPage() {
     const { login } = useAuth();
@@ -42,75 +46,55 @@ export default function LoginPage() {
     }
 
     return (
-        <section className="h-screen flex items-center justify-center bg-gray-100">
-            <div className="w-full max-w-xs">
-                <form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" onSubmit={handleSubmit}>
-                    {errorMsg && (
-                        <div className="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative text-sm text-center" role="alert">
-                            <span className="block sm:inline">{errorMsg}</span>
-                        </div>
-                    )}
+        <AuthShell
+            title="Welcome back"
+            subtitle="Log in to pick up where you left off."
+            footer={
+                <>
+                    New here?{" "}
+                    <Link to="/register" className="font-semibold text-[#0F766E] hover:underline">
+                        Create an account
+                    </Link>
+                </>
+            }
+        >
+            <form onSubmit={handleSubmit}>
+                {errorMsg && <AuthError message={errorMsg} />}
 
-                    <div className="mb-4">
-                        <label
-                            className="block text-gray-700 text-sm font-bold mb-2"
-                            htmlFor="accountName">
-                            User Account
-                        </label>
-                        <input
-                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                            id="accountName"
-                            type="text"
-                            placeholder="User Account"
-                            value={form.accountName}
-                            required
-                            onChange={(e) => setForm({ ...form, accountName: e.target.value })} />
-                    </div>
+                <AuthField
+                    className="mb-4"
+                    id="accountName"
+                    label="User account"
+                    type="text"
+                    placeholder="Your account name"
+                    autoComplete="username"
+                    value={form.accountName}
+                    required
+                    onChange={(e) => setForm({ ...form, accountName: e.target.value })} />
 
-                    <div className="mb-6">
-                        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
-                            Password
-                        </label>
-                        <input
-                            className="shadow appearance-none border border-red-500 rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
-                            id="password"
-                            type="password"
-                            placeholder="******************"
-                            value={form.password}
-                            required
-                            onChange={(e) => setForm({ ...form, password: e.target.value })} />
-                        <p className="text-red-500 text-xs italic">Please choose a password.</p>
-                    </div>
+                <AuthField
+                    className="mb-6"
+                    id="password"
+                    label="Password"
+                    type="password"
+                    placeholder="Your password"
+                    autoComplete="current-password"
+                    value={form.password}
+                    required
+                    onChange={(e) => setForm({ ...form, password: e.target.value })} />
 
-                    <div>
-                        <div className="flex justify-around mb-4">
-                            <button
-                                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                                type="submit"
-                                disabled={loading}>
-                                {loading ? "Logging in..." : "Login"}
-                            </button>
+                <Button
+                    type="submit"
+                    disabled={loading}
+                    className="h-11 w-full rounded-[10px] bg-[#0F766E] text-[15px] font-semibold text-white hover:bg-[#0F766E]/90">
+                    {loading ? "Logging in..." : "Log in"}
+                </Button>
 
-                            <Link to="/register">
-                                <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
-                                    Register
-                                </button>
-                            </Link>
-                        </div>
-
-                        {/* TODO: Implement forgot password functionality */}
-                        {/* <div className="text-center">
-                            <a className="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800" href="#">
-                                Forgot Password?
-                            </a>
-                        </div> */}
-                    </div>
-                </form>
-
-                <p className="text-center text-gray-500 text-xs">
-                    &copy;2026 Chris Hsiao. All rights reserved.
-                </p>
-            </div>
-        </section>
+                {/* TODO: Implement forgot password functionality */}
+                {/* <a className="mt-4 block text-center text-sm font-medium text-[#0F766E]" href="#">
+                    Forgot password?
+                </a> */}
+            </form>
+        </AuthShell>
     );
 }

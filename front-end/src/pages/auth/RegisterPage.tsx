@@ -2,6 +2,10 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { isAxiosError } from "axios";
 import { userRegister } from "@/api/apis";
+import { Button } from "@/components/ui/button";
+import AuthShell from "@/components/auth/AuthShell";
+import AuthField from "@/components/auth/AuthField";
+import AuthError from "@/components/auth/AuthError";
 
 export default function RegisterPage() {
     const navigate = useNavigate();
@@ -42,106 +46,82 @@ export default function RegisterPage() {
     };
 
     return (
-        <section className="h-screen flex items-center justify-center bg-gray-100">
-            <div className="w-full max-w-xs">
-                <form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" onSubmit={handleSubmit}>
-                    {errorMsg && (
-                        <div className="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative text-sm text-center" role="alert">
-                            <span className="block sm:inline">{errorMsg}</span>
-                        </div>
-                    )}
+        <AuthShell
+            title="Create your account"
+            subtitle="Set up a free account and start your first board."
+            footer={
+                <>
+                    Already have an account?{" "}
+                    <Link to="/login" className="font-semibold text-[#0F766E] hover:underline">
+                        Log in
+                    </Link>
+                </>
+            }
+        >
+            <form onSubmit={handleSubmit}>
+                {errorMsg && <AuthError message={errorMsg} />}
 
-                    <div className="mb-4">
-                        <label
-                            className="block text-gray-700 text-sm font-bold mb-2"
-                            htmlFor="accountName">
-                            Account Name
-                        </label>
-                        <input
-                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                            id="accountName"
-                            type="text"
-                            placeholder="Account Name"
-                            value={form.accountName}
-                            required
-                            onChange={(e) => setForm({ ...form, accountName: e.target.value })} />
-                    </div>
+                <AuthField
+                    className="mb-4"
+                    id="accountName"
+                    label="Account name"
+                    type="text"
+                    placeholder="Choose an account name"
+                    autoComplete="username"
+                    value={form.accountName}
+                    required
+                    onChange={(e) => setForm({ ...form, accountName: e.target.value })} />
 
-                    <div className="mb-4">
-                        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
-                            Password
-                        </label>
-                        <input
-                            className="shadow appearance-none border border-red-500 rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
-                            id="password"
-                            type="password"
-                            placeholder="Password"
-                            value={form.password}
-                            required
-                            onChange={(e) => setForm({ ...form, password: e.target.value })} />
-                        <p className="text-red-500 text-xs italic">Please choose a password.</p>
-                    </div>
+                <AuthField
+                    className="mb-4"
+                    id="password"
+                    label="Password"
+                    type="password"
+                    placeholder="Choose a password"
+                    autoComplete="new-password"
+                    value={form.password}
+                    required
+                    onChange={(e) => setForm({ ...form, password: e.target.value })} />
 
-                    <div className="mb-4">
-                        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="firstName">
-                            First Name
-                        </label>
-                        <input
-                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                            id="firstName"
-                            type="text"
-                            placeholder="First Name"
-                            value={form.firstName}
-                            required
-                            onChange={(e) => setForm({ ...form, firstName: e.target.value })} />
-                    </div>
+                <div className="mb-4 grid gap-4 sm:grid-cols-2">
+                    <AuthField
+                        id="firstName"
+                        label="First name"
+                        type="text"
+                        placeholder="First name"
+                        autoComplete="given-name"
+                        value={form.firstName}
+                        required
+                        onChange={(e) => setForm({ ...form, firstName: e.target.value })} />
 
-                    <div className="mb-4">
-                        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="lastName">
-                            Last Name
-                        </label>
-                        <input
-                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                            id="lastName"
-                            type="text"
-                            placeholder="Last Name"
-                            value={form.lastName}
-                            required
-                            onChange={(e) => setForm({ ...form, lastName: e.target.value })} />
-                    </div>
+                    <AuthField
+                        id="lastName"
+                        label="Last name"
+                        type="text"
+                        placeholder="Last name"
+                        autoComplete="family-name"
+                        value={form.lastName}
+                        required
+                        onChange={(e) => setForm({ ...form, lastName: e.target.value })} />
+                </div>
 
-                    <div className="mb-6">
-                        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
-                            Email
-                        </label>
-                        <input
-                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                            id="email"
-                            type="email"
-                            placeholder="Email"
-                            value={form.email}
-                            required
-                            onChange={(e) => setForm({ ...form, email: e.target.value })} />
-                    </div>
+                <AuthField
+                    className="mb-6"
+                    id="email"
+                    label="Email"
+                    type="email"
+                    placeholder="you@example.com"
+                    autoComplete="email"
+                    value={form.email}
+                    required
+                    onChange={(e) => setForm({ ...form, email: e.target.value })} />
 
-                    <div className="text-center">
-                        <button className="mb-6 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
-                            Register
-                        </button>
-
-                        <div>
-                            <p className="mb-1 inline-block align-baseline font-bold text-sm">
-                                Already have an account?
-                            </p>
-                            <Link to="/login">
-                                <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
-                                    Sign In
-                                </button>
-                            </Link>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </section>
+                <Button
+                    type="submit"
+                    className="h-11 w-full rounded-[10px] bg-[#0F766E] text-[15px] font-semibold text-white hover:bg-[#0F766E]/90">
+                    Create account
+                </Button>
+            </form>
+        </AuthShell>
     );
 }

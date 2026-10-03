@@ -128,7 +128,7 @@ TodoFlow is a lightweight, Trello-inspired task management web application focus
 - **Header**: Logo/title (left), search bar (centre), Avatar with DropdownMenu (right)
   - shadcn components: `Avatar`, `DropdownMenu`, `Button`, `Input`
   - Search bar: full width on desktop, collapses to icon on mobile
-  - Dropdown items: Profile, Settings, Logout (destructive variant)
+  - Dropdown items: Profile, Logout (destructive variant)
   - Avatar fallback shows user initials with primary blue background
 - **Main**: Full-width content area with `<Outlet />` for nested routes
 - **Footer**: Copyright text with dark blue background
@@ -169,7 +169,7 @@ TodoFlow is a lightweight, Trello-inspired task management web application focus
 - Already implemented in `AppLayout.tsx` with shadcn components.
 - Logo "TodoFlow" (left).
 - Global search bar (centre, collapses to icon on mobile) using `Input` with `Search` icon.
-- User avatar + dropdown (right): displays full name, username, with Profile/Settings/Logout options.
+- User avatar + dropdown (right): displays full name, username, with Profile/Logout options.
 
 ### 2.6 Motion & Interaction
 
@@ -210,7 +210,6 @@ npx shadcn@latest add card
 npx shadcn@latest add badge
 npx shadcn@latest add avatar
 npx shadcn@latest add checkbox
-npx shadcn@latest add switch
 
 # Navigation & modals
 npx shadcn@latest add dropdown-menu
@@ -237,7 +236,6 @@ npx shadcn@latest add sonner
 | Labels | `Badge` |
 | User profile | `Avatar` |
 | Task completion | `Checkbox` |
-| Settings toggles | `Switch` |
 | User menu | `DropdownMenu` |
 | Card detail editor | `Dialog` |
 | Due date picker | `Popover` + `Calendar` |

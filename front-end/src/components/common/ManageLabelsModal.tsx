@@ -141,7 +141,7 @@ export default function ManageLabelsModal({
     return (
         <Dialog open={open} onOpenChange={handleOpenChange}>
             <DialogTrigger asChild>
-                <Button variant="outline" className="cursor-pointer">Manage labels</Button>
+                <Button variant="outline" className="h-10 cursor-pointer rounded-[10px] border-[#E1E4E8] bg-white px-4 text-sm font-medium text-[#14161A] shadow-none hover:bg-[#F1F3F5]">Manage labels</Button>
             </DialogTrigger>
 
             <DialogContent>

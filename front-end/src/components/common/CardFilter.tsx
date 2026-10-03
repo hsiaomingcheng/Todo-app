@@ -34,7 +34,7 @@ export default function CardFilter({
         <div className="flex items-center gap-2">
             <Popover>
                 <PopoverTrigger asChild>
-                    <Button variant="outline" className="cursor-pointer">
+                    <Button variant="outline" className="h-10 cursor-pointer rounded-[10px] border-[#E1E4E8] bg-white px-4 text-sm font-medium text-[#14161A] shadow-none hover:bg-[#F1F3F5]">
                         Filter{isFilterActive ? ` (${matchCount})` : ""}
                     </Button>
                 </PopoverTrigger>

@@ -40,17 +40,17 @@ export default function Cards({
         <>
             <div
                 onClick={() => !isFilteredOut && setOpen(true)}
-                className={`bg-white group flex justify-between items-start shadow-sm rounded-md p-2 transition-colors duration-150 ${card.completed ? "border-l-4 border-app-success" : ""
-                    } ${isFilteredOut ? "opacity-40 cursor-default" : "cursor-pointer hover:bg-gray-50"
+                className={`bg-white group flex justify-between items-start rounded-lg px-3 py-2.5 shadow-[0_1px_2px_rgba(20,22,26,0.08)] transition-shadow duration-150 ${card.completed ? "border-l-4 border-[#0F766E]" : ""
+                    } ${isFilteredOut ? "opacity-40 cursor-default" : "cursor-pointer hover:shadow-[0_6px_14px_-6px_rgba(20,22,26,0.25)]"
                     }`}
             >
-                <div className="min-w-0 flex flex-col gap-1">
+                <div className="min-w-0 flex flex-col gap-2">
                     {card.labels.length > 0 && (
                         <div className="flex flex-wrap gap-1">
                             {card.labels.map((label) => (
                                 <Badge
                                     key={label.id}
-                                    className="border-0 text-white"
+                                    className="h-auto rounded-full border-0 px-2 py-0.5 text-[11px] font-semibold text-white"
                                     style={{ backgroundColor: label.color }}
                                 >
                                     {label.name}
@@ -59,22 +59,22 @@ export default function Cards({
                         </div>
                     )}
 
-                    <div className={`text-sm ${card.completed ? "line-through text-app-text-subtle" : ""}`}>
+                    <div className={`text-sm leading-[1.4] text-[#14161A] ${card.completed ? "line-through text-[#5B6270]" : ""}`}>
                         {card.title}
                     </div>
 
                     {card.tasks.length > 0 && (
                         <div
-                            className={`flex items-center gap-1 text-xs ${doneTaskCount === card.tasks.length ? "text-app-success" : "text-app-text-subtle"}`}
+                            className={`flex items-center gap-1 text-[11px] ${doneTaskCount === card.tasks.length ? "font-semibold text-[#0F766E]" : "text-[#5B6270]"}`}
                         >
-                            <ListChecks size={14} strokeWidth={2} />
+                            <ListChecks size={12} strokeWidth={2} />
                             <span>{doneTaskCount}/{card.tasks.length}</span>
                         </div>
                     )}
                 </div>
 
                 {!isFilteredOut && (
-                    <FilePen size={16} color="#000" strokeWidth={2} className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-150" />
+                    <FilePen size={16} color="#5B6270" strokeWidth={2} className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-150" />
                 )}
             </div>
 

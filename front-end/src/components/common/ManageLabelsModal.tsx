@@ -12,7 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import DeletingModal from "@/components/common/DeletingModal";
-import { LABEL_COLORS } from "@/lib/labelColors";
+import { LABEL_COLORS, getLabelStyle } from "@/lib/labelColors";
 import type { BoardLabel } from "@/types/board";
 
 function ColorSwatchPicker({ value, onChange }: { value: string; onChange: (color: string) => void }) {
@@ -24,9 +24,9 @@ function ColorSwatchPicker({ value, onChange }: { value: string; onChange: (colo
                     type="button"
                     title={c.name}
                     onClick={() => onChange(c.value)}
-                    className={`h-6 w-6 rounded-full cursor-pointer transition-shadow ${value === c.value ? "ring-2 ring-offset-2 ring-[#14161A]" : ""
+                    className={`h-6 w-6 rounded-full border cursor-pointer transition-shadow ${value === c.value ? "ring-2 ring-offset-2 ring-[#14161A]" : ""
                         }`}
-                    style={{ backgroundColor: c.value }}
+                    style={{ backgroundColor: c.value, borderColor: c.text }}
                 />
             ))}
         </div>
@@ -67,8 +67,8 @@ function LabelRow({
                     type="button"
                     title="Change color"
                     onClick={() => setShowColors((s) => !s)}
-                    className="h-6 w-6 shrink-0 rounded-full cursor-pointer"
-                    style={{ backgroundColor: label.color }}
+                    className="h-6 w-6 shrink-0 rounded-full border cursor-pointer"
+                    style={{ backgroundColor: getLabelStyle(label.color).backgroundColor, borderColor: getLabelStyle(label.color).color }}
                 />
                 <Input
                     value={name}

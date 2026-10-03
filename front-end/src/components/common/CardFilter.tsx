@@ -2,6 +2,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import type { BoardLabel } from "@/types/board";
+import { getLabelStyle } from "@/lib/labelColors";
 
 export type CompletionFilter = "all" | "active" | "completed";
 
@@ -78,7 +79,7 @@ export default function CardFilter({
                                             />
                                             <span
                                                 className="inline-block w-3 h-3 rounded-full shrink-0"
-                                                style={{ backgroundColor: label.color }}
+                                                style={{ backgroundColor: getLabelStyle(label.color).color }}
                                             />
                                             <span className="truncate">{label.name}</span>
                                         </label>

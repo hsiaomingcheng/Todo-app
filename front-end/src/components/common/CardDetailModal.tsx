@@ -15,6 +15,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import DeletingModal from "@/components/common/DeletingModal";
+import { getLabelStyle } from "@/lib/labelColors";
 import type { BoardLabel, Card } from "@/types/board";
 
 // Parse a "YYYY-MM-DD" (or ISO timestamp) date-only value as a local date,
@@ -254,9 +255,9 @@ export default function CardDetailModal({
                                             key={label.id}
                                             type="button"
                                             onClick={() => toggleLabel(label.id)}
-                                            className={`px-3 py-1 rounded-full text-xs font-semibold cursor-pointer transition-opacity outline-none focus-visible:ring-2 focus-visible:ring-[#0F766E] ${isSelected ? "text-white" : "border border-current opacity-60 hover:opacity-100"
+                                            className={`px-3 py-1 rounded-full text-xs font-semibold cursor-pointer transition-opacity outline-none focus-visible:ring-2 focus-visible:ring-[#0F766E] ${isSelected ? "" : "border border-current opacity-60 hover:opacity-100"
                                                 }`}
-                                            style={isSelected ? { backgroundColor: label.color } : { color: label.color }}
+                                            style={isSelected ? getLabelStyle(label.color) : { color: getLabelStyle(label.color).color }}
                                         >
                                             {label.name}
                                         </button>

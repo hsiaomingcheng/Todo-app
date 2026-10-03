@@ -3,6 +3,7 @@ import { FilePen, ListChecks } from "lucide-react";
 import type { BoardLabel, Card } from "@/types/board";
 import { Badge } from "@/components/ui/badge";
 import CardDetailModal from "@/components/common/CardDetailModal";
+import { getLabelStyle } from "@/lib/labelColors";
 
 export default function Cards({
     card,
@@ -50,8 +51,8 @@ export default function Cards({
                             {card.labels.map((label) => (
                                 <Badge
                                     key={label.id}
-                                    className="h-auto rounded-full border-0 px-2 py-0.5 text-[11px] font-semibold text-white"
-                                    style={{ backgroundColor: label.color }}
+                                    className="h-auto rounded-full border-0 px-2 py-0.5 text-[11px] font-semibold"
+                                    style={getLabelStyle(label.color)}
                                 >
                                     {label.name}
                                 </Badge>

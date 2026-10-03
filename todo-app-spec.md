@@ -108,7 +108,7 @@ TodoFlow is a lightweight, Trello-inspired task management web application focus
 | `--color-text` | `#172B4D` | Body text |
 | `--color-text-subtle` | `#6B778C` | Placeholder, meta text |
 
-**Label colours (8 options):** Green `#61BD4F`, Yellow `#F2D600`, Orange `#FF9F1A`, Red `#EB5A46`, Purple `#C377E0`, Blue `#0079BF`, Teal `#00C2E0`, Pink `#FF78CB`.
+**Label colours (8 options):** soft-tint chips, each a light background (the value stored in `labels.color`) with a dark text shade — Green `#DCFCE7`/`#166534`, Yellow `#FEF3C7`/`#92400E`, Orange `#FFEDD5`/`#9A3412`, Red `#FEE2E2`/`#991B1B`, Purple `#EDE9FE`/`#5B21B6`, Blue `#DBEAFE`/`#1E40AF`, Teal `#CCFBF1`/`#115E59`, Pink `#FCE7F3`/`#9D174D`. A stored colour outside this palette (a label created before the palette change) is rendered with a tint and text shade derived from it.
 
 ### 2.4 Typography
 
@@ -695,7 +695,7 @@ Get card detail.
   "completed": false,
   "due_date": "2026-05-01",
   "labels": [
-    { "id": "uuid", "name": "Design", "color": "#0079BF" }
+    { "id": "uuid", "name": "Design", "color": "#DBEAFE" }
   ],
   "created_at": "2026-04-10T09:00:00Z",
   "updated_at": "2026-04-20T14:00:00Z"

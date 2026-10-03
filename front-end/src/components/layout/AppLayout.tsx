@@ -89,9 +89,6 @@ export default function AppLayout() {
                                     <DropdownMenuItem onClick={() => navigate("/profile")}>
                                         Profile
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => navigate("/settings")}>
-                                        Settings
-                                    </DropdownMenuItem>
                                 </DropdownMenuGroup>
 
                                 <DropdownMenuSeparator />

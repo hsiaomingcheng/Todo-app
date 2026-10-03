@@ -55,12 +55,13 @@ export default function DeletingModal({
                 </DialogHeader>
 
                 <div>
-                    <label htmlFor="confirmText" className="text-sm">Type <strong className="text-red-600 font-bold">Delete</strong> to confirm</label>
+                    <label htmlFor="confirmText" className="text-sm">Type <strong className="text-[#B91C1C] font-bold">Delete</strong> to confirm</label>
                     <Input
                         id="confirmText"
                         type="text"
                         value={text}
                         onChange={(e) => setText(e.target.value)}
+                        className="mt-1.5 h-11 rounded-[10px] border-[#E1E4E8] bg-white px-3.5 text-[15px] shadow-none focus-visible:border-[#0F766E] focus-visible:ring-[#0F766E]/25"
                     />
                 </div>
 
@@ -69,11 +70,12 @@ export default function DeletingModal({
                         asChild
                         onClick={() => setText("")}
                     >
-                        <Button variant="outline" className="cursor-pointer">Cancel</Button>
+                        <Button variant="outline" className="h-10 cursor-pointer rounded-[10px]">Cancel</Button>
                     </DialogClose>
 
                     <Button
                         variant="destructive"
+                        className="h-10 rounded-[10px] font-semibold"
                         onClick={() => submissionHandler()}
                         disabled={text.toLowerCase() !== "delete"}
                     >Delete</Button>

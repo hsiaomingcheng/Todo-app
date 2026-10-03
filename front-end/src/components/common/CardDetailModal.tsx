@@ -171,14 +171,15 @@ export default function CardDetailModal({
                             id="completed"
                             checked={completed}
                             onCheckedChange={(checked) => setCompleted(checked === true)}
+                            className="data-checked:border-[#0F766E] data-checked:bg-[#0F766E] data-checked:text-white"
                         />
-                        <label htmlFor="completed" className="text-sm text-app-text-subtle">
+                        <label htmlFor="completed" className="text-sm text-[#5B6270]">
                             Mark as completed
                         </label>
                     </div>
 
                     <div>
-                        <label className="block text-gray-700 text-sm font-bold mb-1" htmlFor="cardTitle">
+                        <label className="mb-1.5 block text-[13px] font-medium text-[#14161A]" htmlFor="cardTitle">
                             Title
                         </label>
                         <Input
@@ -186,12 +187,12 @@ export default function CardDetailModal({
                             type="text"
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
-                            className={completed ? "line-through text-app-text-subtle" : ""}
+                            className={`h-11 rounded-[10px] border-[#E1E4E8] bg-white px-3.5 text-[15px] shadow-none focus-visible:border-[#0F766E] focus-visible:ring-[#0F766E]/25 ${completed ? "line-through text-[#5B6270]" : ""}`}
                         />
                     </div>
 
                     <div>
-                        <label className="block text-gray-700 text-sm font-bold mb-1" htmlFor="cardDescription">
+                        <label className="mb-1.5 block text-[13px] font-medium text-[#14161A]" htmlFor="cardDescription">
                             Description
                         </label>
                         <Textarea
@@ -199,16 +200,17 @@ export default function CardDetailModal({
                             placeholder="Add a more detailed description..."
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
+                            className="min-h-24 rounded-[10px] border-[#E1E4E8] bg-white px-3.5 py-2.5 text-[15px] shadow-none focus-visible:border-[#0F766E] focus-visible:ring-[#0F766E]/25"
                         />
                     </div>
 
                     <div>
-                        <label className="block text-gray-700 text-sm font-bold mb-1">
+                        <label className="mb-1.5 block text-[13px] font-medium text-[#14161A]">
                             Due date
                         </label>
                         <Popover>
                             <PopoverTrigger asChild>
-                                <Button type="button" variant="outline" className="w-full justify-start font-normal">
+                                <Button type="button" variant="outline" className="h-11 w-full justify-start rounded-[10px] border-[#E1E4E8] bg-white px-3.5 text-[15px] font-normal shadow-none hover:bg-[#F1F3F5]">
                                     {dueDate ? dueDate.toLocaleDateString() : "No due date"}
                                 </Button>
                             </PopoverTrigger>
@@ -236,11 +238,11 @@ export default function CardDetailModal({
                     </div>
 
                     <div>
-                        <label className="block text-gray-700 text-sm font-bold mb-1">
+                        <label className="mb-1.5 block text-[13px] font-medium text-[#14161A]">
                             Labels
                         </label>
                         {boardLabels.length === 0 ? (
-                            <p className="text-sm text-app-text-subtle">
+                            <p className="text-sm text-[#5B6270]">
                                 No labels on this board yet — add some from "Manage labels".
                             </p>
                         ) : (
@@ -252,7 +254,7 @@ export default function CardDetailModal({
                                             key={label.id}
                                             type="button"
                                             onClick={() => toggleLabel(label.id)}
-                                            className={`px-3 py-1 rounded-full text-xs font-medium cursor-pointer transition-opacity ${isSelected ? "text-white" : "text-app-text border border-current opacity-60 hover:opacity-100"
+                                            className={`px-3 py-1 rounded-full text-xs font-semibold cursor-pointer transition-opacity outline-none focus-visible:ring-2 focus-visible:ring-[#0F766E] ${isSelected ? "text-white" : "border border-current opacity-60 hover:opacity-100"
                                                 }`}
                                             style={isSelected ? { backgroundColor: label.color } : { color: label.color }}
                                         >
@@ -265,10 +267,10 @@ export default function CardDetailModal({
                     </div>
 
                     <div>
-                        <label className="block text-gray-700 text-sm font-bold mb-1">
+                        <label className="mb-1.5 block text-[13px] font-medium text-[#14161A]">
                             Subtasks
                             {card.tasks.length > 0 && (
-                                <span className="ml-2 font-normal text-app-text-subtle">
+                                <span className="ml-2 font-normal text-[#5B6270]">
                                     {card.tasks.filter((t) => t.is_completed).length}/{card.tasks.length}
                                 </span>
                             )}
@@ -283,9 +285,10 @@ export default function CardDetailModal({
                                             onCheckedChange={(checked) =>
                                                 updateTaskFunc(task.id, { is_completed: checked === true })
                                             }
+                                            className="data-checked:border-[#0F766E] data-checked:bg-[#0F766E] data-checked:text-white"
                                         />
                                         <span
-                                            className={`flex-1 text-sm ${task.is_completed ? "line-through text-app-text-subtle" : ""}`}
+                                            className={`flex-1 text-sm ${task.is_completed ? "line-through text-[#5B6270]" : ""}`}
                                         >
                                             {task.content}
                                         </span>
@@ -293,7 +296,7 @@ export default function CardDetailModal({
                                             type="button"
                                             variant="ghost"
                                             size="icon-sm"
-                                            className="cursor-pointer text-app-danger shrink-0"
+                                            className="cursor-pointer text-[#B91C1C] shrink-0 size-8 rounded-lg"
                                             aria-label="Delete subtask"
                                             onClick={() => deleteTaskFunc(task.id)}
                                         >
@@ -308,6 +311,7 @@ export default function CardDetailModal({
                             <Input
                                 type="text"
                                 placeholder="Add a subtask..."
+                                className="h-11 rounded-[10px] border-[#E1E4E8] bg-white px-3.5 text-[15px] shadow-none focus-visible:border-[#0F766E] focus-visible:ring-[#0F766E]/25"
                                 value={newTaskContent}
                                 onChange={(e) => setNewTaskContent(e.target.value)}
                                 onKeyDown={(e) => {
@@ -321,6 +325,7 @@ export default function CardDetailModal({
                             <Button
                                 type="button"
                                 variant="outline"
+                                className="h-11 rounded-[10px] border-[#E1E4E8] bg-white px-4 shadow-none hover:bg-[#F1F3F5]"
                                 disabled={isAddingTask || !newTaskContent.trim()}
                                 onClick={handleAddTask}
                             >
@@ -334,7 +339,7 @@ export default function CardDetailModal({
                             title="Delete card"
                             description="This action cannot be undone. This will permanently delete this card."
                             button={
-                                <Button type="button" variant="destructive">
+                                <Button type="button" variant="destructive" className="h-10 rounded-[10px] font-semibold">
                                     Delete
                                 </Button>
                             }
@@ -343,9 +348,9 @@ export default function CardDetailModal({
 
                         <div className="flex gap-2">
                             <DialogClose asChild>
-                                <Button type="button" variant="outline">Cancel</Button>
+                                <Button type="button" variant="outline" className="h-10 rounded-[10px]">Cancel</Button>
                             </DialogClose>
-                            <Button type="submit" disabled={isProcessing || !title.trim()}>
+                            <Button type="submit" disabled={isProcessing || !title.trim()} className="h-10 rounded-[10px] bg-[#0F766E] font-semibold text-white hover:bg-[#0F766E]/90">
                                 Save
                             </Button>
                         </div>

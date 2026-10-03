@@ -39,10 +39,10 @@ export default function CardFilter({
                     </Button>
                 </PopoverTrigger>
 
-                <PopoverContent className="w-64">
+                <PopoverContent className="w-64 rounded-xl border border-[#E1E4E8] bg-white p-4 shadow-lg ring-0">
                     <div className="flex flex-col gap-4">
                         <div>
-                            <p className="text-sm font-bold text-gray-700 mb-2">Status</p>
+                            <p className="text-[13px] font-medium text-[#14161A] mb-2">Status</p>
                             <div className="flex flex-col gap-1.5">
                                 {COMPLETION_OPTIONS.map((option) => (
                                     <label
@@ -51,6 +51,7 @@ export default function CardFilter({
                                     >
                                         <input
                                             type="radio"
+                                            className="accent-[#0F766E]"
                                             name="completion-filter"
                                             checked={completionFilter === option.value}
                                             onChange={() => onCompletionFilterChange(option.value)}
@@ -63,7 +64,7 @@ export default function CardFilter({
 
                         {boardLabels.length > 0 && (
                             <div>
-                                <p className="text-sm font-bold text-gray-700 mb-2">Labels</p>
+                                <p className="text-[13px] font-medium text-[#14161A] mb-2">Labels</p>
                                 <div className="flex flex-col gap-1.5 max-h-40 overflow-y-auto">
                                     {boardLabels.map((label) => (
                                         <label
@@ -73,6 +74,7 @@ export default function CardFilter({
                                             <Checkbox
                                                 checked={selectedLabelIds.has(label.id)}
                                                 onCheckedChange={() => onToggleLabel(label.id)}
+                                                className="data-checked:border-[#0F766E] data-checked:bg-[#0F766E] data-checked:text-white"
                                             />
                                             <span
                                                 className="inline-block w-3 h-3 rounded-full shrink-0"
@@ -90,14 +92,14 @@ export default function CardFilter({
 
             {isFilterActive && (
                 <>
-                    <span className="text-sm text-app-text-subtle">
+                    <span className="text-sm text-[#5B6270]">
                         {matchCount} matching card{matchCount === 1 ? "" : "s"}
                     </span>
                     <Button
                         type="button"
                         variant="ghost"
                         size="sm"
-                        className="cursor-pointer"
+                        className="cursor-pointer rounded-lg text-[#5B6270] hover:text-[#14161A]"
                         onClick={onClear}
                     >
                         Clear filters

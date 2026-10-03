@@ -75,11 +75,11 @@ export default function GlobalSearch({
                 onChange={(e) => setQuery(e.target.value)}
                 onFocus={() => results.length > 0 && setIsOpen(true)}
                 onKeyDown={(e) => e.key === "Escape" && setIsOpen(false)}
-                className="bg-app-bg border-gray-300 focus:bg-white"
+                className="h-10 rounded-[10px] border-[#E1E4E8] bg-[#F7F8FA] px-3.5 shadow-none focus:bg-white focus-visible:border-[#0F766E] focus-visible:ring-[#0F766E]/25"
             />
 
             {isOpen && (
-                <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-80 overflow-y-auto z-50">
+                <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-[#E1E4E8] rounded-xl shadow-lg max-h-80 overflow-y-auto z-50">
                     {results.length === 0 ? (
                         <p className="p-3 text-sm text-app-text-subtle">No matching cards.</p>
                     ) : (

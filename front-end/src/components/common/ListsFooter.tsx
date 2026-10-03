@@ -40,13 +40,16 @@ export default function ListsFooter({ index, boardList, handleCreateCard }: { in
         <>
             {addingCardListId !== boardList.id ? (
                 <button
-                    className="cursor-pointer w-full text-left text-sm text-app-text-subtle hover:text-app-text hover:bg-gray-200 rounded-lg px-2 py-1.5 transition-colors duration-150"
+                    className="cursor-pointer w-full text-left text-sm text-[#5B6270] hover:text-[#14161A] hover:bg-[#E6E8EC] rounded-lg px-2 py-2 transition-colors duration-150 outline-none focus-visible:ring-2 focus-visible:ring-[#0F766E]"
                     onClick={() => setAddingCardListId(boardList.id)}
                 >
                     + Add a card
                 </button>
             ) : (
-                <form onSubmit={(e) => handleSubmit(e, boardList.id, index)}>
+                <form
+                    onSubmit={(e) => handleSubmit(e, boardList.id, index)}
+                    className="flex flex-col gap-2"
+                >
                     <Input
                         autoFocus
                         type="text"
@@ -56,14 +59,14 @@ export default function ListsFooter({ index, boardList, handleCreateCard }: { in
                         onKeyDown={(e) => e.key === "Escape" && cleanAddingCard()}
                         onBlur={() => cleanAddingCard()}
                         disabled={isProcessing}
-                        className="text-sm h-8 border-gray-200 focus-visible:ring-app-primary bg-white"
+                        className="text-sm h-9 rounded-[10px] border-[#E1E4E8] bg-white shadow-none focus-visible:border-[#0F766E] focus-visible:ring-[#0F766E]/25"
                     />
 
                     <div className="flex gap-1.5">
                         <Button
                             type="submit"
                             size="sm"
-                            className="flex-1 h-7 text-xs bg-app-primary hover:bg-app-primary-hover"
+                            className="flex-1 h-8 rounded-[8px] text-xs font-semibold bg-[#0F766E] text-white hover:bg-[#0F766E]/90"
                             onMouseDown={(e) => e.preventDefault()}
                             disabled={isProcessing}
                         >
@@ -74,7 +77,7 @@ export default function ListsFooter({ index, boardList, handleCreateCard }: { in
                             type="button"
                             size="sm"
                             variant="ghost"
-                            className="h-7 text-xs px-2"
+                            className="h-8 rounded-[8px] text-xs px-2.5 text-[#5B6270]"
                             onClick={cleanAddingCard}
                         >
                             ✕

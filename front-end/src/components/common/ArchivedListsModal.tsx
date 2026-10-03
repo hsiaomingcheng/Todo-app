@@ -52,7 +52,7 @@ export default function ArchivedListsModal({
     return (
         <Dialog open={open} onOpenChange={handleOpenChange}>
             <DialogTrigger asChild>
-                <Button variant="outline" className="cursor-pointer">Archived lists</Button>
+                <Button variant="outline" className="h-10 cursor-pointer rounded-[10px] border-[#E1E4E8] bg-white px-4 text-sm font-medium text-[#14161A] shadow-none hover:bg-[#F1F3F5]">Archived lists</Button>
             </DialogTrigger>
 
             <DialogContent>
@@ -63,16 +63,16 @@ export default function ArchivedListsModal({
 
                 <div className="flex flex-col gap-2 max-h-[300px] overflow-y-auto">
                     {archivedLists.length === 0 && (
-                        <p className="text-sm text-app-text-subtle">No archived lists.</p>
+                        <p className="text-sm text-[#5B6270]">No archived lists.</p>
                     )}
                     {archivedLists.map((list) => (
-                        <div key={list.id} className="flex items-center justify-between gap-2 border rounded-md px-3 py-2">
-                            <span className="text-sm font-medium text-app-text">{list.title}</span>
+                        <div key={list.id} className="flex items-center justify-between gap-2 border border-[#E6E8EC] rounded-[10px] px-3 py-2.5">
+                            <span className="text-sm font-medium text-[#14161A]">{list.title}</span>
                             <Button
                                 type="button"
                                 size="sm"
                                 variant="outline"
-                                className="cursor-pointer"
+                                className="h-9 cursor-pointer rounded-[10px] border-[#E1E4E8] bg-white shadow-none hover:bg-[#F1F3F5]"
                                 disabled={restoringId === list.id}
                                 onClick={() => handleRestore(list.id)}
                             >
@@ -84,7 +84,7 @@ export default function ArchivedListsModal({
 
                 <DialogFooter>
                     <DialogClose asChild>
-                        <Button variant="outline">Close</Button>
+                        <Button variant="outline" className="h-10 rounded-[10px]">Close</Button>
                     </DialogClose>
                 </DialogFooter>
             </DialogContent>

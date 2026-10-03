@@ -70,23 +70,23 @@ export default function ChangePasswordModal(
             if (!isOpen) setPasswords({ current_password: "", new_password: "", new_password_confirmation: "" });
         }}>
             <DialogTrigger asChild>
-                <Button className="cursor-pointer">Change Password</Button>
+                <Button variant="outline" className="h-11 cursor-pointer rounded-[10px] border-[#E1E4E8] bg-white px-5 font-semibold text-[#14161A] hover:bg-[#F1F3F5]">Change password</Button>
             </DialogTrigger>
 
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Change Password</DialogTitle>
+                    <DialogTitle>Change password</DialogTitle>
                     <DialogDescription>Update your password</DialogDescription>
                 </DialogHeader>
 
                 {/* Input fields */}
                 <form onSubmit={(e) => handleSubmit(e)}>
                     <div className="mb-4">
-                        <div className="mb-2">
+                        <div className="mb-3">
                             <label
-                                className="block text-gray-700 text-sm font-bold mb-1"
+                                className="mb-1.5 block text-[13px] font-medium text-[#14161A]"
                                 htmlFor="currentPassword">
-                                Current Password
+                                Current password
                             </label>
                             <div className="relative">
                                 <Input
@@ -97,23 +97,23 @@ export default function ChangePasswordModal(
                                     placeholder="Current password"
                                     value={passwords.current_password}
                                     onChange={(e) => setPasswords({ ...passwords, current_password: e.target.value })}
-                                    className="pr-10"
+                                    className="h-11 rounded-[10px] border-[#E1E4E8] bg-white px-3.5 text-[15px] shadow-none focus-visible:border-[#0F766E] focus-visible:ring-[#0F766E]/25 pr-11"
                                 />
                                 <button
                                     type="button"
                                     onClick={() => toggleShow("current_password")}
-                                    className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                                    className="absolute right-1.5 top-1/2 -translate-y-1/2 inline-flex size-8 items-center justify-center rounded-lg text-[#5B6270] hover:bg-[#F1F3F5] hover:text-[#14161A] outline-none focus-visible:ring-2 focus-visible:ring-[#0F766E]"
                                 >
                                     {showPasswords.current_password ? <EyeOff size={16} /> : <Eye size={16} />}
                                 </button>
                             </div>
                         </div>
 
-                        <div className="mb-2">
+                        <div className="mb-3">
                             <label
-                                className="block text-gray-700 text-sm font-bold mb-1"
+                                className="mb-1.5 block text-[13px] font-medium text-[#14161A]"
                                 htmlFor="newPassword">
-                                New Password
+                                New password
                             </label>
                             <div className="relative">
                                 <Input
@@ -123,23 +123,23 @@ export default function ChangePasswordModal(
                                     placeholder="New password"
                                     value={passwords.new_password}
                                     onChange={(e) => setPasswords({ ...passwords, new_password: e.target.value })}
-                                    className="pr-10"
+                                    className="h-11 rounded-[10px] border-[#E1E4E8] bg-white px-3.5 text-[15px] shadow-none focus-visible:border-[#0F766E] focus-visible:ring-[#0F766E]/25 pr-11"
                                 />
                                 <button
                                     type="button"
                                     onClick={() => toggleShow("new_password")}
-                                    className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                                    className="absolute right-1.5 top-1/2 -translate-y-1/2 inline-flex size-8 items-center justify-center rounded-lg text-[#5B6270] hover:bg-[#F1F3F5] hover:text-[#14161A] outline-none focus-visible:ring-2 focus-visible:ring-[#0F766E]"
                                 >
                                     {showPasswords.new_password ? <EyeOff size={16} /> : <Eye size={16} />}
                                 </button>
                             </div>
                         </div>
 
-                        <div className="mb-2">
+                        <div className="mb-3">
                             <label
-                                className="block text-gray-700 text-sm font-bold mb-1"
+                                className="mb-1.5 block text-[13px] font-medium text-[#14161A]"
                                 htmlFor="newPasswordConfirmation">
-                                Confirm New Password
+                                Confirm new password
                             </label>
                             <div className="relative">
                                 <Input
@@ -149,12 +149,12 @@ export default function ChangePasswordModal(
                                     placeholder="Confirm new password"
                                     value={passwords.new_password_confirmation}
                                     onChange={(e) => setPasswords({ ...passwords, new_password_confirmation: e.target.value })}
-                                    className="pr-10"
+                                    className="h-11 rounded-[10px] border-[#E1E4E8] bg-white px-3.5 text-[15px] shadow-none focus-visible:border-[#0F766E] focus-visible:ring-[#0F766E]/25 pr-11"
                                 />
                                 <button
                                     type="button"
                                     onClick={() => toggleShow("new_password_confirmation")}
-                                    className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                                    className="absolute right-1.5 top-1/2 -translate-y-1/2 inline-flex size-8 items-center justify-center rounded-lg text-[#5B6270] hover:bg-[#F1F3F5] hover:text-[#14161A] outline-none focus-visible:ring-2 focus-visible:ring-[#0F766E]"
                                 >
                                     {showPasswords.new_password_confirmation ? <EyeOff size={16} /> : <Eye size={16} />}
                                 </button>
@@ -164,10 +164,10 @@ export default function ChangePasswordModal(
 
                     <DialogFooter>
                         <DialogClose asChild>
-                            <Button variant="outline">Cancel</Button>
+                            <Button variant="outline" className="h-10 rounded-[10px]">Cancel</Button>
                         </DialogClose>
 
-                        <Button type="submit" disabled={isProcessing}>Save</Button>
+                        <Button type="submit" disabled={isProcessing} className="h-10 rounded-[10px] bg-[#0F766E] font-semibold text-white hover:bg-[#0F766E]/90">Save</Button>
                     </DialogFooter>
                 </form>
             </DialogContent>

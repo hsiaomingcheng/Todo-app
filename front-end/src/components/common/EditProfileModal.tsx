@@ -49,21 +49,21 @@ export default function EditProfileModal(
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button className="cursor-pointer">Edit Profile</Button>
+                <Button className="h-11 cursor-pointer rounded-[10px] bg-[#0F766E] px-5 font-semibold text-white hover:bg-[#0F766E]/90">Edit profile</Button>
             </DialogTrigger>
 
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Edit Profile</DialogTitle>
+                    <DialogTitle>Edit profile</DialogTitle>
                     <DialogDescription>Update your profile information</DialogDescription>
                 </DialogHeader>
 
                 {/* Input fields */}
                 <form onSubmit={(e) => handleSubmit(e)}>
                     <div className="mb-4">
-                        <div className="mb-2">
+                        <div className="mb-3">
                             <label
-                                className="block text-gray-700 text-sm font-bold mb-1"
+                                className="mb-1.5 block text-[13px] font-medium text-[#14161A]"
                                 htmlFor="firstName">
                                 First name
                             </label>
@@ -74,13 +74,14 @@ export default function EditProfileModal(
                                 type="text"
                                 placeholder="First name"
                                 value={userData.first_name}
+                                className="h-11 rounded-[10px] border-[#E1E4E8] bg-white px-3.5 text-[15px] shadow-none focus-visible:border-[#0F766E] focus-visible:ring-[#0F766E]/25"
                                 onChange={(e) => setUserData({ ...userData, first_name: e.target.value })}
                             />
                         </div>
 
-                        <div className="mb-2">
+                        <div className="mb-3">
                             <label
-                                className="block text-gray-700 text-sm font-bold mb-1"
+                                className="mb-1.5 block text-[13px] font-medium text-[#14161A]"
                                 htmlFor="lastName">
                                 Last name
                             </label>
@@ -90,13 +91,14 @@ export default function EditProfileModal(
                                 type="text"
                                 placeholder="Last name"
                                 value={userData.last_name}
+                                className="h-11 rounded-[10px] border-[#E1E4E8] bg-white px-3.5 text-[15px] shadow-none focus-visible:border-[#0F766E] focus-visible:ring-[#0F766E]/25"
                                 onChange={(e) => setUserData({ ...userData, last_name: e.target.value })}
                             />
                         </div>
 
-                        <div className="mb-2">
+                        <div className="mb-3">
                             <label
-                                className="block text-gray-700 text-sm font-bold mb-1"
+                                className="mb-1.5 block text-[13px] font-medium text-[#14161A]"
                                 htmlFor="email">
                                 Email
                             </label>
@@ -106,6 +108,7 @@ export default function EditProfileModal(
                                 type="email"
                                 placeholder="Email"
                                 value={userData.email}
+                                className="h-11 rounded-[10px] border-[#E1E4E8] bg-white px-3.5 text-[15px] shadow-none focus-visible:border-[#0F766E] focus-visible:ring-[#0F766E]/25"
                                 onChange={(e) => setUserData({ ...userData, email: e.target.value })}
                             />
                         </div>
@@ -113,10 +116,10 @@ export default function EditProfileModal(
 
                     <DialogFooter>
                         <DialogClose asChild>
-                            <Button variant="outline">Cancel</Button>
+                            <Button variant="outline" className="h-10 rounded-[10px]">Cancel</Button>
                         </DialogClose>
 
-                        <Button type="submit" disabled={isProcessing}>Save</Button>
+                        <Button type="submit" disabled={isProcessing} className="h-10 rounded-[10px] bg-[#0F766E] font-semibold text-white hover:bg-[#0F766E]/90">Save</Button>
                     </DialogFooter>
                 </form>
             </DialogContent>

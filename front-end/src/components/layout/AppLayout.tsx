@@ -1,3 +1,5 @@
+import "@fontsource-variable/geist";
+
 import { useState } from "react";
 import { Outlet, Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
@@ -29,13 +31,17 @@ export default function AppLayout() {
     };
 
     return (
-        <div className="flex flex-col min-h-screen bg-app-bg">
-            {/* Header - spec color palette */}
-            <header className="bg-white shadow-sm border-b border-gray-200">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center gap-4">
+        <div className="flex flex-col min-h-screen bg-[#F7F8FA] font-[Geist_Variable,ui-sans-serif,system-ui,sans-serif] text-[#14161A]">
+            {/* Header */}
+            <header className="bg-white border-b border-[#ECEEF1]">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex justify-between items-center gap-4">
                     {/* Logo / App title */}
-                    <Link to="/boards" className="flex-shrink-0">
-                        <h1 className="text-xl font-bold text-app-text">TodoFlow</h1>
+                    <Link
+                        to="/boards"
+                        className="flex-shrink-0 inline-flex items-center gap-2.5 rounded-md outline-none focus-visible:ring-2 focus-visible:ring-[#0F766E]"
+                    >
+                        <span className="size-3 rounded-[4px] bg-[#0F766E]" aria-hidden="true" />
+                        <h1 className="text-[17px] font-bold tracking-[-0.02em] text-[#14161A]">TodoFlow</h1>
                     </Link>
 
                     {/* Global search - center (hidden on mobile, icon only on tablet) */}
@@ -47,32 +53,32 @@ export default function AppLayout() {
                     <Button
                         variant="ghost"
                         size="icon"
-                        className="md:hidden"
+                        className="md:hidden size-11 rounded-[10px]"
                         onClick={() => setIsMobileSearchOpen(true)}
                     >
-                        <Search className="h-5 w-5 text-[#6B778C]" />
+                        <Search className="h-5 w-5 text-[#5B6270]" />
                     </Button>
 
                     {/* User menu */}
                     <div className="flex items-center gap-2">
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="icon" className="rounded-full">
+                                <Button variant="ghost" size="icon" className="size-11 rounded-full">
                                     <Avatar className="h-8 w-8">
                                         <AvatarImage src={user?.avatar_url} alt={user?.first_name} />
-                                        <AvatarFallback className="bg-app-primary text-white text-xs">
+                                        <AvatarFallback className="bg-[#0F766E] text-white text-xs font-semibold">
                                             {getUserInitials()}
                                         </AvatarFallback>
                                     </Avatar>
                                 </Button>
                             </DropdownMenuTrigger>
 
-                            <DropdownMenuContent align="end" className="w-48">
+                            <DropdownMenuContent align="end" className="w-52 rounded-xl border border-[#E1E4E8] bg-white shadow-lg ring-0">
                                 <div className="px-2 py-1.5 text-sm">
-                                    <p className="font-medium text-app-text">
+                                    <p className="font-semibold text-[#14161A]">
                                         {user?.first_name} {user?.last_name}
                                     </p>
-                                    <p className="text-xs text-app-text-subtle truncate">
+                                    <p className="text-xs text-[#5B6270] truncate">
                                         @{user?.user_account}
                                     </p>
                                 </div>
@@ -82,9 +88,6 @@ export default function AppLayout() {
                                 <DropdownMenuGroup>
                                     <DropdownMenuItem onClick={() => navigate("/profile")}>
                                         Profile
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => navigate("/settings")}>
-                                        Settings
                                     </DropdownMenuItem>
                                 </DropdownMenuGroup>
 
@@ -121,10 +124,12 @@ export default function AppLayout() {
             </main>
 
             {/* Footer */}
-            <footer className="bg-app-text text-white text-center py-4 mt-auto">
-                <p className="text-sm">
-                    &copy; 2026 Chris Hsiao. All rights reserved.
-                </p>
+            <footer className="bg-white border-t border-[#ECEEF1] mt-auto">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
+                    <p className="text-sm text-[#5B6270]">
+                        &copy; 2026 Chris Hsiao. All rights reserved.
+                    </p>
+                </div>
             </footer>
         </div>
     );

@@ -108,14 +108,14 @@ export default function BoardsPage() {
         <div className="max-w-7xl mx-auto px-4 py-8">
             {/* Page heading */}
             <div className="mb-8">
-                <h2 className="text-2xl font-bold text-app-text">My Boards</h2>
-                <p className="text-sm text-app-text-subtle mt-0.5">
+                <h2 className="text-[28px] font-bold leading-[1.15] tracking-[-0.02em] text-[#14161A]">My boards</h2>
+                <p className="mt-1.5 font-[Geist_Mono_Variable,ui-monospace,monospace] text-xs uppercase tracking-[0.12em] text-[#5B6270]">
                     {activeBoards.length} {activeBoards.length === 1 ? "board" : "boards"}
                 </p>
             </div>
 
             {/* Board grid */}
-            <div className="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-4">
+            <div className="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-4">
                 {activeBoards.map((board) => (
                     <BoardCard
                         key={board.id}
@@ -131,7 +131,7 @@ export default function BoardsPage() {
                 {!isAddingBoard ? (
                     <button
                         onClick={() => setIsAddingBoard(true)}
-                        className="group h-[120px] rounded-xl border-2 border-dashed border-gray-300 flex flex-col items-center justify-center gap-2 text-app-text-subtle hover:border-app-primary hover:text-app-primary transition-colors duration-200 cursor-pointer bg-transparent"
+                        className="group h-[132px] rounded-[14px] border-[1.5px] border-dashed border-[#C9CED6] flex flex-col items-center justify-center gap-2 text-[#5B6270] hover:border-[#0F766E] hover:bg-[color-mix(in_srgb,#0F766E_6%,#FFFFFF)] hover:text-[#0F766E] transition-colors duration-200 cursor-pointer bg-transparent outline-none focus-visible:ring-2 focus-visible:ring-[#0F766E]"
                     >
                         <span className="text-2xl font-light leading-none">+</span>
                         <span className="text-sm font-medium">New board</span>
@@ -139,7 +139,7 @@ export default function BoardsPage() {
                 ) : (
                     <form
                         onSubmit={createNewBoard}
-                        className="h-[120px] rounded-xl border-2 border-app-primary bg-white p-3 flex flex-col gap-2 shadow-sm"
+                        className="h-[132px] rounded-[14px] border-[1.5px] border-[#0F766E] bg-white p-3 flex flex-col gap-2 shadow-sm"
                     >
                         <Input
                             autoFocus
@@ -147,14 +147,14 @@ export default function BoardsPage() {
                             placeholder="Board name..."
                             value={form.boardName}
                             onChange={(e) => setForm({ ...form, boardName: e.target.value })}
-                            className="text-sm h-8 border-gray-200 focus-visible:ring-app-primary"
+                            className="text-sm h-9 rounded-[10px] border-[#E1E4E8] bg-white shadow-none focus-visible:border-[#0F766E] focus-visible:ring-[#0F766E]/25"
                             onKeyDown={(e) => e.key === "Escape" && cleanAddingBoard()}
                         />
                         <div className="flex gap-1.5">
                             <Button
                                 type="submit"
                                 size="sm"
-                                className="flex-1 h-7 text-xs bg-app-primary hover:bg-app-primary-hover"
+                                className="flex-1 h-8 rounded-[8px] text-xs font-semibold bg-[#0F766E] hover:bg-[#0F766E]/90"
                             >
                                 Create
                             </Button>
@@ -162,7 +162,7 @@ export default function BoardsPage() {
                                 type="button"
                                 size="sm"
                                 variant="ghost"
-                                className="h-7 text-xs px-2"
+                                className="h-8 rounded-[8px] text-xs px-2.5 text-[#5B6270]"
                                 onClick={cleanAddingBoard}
                             >
                                 ✕
@@ -242,17 +242,17 @@ function BoardCard({
     return (
         <div
             onClick={onClick}
-            className="group relative h-[120px] rounded-xl overflow-hidden cursor-pointer shadow-sm hover:shadow-md transition-shadow duration-200 bg-white border border-gray-100"
+            className="group relative h-[132px] rounded-[14px] overflow-hidden cursor-pointer bg-white border border-[#E6E8EC] hover:border-[#C9CED6] hover:shadow-[0_12px_24px_-12px_rgba(20,22,26,0.2)] transition-[border-color,box-shadow] duration-200"
         >
             {/* Color strip */}
             <div className="h-2 w-full" style={{ backgroundColor: color }} />
 
             {/* Content */}
-            <div className="p-3 flex flex-col justify-between h-[calc(100%-8px)]">
+            <div className="px-4 pt-3.5 pb-2.5 flex flex-col justify-between h-[calc(100%-8px)]">
                 {!isEditingTitle ? (
                     <p
                         onClick={startEditing}
-                        className="font-semibold text-app-text text-sm leading-snug line-clamp-2 hover:bg-gray-100 rounded p-0.5 -m-0.5 transition-colors duration-150"
+                        className="font-semibold text-[#14161A] text-[15px] leading-snug line-clamp-2 hover:bg-[#F1F3F5] rounded-md p-0.5 -m-0.5 transition-colors duration-150"
                     >
                         {board.title}
                     </p>
@@ -266,7 +266,7 @@ function BoardCard({
                             onKeyDown={(e) => e.key === "Escape" && cleanInput()}
                             onBlur={() => cleanInput()}
                             disabled={isProcessing}
-                            className="text-sm h-7 border-gray-200 focus-visible:ring-app-primary"
+                            className="text-sm h-8 rounded-[8px] border-[#E1E4E8] bg-white shadow-none focus-visible:border-[#0F766E] focus-visible:ring-[#0F766E]/25"
                         />
                     </form>
                 )}
@@ -279,7 +279,7 @@ function BoardCard({
                             onClick={(e) => e.stopPropagation()}
                         >
                             <button
-                                className="cursor-pointer text-app-text-subtle hover:text-app-text hover:bg-gray-200 rounded p-1 transition-colors duration-150"
+                                className="cursor-pointer inline-flex size-8 items-center justify-center text-[#5B6270] hover:text-[#14161A] hover:bg-[#F1F3F5] rounded-lg transition-colors duration-150 outline-none focus-visible:ring-2 focus-visible:ring-[#0F766E]"
                                 aria-label="Change board color"
                             >
                                 <Palette size={16} strokeWidth={2} />
@@ -299,7 +299,7 @@ function BoardCard({
                                     <button
                                         key={swatch}
                                         onClick={() => setSelectedColor(swatch)}
-                                        className={`w-8 h-8 rounded-full cursor-pointer border-2 transition-transform duration-100 ${selectedColor === swatch ? "border-app-text scale-110" : "border-black/10 hover:scale-110"}`}
+                                        className={`w-8 h-8 rounded-full cursor-pointer border-2 transition-transform duration-100 ${selectedColor === swatch ? "border-[#14161A] scale-110" : "border-black/10 hover:scale-110"}`}
                                         style={{ backgroundColor: swatch }}
                                         aria-label={`Set board color to ${swatch}`}
                                     />
@@ -314,7 +314,7 @@ function BoardCard({
                                 <Button
                                     onClick={handleSaveColor}
                                     disabled={isSavingColor}
-                                    className="cursor-pointer bg-app-primary hover:bg-app-primary-hover"
+                                    className="cursor-pointer bg-[#0F766E] hover:bg-[#0F766E]/90"
                                 >
                                     Save
                                 </Button>
@@ -329,7 +329,7 @@ function BoardCard({
                         button={
                             <button
                                 onClick={(e) => e.stopPropagation()}
-                                className="cursor-pointer text-app-text-subtle hover:text-app-text hover:bg-gray-200 rounded p-1 transition-colors duration-150"
+                                className="cursor-pointer inline-flex size-8 items-center justify-center text-[#5B6270] hover:text-[#14161A] hover:bg-[#F1F3F5] rounded-lg transition-colors duration-150 outline-none focus-visible:ring-2 focus-visible:ring-[#0F766E]"
                             >
                                 <Trash2 size={16} color="#dc2626" strokeWidth={2} />
                             </button>

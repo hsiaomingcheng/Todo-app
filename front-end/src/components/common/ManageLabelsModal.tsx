@@ -12,7 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import DeletingModal from "@/components/common/DeletingModal";
-import { LABEL_COLORS } from "@/lib/labelColors";
+import { LABEL_COLORS, getLabelStyle } from "@/lib/labelColors";
 import type { BoardLabel } from "@/types/board";
 
 function ColorSwatchPicker({ value, onChange }: { value: string; onChange: (color: string) => void }) {
@@ -24,9 +24,9 @@ function ColorSwatchPicker({ value, onChange }: { value: string; onChange: (colo
                     type="button"
                     title={c.name}
                     onClick={() => onChange(c.value)}
-                    className={`h-6 w-6 rounded-full cursor-pointer transition-shadow ${value === c.value ? "ring-2 ring-offset-2 ring-app-text" : ""
+                    className={`h-6 w-6 rounded-full border cursor-pointer transition-shadow ${value === c.value ? "ring-2 ring-offset-2 ring-[#14161A]" : ""
                         }`}
-                    style={{ backgroundColor: c.value }}
+                    style={{ backgroundColor: c.value, borderColor: c.text }}
                 />
             ))}
         </div>
@@ -67,15 +67,15 @@ function LabelRow({
                     type="button"
                     title="Change color"
                     onClick={() => setShowColors((s) => !s)}
-                    className="h-6 w-6 shrink-0 rounded-full cursor-pointer"
-                    style={{ backgroundColor: label.color }}
+                    className="h-6 w-6 shrink-0 rounded-full border cursor-pointer"
+                    style={{ backgroundColor: getLabelStyle(label.color).backgroundColor, borderColor: getLabelStyle(label.color).color }}
                 />
                 <Input
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     onBlur={handleNameBlur}
                     onKeyDown={(e) => e.key === "Enter" && (e.target as HTMLInputElement).blur()}
-                    className="h-8 flex-1"
+                    className="h-10 flex-1 rounded-[10px] border-[#E1E4E8] bg-white shadow-none focus-visible:border-[#0F766E] focus-visible:ring-[#0F766E]/25"
                 />
                 <DeletingModal
                     title="Delete label"
@@ -85,7 +85,7 @@ function LabelRow({
                             : "This action cannot be undone."
                     }
                     button={
-                        <Button type="button" variant="ghost" size="icon-sm" className="cursor-pointer text-app-danger shrink-0">
+                        <Button type="button" variant="ghost" size="icon-sm" className="cursor-pointer text-[#B91C1C] shrink-0 size-8 rounded-lg">
                             ✕
                         </Button>
                     }
@@ -141,7 +141,7 @@ export default function ManageLabelsModal({
     return (
         <Dialog open={open} onOpenChange={handleOpenChange}>
             <DialogTrigger asChild>
-                <Button variant="outline" className="cursor-pointer">Manage labels</Button>
+                <Button variant="outline" className="h-10 cursor-pointer rounded-[10px] border-[#E1E4E8] bg-white px-4 text-sm font-medium text-[#14161A] shadow-none hover:bg-[#F1F3F5]">Manage labels</Button>
             </DialogTrigger>
 
             <DialogContent>
@@ -152,29 +152,30 @@ export default function ManageLabelsModal({
 
                 <div className="flex flex-col gap-3 max-h-[300px] overflow-y-auto">
                     {labels.length === 0 && (
-                        <p className="text-sm text-app-text-subtle">No labels yet — add one below.</p>
+                        <p className="text-sm text-[#5B6270]">No labels yet — add one below.</p>
                     )}
                     {labels.map((label) => (
                         <LabelRow key={label.id} label={label} updateFunc={updateFunc} deleteFunc={deleteFunc} />
                     ))}
                 </div>
 
-                <form onSubmit={handleCreate} className="flex flex-col gap-2 border-t pt-4">
-                    <label className="text-sm font-bold text-gray-700">Add a label</label>
+                <form onSubmit={handleCreate} className="flex flex-col gap-2 border-t border-[#ECEEF1] pt-4">
+                    <label className="text-[13px] font-medium text-[#14161A]">Add a label</label>
                     <Input
                         placeholder="Label name"
+                        className="h-11 rounded-[10px] border-[#E1E4E8] bg-white px-3.5 text-[15px] shadow-none focus-visible:border-[#0F766E] focus-visible:ring-[#0F766E]/25"
                         value={newName}
                         onChange={(e) => setNewName(e.target.value)}
                     />
                     <ColorSwatchPicker value={newColor} onChange={setNewColor} />
-                    <Button type="submit" disabled={isCreating || !newName.trim()} className="cursor-pointer">
+                    <Button type="submit" disabled={isCreating || !newName.trim()} className="h-10 cursor-pointer rounded-[10px] bg-[#0F766E] font-semibold text-white hover:bg-[#0F766E]/90">
                         Add label
                     </Button>
                 </form>
 
                 <DialogFooter>
                     <DialogClose asChild>
-                        <Button variant="outline">Close</Button>
+                        <Button variant="outline" className="h-10 rounded-[10px]">Close</Button>
                     </DialogClose>
                 </DialogFooter>
             </DialogContent>

@@ -36,9 +36,9 @@ export default function ListsHeader({ boardList, submitFunc, deleteFunc, archive
             {isEditingTitle !== boardList.id ? (
                 <div
                     onClick={() => setIsEditingTitle(boardList.id)}
-                    className="w-full cursor-pointer hover:bg-gray-200 rounded p-1 transition-colors duration-150"
+                    className="w-full cursor-pointer hover:bg-[#E6E8EC] rounded-md p-1 transition-colors duration-150"
                 >
-                    <h3 className="font-bold text-sm text-app-text">
+                    <h3 className="font-semibold text-sm text-[#14161A]">
                         {boardList.title}
                     </h3>
                 </div>
@@ -52,14 +52,14 @@ export default function ListsHeader({ boardList, submitFunc, deleteFunc, archive
                         onKeyDown={(e) => e.key === "Escape" && cleanInput()}
                         onBlur={() => cleanInput()}
                         disabled={isProcessing}
-                        className="w-full text-sm h-8 border-gray-200 focus-visible:ring-app-primary bg-white"
+                        className="w-full text-sm h-9 rounded-[10px] border-[#E1E4E8] bg-white shadow-none focus-visible:border-[#0F766E] focus-visible:ring-[#0F766E]/25"
                     />
                 </form>
             )}
 
             <button
                 onClick={() => archiveFunc(boardList.id)}
-                className="cursor-pointer text-app-text-subtle hover:text-app-text hover:bg-gray-200 rounded p-1 transition-colors duration-150"
+                className="cursor-pointer inline-flex size-8 shrink-0 items-center justify-center text-[#5B6270] hover:text-[#14161A] hover:bg-[#E6E8EC] rounded-lg transition-colors duration-150 outline-none focus-visible:ring-2 focus-visible:ring-[#0F766E]"
                 aria-label="Archive list"
             >
                 <Archive size={16} strokeWidth={2} />
@@ -70,7 +70,7 @@ export default function ListsHeader({ boardList, submitFunc, deleteFunc, archive
                 description={`Are you sure you want to delete "${boardList.title}"?`}
                 button={
                     <button
-                        className="cursor-pointer text-app-text-subtle hover:text-app-text hover:bg-gray-200 rounded p-1 transition-colors duration-150"
+                        className="cursor-pointer inline-flex size-8 shrink-0 items-center justify-center text-[#5B6270] hover:text-[#14161A] hover:bg-[#E6E8EC] rounded-lg transition-colors duration-150 outline-none focus-visible:ring-2 focus-visible:ring-[#0F766E]"
                     >
                         <Trash2 size={16} color="#dc2626" strokeWidth={2} />
                     </button>

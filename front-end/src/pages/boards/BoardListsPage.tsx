@@ -338,7 +338,7 @@ export default function BoardListsPage() {
 
     return (
         <DragDropContext onDragEnd={onDragEnd}>
-            <div className="mb-3 flex items-center gap-2 flex-wrap">
+            <div className="mb-4 flex items-center gap-2 flex-wrap">
                 <ManageLabelsModal
                     labels={board?.labels ?? []}
                     createFunc={createLabelHandler}
@@ -374,7 +374,7 @@ export default function BoardListsPage() {
                                         <div
                                             ref={provided.innerRef}
                                             {...provided.draggableProps}
-                                            className="flex-shrink-0 w-[272px] bg-app-list-bg rounded-xl shadow-sm flex flex-col"
+                                            className="flex-shrink-0 w-[272px] bg-[#F1F3F5] rounded-[14px] border border-[#E6E8EC] flex flex-col"
                                         >
                                             {/* List header — drag handle is here only */}
                                             <div
@@ -388,7 +388,7 @@ export default function BoardListsPage() {
                                                     archiveFunc={archiveList}
                                                 />
                                                 {isFilterActive && (
-                                                    <span className="text-xs text-app-text-subtle shrink-0 ml-1">
+                                                    <span className="font-[Geist_Mono_Variable,ui-monospace,monospace] text-xs text-[#5B6270] shrink-0 ml-1">
                                                         ({boardList.cards?.filter(cardMatchesFilter).length ?? 0})
                                                     </span>
                                                 )}
@@ -457,7 +457,7 @@ export default function BoardListsPage() {
                     {!isAddingList ? (
                         <button
                             onClick={() => setIsAddingList(true)}
-                            className="w-full h-11 rounded-xl border-2 border-dashed border-gray-300 flex items-center justify-center gap-2 text-app-text-subtle hover:border-app-primary hover:text-app-primary transition-colors duration-200 bg-transparent text-sm font-medium"
+                            className="w-full h-11 rounded-[14px] border-[1.5px] border-dashed border-[#C9CED6] flex items-center justify-center gap-2 text-[#5B6270] hover:border-[#0F766E] hover:bg-[color-mix(in_srgb,#0F766E_6%,#FFFFFF)] hover:text-[#0F766E] transition-colors duration-200 bg-transparent text-sm font-medium cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[#0F766E]"
                         >
                             <span className="text-lg leading-none">+</span>
                             Add a list
@@ -465,7 +465,7 @@ export default function BoardListsPage() {
                     ) : (
                         <form
                             onSubmit={createNewList}
-                            className="bg-app-list-bg rounded-xl border-2 border-app-primary p-3 flex flex-col gap-2 shadow-sm"
+                            className="bg-[#F1F3F5] rounded-[14px] border-[1.5px] border-[#0F766E] p-3 flex flex-col gap-2"
                         >
                             <Input
                                 autoFocus
@@ -473,14 +473,14 @@ export default function BoardListsPage() {
                                 placeholder="List name..."
                                 value={form.listName}
                                 onChange={(e) => setForm({ ...form, listName: e.target.value })}
-                                className="text-sm h-8 border-gray-200 focus-visible:ring-app-primary bg-white"
+                                className="text-sm h-9 rounded-[10px] border-[#E1E4E8] bg-white shadow-none focus-visible:border-[#0F766E] focus-visible:ring-[#0F766E]/25"
                                 onKeyDown={(e) => e.key === "Escape" && cleanAddingList()}
                             />
                             <div className="flex gap-1.5">
                                 <Button
                                     type="submit"
                                     size="sm"
-                                    className="flex-1 h-7 text-xs bg-app-primary hover:bg-app-primary-hover"
+                                    className="flex-1 h-8 rounded-[8px] text-xs font-semibold bg-[#0F766E] text-white hover:bg-[#0F766E]/90"
                                 >
                                     Create
                                 </Button>
@@ -488,7 +488,7 @@ export default function BoardListsPage() {
                                     type="button"
                                     size="sm"
                                     variant="ghost"
-                                    className="h-7 text-xs px-2"
+                                    className="h-8 rounded-[8px] text-xs px-2.5 text-[#5B6270]"
                                     onClick={cleanAddingList}
                                 >
                                     ✕
